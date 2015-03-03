@@ -30,28 +30,23 @@ public class main extends Game {
         batch = new SpriteBatch();
         img = new Texture("bgimg2.jpeg");
         LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
-        LoginSong.setVolume(1f);
-        LoginSong.setLooping(true);
-        LoginSong.play();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-        Table table = new Table();
-        Gdx.input.setInputProcessor(stage);
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
         final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
+        Table table = new Table();
         final TextField txtUsername = new TextField("", skin);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        Gdx.input.setInputProcessor(stage);
         txtUsername.setMessageText("ex.John101");
         txtUsername.setAlignment(Align.left);
-
         textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
         textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
         textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
-
         skin.add("default", textButtonStyle);
         userLabel.setFontScaleX(1.5f);
         userLabel.setFontScaleY(1.5f);
@@ -71,6 +66,9 @@ public class main extends Game {
         table.add(button).padBottom(10).padRight(25);
         table.setFillParent(true);
         stage.addActor(table);
+        LoginSong.setVolume(1f);
+        LoginSong.setLooping(true);
+        LoginSong.play();
         txtUsername.setTextFieldListener(new TextFieldListener() {
             public void keyTyped (TextField textField, char key) {
                 if (key == '\n') textField.getOnscreenKeyboard().show(false);
