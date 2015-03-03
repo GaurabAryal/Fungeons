@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public class main extends Game {
     Skin skin;
@@ -24,6 +26,7 @@ public class main extends Game {
 
     @Override
     public void create () {
+        final Parse parse = new Parse();
         batch = new SpriteBatch();
         img = new Texture("bgimg2.jpeg");
         LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
@@ -32,14 +35,14 @@ public class main extends Game {
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
         final Label someSpace = new Label("         ", skin);
-        final TextField passwordTextField = new TextField("", skin);
+        final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
         Table table = new Table();
-        TextField textfield = new TextField("", skin);
+        final TextField txtUsername = new TextField("", skin);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         Gdx.input.setInputProcessor(stage);
-        textfield.setMessageText("ex.John101");
-        textfield.setAlignment(Align.left);
+        txtUsername.setMessageText("ex.John101");
+        txtUsername.setAlignment(Align.left);
         textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
         textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
         textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
@@ -51,14 +54,14 @@ public class main extends Game {
         passwordLabel.setFontScaleY(1.5f);
         someSpace.setFontScaleX(1.5f);
         someSpace.setFontScaleY(1.5f);
-        passwordTextField.setMessageText("*****");
-        passwordTextField.setPasswordCharacter('*');
-        passwordTextField.setPasswordMode(true);
+        txtPassword.setMessageText("*****");
+        txtPassword.setPasswordCharacter('*');
+        txtPassword.setPasswordMode(true);
         table.add(userLabel).padBottom(10).padRight(25);
-        table.add(textfield).width(300).padBottom(10);
+        table.add(txtUsername).width(300).padBottom(10);
         table.row();
         table.add(passwordLabel).padBottom(10).padRight(25);
-        table.add(passwordTextField).width(300).padBottom(10);
+        table.add(txtPassword).width(300).padBottom(10);
         table.row();
         table.add(button).padBottom(10).padRight(25);
         table.setFillParent(true);
@@ -66,9 +69,21 @@ public class main extends Game {
         LoginSong.setVolume(1f);
         LoginSong.setLooping(true);
         LoginSong.play();
-        textfield.setTextFieldListener(new TextFieldListener() {
+        txtUsername.setTextFieldListener(new TextFieldListener() {
             public void keyTyped (TextField textField, char key) {
                 if (key == '\n') textField.getOnscreenKeyboard().show(false);
+            }
+        });
+        txtPassword.setTextFieldListener(new TextFieldListener() {
+            public void keyTyped (TextField textField, char key) {
+                if (key == '\n') textField.getOnscreenKeyboard().show(false);
+            }
+        });
+        //http://stackoverflow.com/questions/21488311/libgdx-how-to-create-a-button
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed (ChangeEvent event, Actor actor) {
+                parse.addLogin(txtUsername.getText(),txtPassword.getText());
             }
         });
     }
