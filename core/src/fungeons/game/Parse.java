@@ -48,6 +48,7 @@ public class Parse implements HttpResponseListener {
         Register register = new Register();
         register.setCreds(sUserName, sPassword);
         httpPost.setContent(json.toJson(register));
+        main n = new main();
         Gdx.net.sendHttpRequest(httpPost,Parse.this);
     }
 

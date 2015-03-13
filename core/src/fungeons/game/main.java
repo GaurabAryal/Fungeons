@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -17,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+
 public class main extends Game {
     Skin skin;
     Stage stage;
@@ -34,18 +37,21 @@ public class main extends Game {
         LoginSong.setLooping(true);
         LoginSong.play();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
         Gdx.input.setInputProcessor(stage);
+        final ExitDialog exitDialog = new ExitDialog("Error", skin);
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
         final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
         final TextField txtUsername = new TextField("", skin);
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
         txtUsername.setAlignment(Align.left);
+
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
 
         textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
         textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
@@ -55,13 +61,17 @@ public class main extends Game {
         skin.add("default", textButtonStyle);
         userLabel.setFontScaleX(1.5f);
         userLabel.setFontScaleY(1.5f);
+
         passwordLabel.setFontScaleX(1.5f);
         passwordLabel.setFontScaleY(1.5f);
+
         someSpace.setFontScaleX(1.5f);
         someSpace.setFontScaleY(1.5f);
+
         txtPassword.setMessageText("*****");
         txtPassword.setPasswordCharacter('*');
         txtPassword.setPasswordMode(true);
+
         table.add(userLabel).padBottom(10).padRight(25);
         table.add(txtUsername).width(300).padBottom(10);
         table.row();
@@ -71,6 +81,9 @@ public class main extends Game {
         table.add(button).padBottom(10).padRight(25);
         table.setFillParent(true);
         stage.addActor(table);
+
+        exitDialog.show(stage);//This makes Dialog Box pop up, it automatically centers itself
+
         txtUsername.setTextFieldListener(new TextFieldListener() {
             public void keyTyped (TextField textField, char key) {
                 if (key == '\n') textField.getOnscreenKeyboard().show(false);
@@ -109,5 +122,29 @@ public class main extends Game {
     public void dispose () {
         stage.dispose();
         skin.dispose();
+    }
+    public static class ExitDialog extends Dialog {
+        public ExitDialog(String title, Skin skin,String windowStyle){
+            super(title, skin, windowStyle);
+
+        }
+        public ExitDialog(String title, Skin skin){
+            super(title, skin);
+
+        }
+
+        public ExitDialog(String title,WindowStyle windowStyle){
+            super(title, windowStyle);
+        }
+        {
+            setScale(1.5f,1.5f);
+            text("An unexpected error has occurred");
+            button("OK");
+
+        }
+        @Override
+        protected void result(Object object){
+           // System.out.println("result");
+        }
     }
 }
