@@ -1,0 +1,11 @@
+apply plugin: "java"
+sourceCompatibility = 1.6
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceSets.main.java.srcDirs = ["src/"]
+eclipse.project {
+    name = appName + "-core"
+}
+dependencies {
+    compile files('C:/Users/Hodor/AndroidStudioProjects/Fungeons/libs/App42_J2ME_SDK_2.1.jar')
+    compile files('C:/Users/Hodor/AndroidStudioProjects/Fungeons/libs/almonds-1.0.1.jar')
+}
