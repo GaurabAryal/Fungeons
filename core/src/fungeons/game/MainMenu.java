@@ -40,8 +40,6 @@ public class MainMenu implements Screen {
     }
     @Override
     public void render(float delta){
-        if(Gdx.input.justTouched())
-            game.setScreen(new GameRooms(game));
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -126,16 +124,15 @@ public class MainMenu implements Screen {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
+                                System.out.println("lol");
                                 ParseUser u = ParseUser.getCurrentUser();
                                 exitDialog.text("Welcome, " + u.getUsername() + "!");
                                 exitDialog.show(stage);
-                                game.setScreen(new GameRooms(game));
 
                             }
                         }
                     });
                 } catch (Exception e) {
-                    System.out.println(e+"E wtf yy");
                 }
             }
         });
