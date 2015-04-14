@@ -1,5 +1,5 @@
 android {
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '21.1.2'
     compileSdkVersion 21
     sourceSets {
         main {
@@ -115,5 +115,5 @@ idea {
     }
 }
 dependencies {
-    compile files('C:/Users/Gaurab/AndroidStudioProjects/Fungeons/libs/kinvey-android-lib-2.7.1.jar')
+    compile files('C:/Users/Gaurab/AndroidStudioProjects/Fungeons/libs/almonds-1.0.1.jar')
 }
