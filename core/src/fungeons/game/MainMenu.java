@@ -72,6 +72,8 @@ public class MainMenu extends Game {
         final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
+
+        final TextButton btnOffline = new TextButton("Offline", skin);
         final TextField txtUsername = new TextField("", skin);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
@@ -102,6 +104,7 @@ public class MainMenu extends Game {
         table.add(txtPassword).width(300).height(100).padBottom(10);
         table.row();
         table.add(button).width(200).height(100).padBottom(10).padRight(25);
+        table.add(btnOffline).width(200).height(100).padBottom(10).padRight(25);
         table.center().top().pad(300);
         table.setFillParent(true);
         txtUsername.setHeight(500);

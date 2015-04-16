@@ -2,6 +2,7 @@ package fungeons.game.android;
 
 import android.os.Bundle;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import fungeons.game.main;
