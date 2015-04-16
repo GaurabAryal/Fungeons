@@ -38,13 +38,32 @@ public class main extends Game {
     SpriteBatch batch;
     Texture img;
     Game game;
+    MainMenu mainMenu;
+    GameRooms gameRooms;
+    int nScreen = 1;
+    ScreenControl screenControl;
     @Override
     public void create () {
-      setScreen(new MainMenu(game));
+
+        screenControl = new ScreenControl();
+        mainMenu = new MainMenu();
+        mainMenu.create();
+        mainMenu.setScreenControl(screenControl);
+        gameRooms = new GameRooms();
+        gameRooms.create();
+        gameRooms.setScreenControl(screenControl);
+        screenControl.create();
+
     }
 
-    public void render(float delta){
-        super.render();
+    public void render(){
+        nScreen = screenControl.nScreen;
+        if (nScreen == 1) {
+            mainMenu.render();
+
+        } else if (nScreen == 2) {
+            gameRooms.render();
+        }
 
     }
     @Override

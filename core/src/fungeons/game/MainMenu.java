@@ -23,24 +23,23 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import pablo127.almonds.LogInCallback;
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseException;
+import pablo127.almonds.ParseObject;
 import pablo127.almonds.ParseUser;
 
 /**
  * Created by Gaurab on 2015-04-13.
  */
-public class MainMenu implements Screen {
+public class MainMenu extends Game {
     Skin skin;
     Stage stage;
     Music LoginSong;
     SpriteBatch batch;
     Texture img =  new Texture("bgimg2.jpeg");
-    Game game;
-    public MainMenu(Game game){
-        this.game = game;
-    }
-    @Override
-    public void render(float delta){
 
+    ScreenControl screenControl;
+    Game game;
+    @Override
+    public void render(){
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -55,7 +54,7 @@ public class MainMenu implements Screen {
     public void resize(int width, int height){
     }
     @Override
-    public void show(){
+    public void create(){
         Parse.initialize("", "");
         batch = new SpriteBatch();
         LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
@@ -83,8 +82,6 @@ public class MainMenu implements Screen {
         textButtonStyle.down = skin.newDrawable("white", Color.WHITE);
         textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
-
-
 
         skin.add("default", textButtonStyle);
         userLabel.setFontScaleX(4f);
@@ -124,11 +121,11 @@ public class MainMenu implements Screen {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
-                                System.out.println("lol");
                                 ParseUser u = ParseUser.getCurrentUser();
                                 exitDialog.text("Welcome, " + u.getUsername() + "!");
                                 exitDialog.show(stage);
 
+                                System.out.println(screenControl.nScreen);
                             }
                         }
                     });
@@ -138,10 +135,8 @@ public class MainMenu implements Screen {
         });
 
     }
-    @Override
-    public void hide(){
-
-
+    public void setScreenControl(ScreenControl screenControl_){
+        screenControl = screenControl_;
     }
     @Override
     public void pause(){
@@ -175,9 +170,10 @@ public class MainMenu implements Screen {
 
         }
         @Override
-        protected void result(Object object){
+            protected void result(Object object){
 
-        }
+            screenControl.setnScreen(2);
+            }
     }
 
 }
