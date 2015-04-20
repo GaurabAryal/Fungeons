@@ -26,9 +26,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-        maven {
-            url "https://bitbucket.org/pablo127/almonds/raw/master/repository/"
-        }
+        maven { url "https://bitbucket.org/pablo127/almonds/raw/master/repository/" }  /*maven repository for Almonds library*/
     }
 }
 
@@ -47,7 +45,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
-        compile group: 'pablo127', name: 'almonds', version: '1.0.1'
+        compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
     }
 }
 
@@ -58,7 +56,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile group: 'pablo127', name: 'almonds', version: '1.0.1'
+        compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
     }
 }
 

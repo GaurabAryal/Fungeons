@@ -17,6 +17,7 @@ public class main extends Game {
     Game game;
     MainMenu mainMenu;
     GameRooms gameRooms;
+    Query query;
     int nScreen = 1;
     ScreenControl screenControl;
     @Override
@@ -31,6 +32,8 @@ public class main extends Game {
         gameRooms.setScreenControl(screenControl);
         screenControl.create();
 
+        query = new Query();
+        query.gamerooms();
     }
 
     public void render(){

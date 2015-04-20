@@ -53,7 +53,7 @@ public class MainMenu extends Game {
     }
     @Override
     public void create(){
-        Parse.initialize("test", "test");
+        Parse.initialize("", "");
         batch = new SpriteBatch();
         LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
         LoginSong.setVolume(1f);
