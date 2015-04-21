@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,7 +31,7 @@ public class MainMenu extends Game {
     Stage stage;
     Music LoginSong;
     SpriteBatch batch;
-    Texture img =  new Texture("bgimg2.jpeg");
+    //Texture img =  new Texture("bgimg2.jpeg");
 
     ScreenControl screenControl;
     Game game;
@@ -43,7 +42,7 @@ public class MainMenu extends Game {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         batch.begin();
-        batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+       // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.draw();
         batch.end();
 
@@ -59,7 +58,8 @@ public class MainMenu extends Game {
         LoginSong.setVolume(1f);
         LoginSong.setLooping(true);
         LoginSong.play();
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
 
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
