@@ -1,9 +1,10 @@
 buildscript {
     repositories {
         mavenCentral()
-
+        jcenter()
     }
     dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
         classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
@@ -30,6 +31,21 @@ allprojects {
     }
 }
 
+project(":desktop") {
+    apply plugin: "java"
+
+
+    dependencies {
+        compile project(":core")
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
+    }
+}
+
+
 project(":android") {
     apply plugin: "android"
 
@@ -48,6 +64,24 @@ project(":android") {
         compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
     }
 }
+
+
+project(":html") {
+    apply plugin: "gwt"
+    apply plugin: "war"
+
+
+    dependencies {
+        compile project(":core")
+        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+        compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
+    }
+}
+
 
 project(":core") {
     apply plugin: "java"
