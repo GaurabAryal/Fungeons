@@ -17,6 +17,7 @@ public class main extends Game {
     Game game;
     MainMenu mainMenu;
     GameRooms gameRooms;
+    Play play;
     Query query;
     int nScreen = 1;
     ScreenControl screenControl;
@@ -30,6 +31,9 @@ public class main extends Game {
         gameRooms = new GameRooms();
         gameRooms.create();
         gameRooms.setScreenControl(screenControl);
+        play = new Play();
+        play.create();
+        play.setScreenControl(screenControl);
         screenControl.create();
 
         query = new Query();
@@ -43,8 +47,9 @@ public class main extends Game {
 
         } else if (nScreen == 2) {
             gameRooms.render();
+        } else if (nScreen == 3){
+            play.render();
         }
-
     }
     @Override
     public void resize(int width, int height){
