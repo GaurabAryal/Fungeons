@@ -103,8 +103,7 @@ public class Play extends Game {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
-
-
+        b2Renderer.render(world, camera.combined);
 
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
@@ -112,7 +111,7 @@ public class Play extends Game {
         batch.begin();
 
         batch.end();
-        b2Renderer.render(world, camera.combined);
+
         world.step(1/60f, 6, 2);
     }
     @Override
