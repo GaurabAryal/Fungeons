@@ -88,7 +88,7 @@ public class GameRooms extends Game {
 
                 final JSONObject ob = new JSONObject(sin.next());
                 System.out.println("ssa");
-                System.out.println(ob.getString("Name")+"fk");
+                System.out.println(ob.getString("Name"));
             }
 
             @Override
