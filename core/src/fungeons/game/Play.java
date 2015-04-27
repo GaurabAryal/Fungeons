@@ -99,7 +99,6 @@ public class Play extends Game {
     }
     @Override
     public void render(){
-        super.render();
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
@@ -116,11 +115,6 @@ public class Play extends Game {
     }
     @Override
     public void dispose(){
-        world.dispose();
-        batch.dispose();
-        MapRenderer.dispose();
-        b2Renderer.dispose();
-        dispose();
     }
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
