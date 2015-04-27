@@ -36,8 +36,6 @@ public class main extends Game {
         play.setScreenControl(screenControl);
         screenControl.create();
 
-        query = new Query();
-        query.gamerooms();
     }
 
     public void render(){

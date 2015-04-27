@@ -71,7 +71,7 @@ public class MainMenu extends Game {
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
 
-        final TextButton btnOffline = new TextButton("Offline", skin);
+        final TextButton btnOffline = new TextButton("Register", skin);
         final TextField txtUsername = new TextField("", skin);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
@@ -84,10 +84,10 @@ public class MainMenu extends Game {
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
 
         skin.add("default", textButtonStyle);
-        userLabel.setFontScaleX(2f);
-        userLabel.setFontScaleY(2f);
-        passwordLabel.setFontScaleX(2f);
-        passwordLabel.setFontScaleY(2f);
+        userLabel.setFontScaleX(1f);
+        userLabel.setFontScaleY(1f);
+        passwordLabel.setFontScaleX(1f);
+        passwordLabel.setFontScaleY(1f);
         someSpace.setFontScaleX(2f);
         someSpace.setFontScaleY(2f);
         txtPassword.setMessageText("*****");
@@ -139,6 +139,7 @@ public class MainMenu extends Game {
         btnOffline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                stage.dispose();
                 screenControl.setnScreen(3);
             }
         });
@@ -174,6 +175,7 @@ public class MainMenu extends Game {
             super(title, windowStyle);
         }
         {
+
             setScale(2.5f, 2.5f);
             button("OK");
 
