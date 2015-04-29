@@ -115,4 +115,5 @@ idea {
     }
 }
 dependencies {
+    compile 'com.google.code.gson:gson:2.3.1'
 }
