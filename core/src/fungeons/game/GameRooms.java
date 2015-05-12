@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -20,12 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseObject;
@@ -41,10 +42,15 @@ public class GameRooms extends Game {
     Query q = new Query();
     ScrollPane scrollPane;
     List list;
-    Table table;
     Table gameroomTable;
+
+    boolean check = true;
+    int ctpos = 0;
+    int pos = 0;
+    Table table;
     JSONObject jsonObject;
     TextButton btnAddGameroom;
+    ArrayList<String> gamerooms = new ArrayList<String>();
     TextButton btnRefresh;
 
     JSONObject resultObject;
@@ -94,6 +100,9 @@ public class GameRooms extends Game {
         final TextField txtName = new TextField("", skin);
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
+
+        scrollPane = new ScrollPane(list,skin);
+        table = new Table(skin);
         /*for (int i =0; i < 20;i++) {
         ParseObject pO = new ParseObject("gamerooms");
             pO.put("Name","some"+i);
@@ -105,15 +114,6 @@ public class GameRooms extends Game {
         btnRefresh = new TextButton("Refresh", skin);
 
         final TextButton btnAdd = new TextButton("Add", skin);
-        gameroomTable = new Table(skin);
-        table = new Table(skin);
-
-        table.add("Gameroom").padRight(nSWidth / 6).padBottom(20);
-        table.add("Status").padRight(nSWidth / 6).padBottom(20);
-        table.add("Map").padRight(nSWidth / 4).padBottom(20);
-        table.add(btnAddGameroom).height(100).width(100);
-        //table.add(btnRefresh).height(100).width(100).padLeft(100);
-        table.row();
 
         populateGmRms();
         nSHeight = Gdx.graphics.getHeight();
@@ -124,20 +124,7 @@ public class GameRooms extends Game {
 
         list = new List(skin);
 
-
-        //list.setItems(table);
-        scrollPane = new ScrollPane(table, skin);//Used to be list
-        //table.add("Players Active");
-        //table.add(list);
-        //table.setPosition(450f,450f);
-        //list.setPosition(450f,450f);
-
-
-        final Table table2 = new Table();
-        table2.setFillParent(true);
-
-        table2.add(scrollPane).fill().expand();
-        ScrollPane scrollPane2 = new ScrollPane(table2, skin);
+        gameroomTable = new Table(skin);
 
         Window.WindowStyle windowStyle = new Window.WindowStyle(new BitmapFont(), Color.WHITE, skin.newDrawable("white", Color.BLACK));
 
@@ -159,13 +146,6 @@ public class GameRooms extends Game {
         gameroomTable.setWidth(window.getWidth());
         gameroomTable.setFillParent(true);
         window.addActor(gameroomTable);
-        Timer timer = new Timer();
-        Task task = timer.scheduleTask(new Task() {
-            @Override
-            public void run() {
-                checkPopulate();
-            }
-        }, 1, 7);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -175,13 +155,6 @@ public class GameRooms extends Game {
         btnRefresh.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                table.clearChildren();
-                table.add("Gameroom").padRight(nSWidth / 6).padBottom(20);
-                table.add("Status").padRight(nSWidth / 6).padBottom(20);
-                table.add("Map").padRight(nSWidth / 4).padBottom(20);
-                table.add(btnAddGameroom).height(100).width(100);
-                //table.add(btnRefresh).height(100).width(100).padLeft(100);
-                table.row();
                 populateGmRms();
             }
         });
@@ -193,64 +166,34 @@ public class GameRooms extends Game {
                 pO.put("map", selectBox.getSelectedIndex());
                 pO.put("isJoinable", true);
                 pO.saveInBackground();
-                table.add(txtName.getText()).padRight(nSWidth / 6).padBottom(20);
-                table.add("Open").padRight(nSWidth / 6).padBottom(20);
-                table.add(selectBox.getSelected().toString()).padRight(nSWidth / 6).padBottom(20);
+                gamerooms.add(txtName.getText());
                 window.remove();
+            }
+        });
+        scrollPane.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+
+                if(pos>((int) scrollPane.getScrollY()+9) || pos<((int)scrollPane.getScrollY()-9)){
+                    System.out.println(scrollPane.getScrollY() +"    "+ pos);
+                    ctpos=0;
+                }
+                else if (ctpos>3){
+                    ctpos=0;
+                }
+                pos = (int) scrollPane.getScrollY();
+                ctpos++;
+                return false;
             }
         });
         window.setPosition(nSWidth / 2, nSHeight / 2);
         window.setSize(500, 300);
-        this.stage.addActor(table2);
 
 
     }
 
     public void setScreenControl(ScreenControl screenControl_) {
         screenControl = screenControl_;
-    }
-
-    public void checkPopulate() {
-        String requestContent = null;
-        final Net.HttpRequest httpRequest;
-        httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        httpRequest.setUrl("https://api.parse.com/1/classes/gamerooms/");
-        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-        httpRequest.setContent(requestContent);
-        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-
-
-            @Override
-            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                try {
-                    jsonObject = new JSONObject(httpResponse.getResultAsString());
-                    JSONArray results = (JSONArray) jsonObject.get("results");
-                    if (results.length() >= table.getRows()) {
-                        table.clearChildren();
-                        table.add("Gameroom").padRight(nSWidth / 6).padBottom(20);
-                        table.add("Status").padRight(nSWidth / 6).padBottom(20);
-                        table.add("Map").padRight(nSWidth / 4).padBottom(20);
-                        table.add(btnAddGameroom).height(100).width(100);
-                        //table.add(btnRefresh).height(100).width(100).padLeft(100);
-                        table.row();
-                        populateGmRms();
-                    }
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            @Override
-            public void failed(Throwable t) {
-
-            }
-
-            @Override
-            public void cancelled() {
-
-            }
-        });
     }
 
     public void populateGmRms() {
@@ -268,21 +211,34 @@ public class GameRooms extends Game {
 
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                gamerooms.clear();
+                table.clearChildren();
                 try {
                     jsonObject = new JSONObject(httpResponse.getResultAsString());
                     JSONArray results = (JSONArray) jsonObject.get("results");
                     for (int n = 0; n < results.length(); n++) {
                         resultObject = (JSONObject) results.get(n);
-                        table.add(resultObject.get("Name").toString()).padRight(nSWidth / 6);
-                        if (resultObject.get("isJoinable").equals(true)) {
-                            table.add("Open").padRight(nSWidth / 6);
-                        } else {
-                            table.add("Closed").padRight(nSWidth / 4);
-                        }
-                        table.add(resultObject.get("map").toString()).padRight(nSWidth / 4);
-                        table.pad(30f);
-                        table.row();
+                        gamerooms.add(resultObject.get("Name").toString() + n);
                     }
+                    list.clearItems();
+                    list.setItems(gamerooms.toArray());
+
+                    System.out.println(list.getItems().size);
+                    scrollPane = new ScrollPane(list,skin);
+                    table.add(btnRefresh).height(100).width(100);
+                    //table.row();
+                    table.add(btnAddGameroom).height(100).width(100);
+                    table.row();
+                    //scrollPane.setFillParent(true);
+
+                    table.add(scrollPane).width(nSWidth).colspan(2);
+
+                    table.setFillParent(true);
+                    //   table.setPosition(nSWidth/2,nSHeight);
+
+                    table.center().top().pad(0);
+                    stage.addActor(table);
+                    //stage.addActor(scrollPane);
                 } catch (Exception e) {
                     System.out.println(e);
                 }

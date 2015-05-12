@@ -18,10 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import pablo127.almonds.LogInCallback;
 import pablo127.almonds.Parse;
-import pablo127.almonds.ParseException;
-import pablo127.almonds.ParseUser;
 
 /**
  * Created by Gaurab on 2015-04-13.
@@ -117,8 +114,8 @@ public class MainMenu extends Game {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
-                try {
+                screenControl.setnScreen(2);
+                /*try {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
@@ -132,7 +129,7 @@ public class MainMenu extends Game {
                     });
                 } catch (Exception e) {
                     System.out.println(e);
-                }
+                }*/
             }
         });
 
