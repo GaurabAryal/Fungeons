@@ -33,6 +33,7 @@ public class Character extends Sprite {
 
         play = new Play();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        System.out.println("sup");
         CharSheet=Atlas.findRegion("Fungeon Char 64 W");
         nImgHeight=CharSheet.getRegionHeight()/Rows;
         nImgWidth=CharSheet.getRegionWidth()/Columns;
