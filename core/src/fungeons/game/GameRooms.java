@@ -43,6 +43,10 @@ public class GameRooms extends Game {
     ScrollPane scrollPane;
     List list;
     Table gameroomTable;
+    Table gameTable;
+    Window.WindowStyle windowStyle;
+    Window window;
+    String []arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
 
     boolean check = true;
     int ctpos = 0;
@@ -50,6 +54,8 @@ public class GameRooms extends Game {
     Table table;
     JSONObject jsonObject;
     TextButton btnAddGameroom;
+    TextButton btnExit;
+    TextButton btnJoin;
     ArrayList<String> gamerooms = new ArrayList<String>();
     TextButton btnRefresh;
 
@@ -101,7 +107,7 @@ public class GameRooms extends Game {
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
-        scrollPane = new ScrollPane(list,skin);
+
         table = new Table(skin);
         /*for (int i =0; i < 20;i++) {
         ParseObject pO = new ParseObject("gamerooms");
@@ -112,7 +118,8 @@ public class GameRooms extends Game {
         }*/
         btnAddGameroom = new TextButton("+", skin);
         btnRefresh = new TextButton("Refresh", skin);
-
+        btnExit = new TextButton("Exit",skin);
+        btnJoin = new TextButton ("Join",skin);
         final TextButton btnAdd = new TextButton("Add", skin);
 
         populateGmRms();
@@ -125,10 +132,10 @@ public class GameRooms extends Game {
         list = new List(skin);
 
         gameroomTable = new Table(skin);
+        gameTable = new Table(skin);
+        windowStyle = new Window.WindowStyle(new BitmapFont(), Color.WHITE, skin.newDrawable("white", Color.BLACK));
 
-        Window.WindowStyle windowStyle = new Window.WindowStyle(new BitmapFont(), Color.WHITE, skin.newDrawable("white", Color.BLACK));
-
-        final Window window = new Window("test", windowStyle);
+        window = new Window("test", windowStyle);
         window.setMovable(true);
         window.padTop(20);
         selectBox.setPosition(100, 100);
@@ -170,26 +177,19 @@ public class GameRooms extends Game {
                 window.remove();
             }
         });
-        scrollPane.addListener(new EventListener() {
+        btnExit.addListener(new ChangeListener() {
             @Override
-            public boolean handle(Event event) {
-
-                if(pos>((int) scrollPane.getScrollY()+9) || pos<((int)scrollPane.getScrollY()-9)){
-                    System.out.println(scrollPane.getScrollY() +"    "+ pos);
-                    ctpos=0;
-                }
-                else if (ctpos>3){
-                    ctpos=0;
-                }
-                pos = (int) scrollPane.getScrollY();
-                ctpos++;
-                return false;
+            public void changed(ChangeEvent event, Actor actor) {
+                gameTable.clearChildren();
+                window.clearChildren();
+                window.remove();
             }
         });
+        window.setModal(true);
         window.setPosition(nSWidth / 2, nSHeight / 2);
         window.setSize(500, 300);
 
-
+        stage.addActor(window);
     }
 
     public void setScreenControl(ScreenControl screenControl_) {
@@ -218,15 +218,52 @@ public class GameRooms extends Game {
                     JSONArray results = (JSONArray) jsonObject.get("results");
                     for (int n = 0; n < results.length(); n++) {
                         resultObject = (JSONObject) results.get(n);
-                        gamerooms.add(resultObject.get("Name").toString() + n);
+                        gamerooms.add(resultObject.get("Name").toString());
                     }
                     list.clearItems();
                     list.setItems(gamerooms.toArray());
-
-                    System.out.println(list.getItems().size);
-                    scrollPane = new ScrollPane(list,skin);
                     table.add(btnRefresh).height(100).width(100);
                     //table.row();
+                    scrollPane = new ScrollPane(list,skin);
+                    scrollPane.addListener(new EventListener() {
+                        @Override
+                        public boolean handle(Event event) {
+
+                            if(pos>((int) scrollPane.getScrollY()+9) || pos<((int)scrollPane.getScrollY()-9)){
+                                //System.out.println(scrollPane.getScrollY() +"    "+ pos);
+                                ctpos=0;
+                            }
+                            else if (ctpos>3 ){
+                                JSONArray results = (JSONArray) jsonObject.get("results");
+                                for (int n = 0; n < results.length(); n++) {
+                                    resultObject = (JSONObject) results.get(n);
+                                    //System.out.println(list.getSelected().toString() + resultObject.get("Name").toString());
+                                    if (resultObject.get("Name").toString().equals(list.getSelected().toString())&&gameTable.getRows()<3) {
+                                        resultObject = (JSONObject) results.get(n);
+                                        gameTable.add(resultObject.get("Name").toString());
+                                        gameTable.row();
+                                        gameTable.add(arsMaps[Integer.parseInt(resultObject.get("map").toString())]);
+                                        gameTable.row();
+                                        if (resultObject.get("isJoinable").toString().equals("true")) {
+                                            gameTable.add("Open");
+                                        } else {
+                                            gameTable.add("Closed");
+                                        }
+                                        gameTable.row();
+                                        gameTable.add(btnExit);
+                                        gameTable.add(btnJoin);
+                                        break;
+                                    }
+                                }
+                                window.clear();
+                                window.add(gameTable);
+                                stage.addActor(window);
+                            }
+                            pos = (int) scrollPane.getScrollY();
+                            ctpos++;
+                            return false;
+                        }
+                    });
                     table.add(btnAddGameroom).height(100).width(100);
                     table.row();
                     //scrollPane.setFillParent(true);
