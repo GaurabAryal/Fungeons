@@ -38,4 +38,5 @@ task afterEclipseImport(description: "Post processing after project generation",
     }
 }
 dependencies {
+    compile 'com.google.code.gson:gson:2.3.1'
 }

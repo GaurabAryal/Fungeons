@@ -91,6 +91,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile group: 'pablo127', name: 'almonds', version: '1.0.1' /*Add the almonds dependency*/
+
     }
 }
 
