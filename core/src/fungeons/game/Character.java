@@ -14,13 +14,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  * Created by Ben on 2015-04-28.
  */
 public class Character extends Sprite {
-    int nCharX=128, nCharY=128, nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
+    int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
+    float fCharX=100, fCharY=100;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
     Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, CurAnim;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
-    Boolean bCanJump=true;
+    Boolean bCanJump=true, bIsAiming;
 
     BodyDef CharDef;
     Body CharBody;
@@ -49,9 +50,8 @@ public class Character extends Sprite {
         CharBox= new PolygonShape();
         CharFixDef=new FixtureDef();
 
-
-        CharBox.setAsBox(16f,32f);
-        CharDef.position.set(128, 128);
+        CharBox.setAsBox(1f,2f);
+        CharDef.position.set(15, 15);
         CharFixDef.shape=CharBox;
         CharDef.type= BodyDef.BodyType.DynamicBody;
 
@@ -60,13 +60,14 @@ public class Character extends Sprite {
         CharFixDef.restitution=0f;
         CharFixDef.friction=0;
 
+
         CharBody.createFixture(CharFixDef);
     }
-    public void setVars(int VX, int VY, int X, int Y, int Dir, Boolean CanJump){
+    public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump){
         nDir=Dir;
         bCanJump=CanJump;
-        nCharX=X;
-        nCharY=Y;
+        fCharX=X;
+        fCharY=Y;
         nCharVX=VX;
         nCharVY=VY;
         if(nCharVX<0){
@@ -108,11 +109,11 @@ public class Character extends Sprite {
     public Character(){
 
     }
-    public int getCharX(){
-        return(nCharX);
+    public float getCharX(){
+        return(fCharX);
     }
-    public int getCharY(){
-        return(nCharY);
+    public float getCharY(){
+        return(fCharY);
     }
     public boolean getCanJump(){
         return(bCanJump);
