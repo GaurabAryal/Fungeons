@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 /**
  * Created by Ben on 2015-04-28.
@@ -24,9 +26,11 @@ public class Character extends Sprite {
     Boolean bCanJump=true, bIsAiming;
 
     BodyDef CharDef;
-    Body CharBody;
+    Body CharBody, CharBody2;
     FixtureDef CharFixDef;
-    PolygonShape CharBox;
+    CircleShape CharBox;
+    WeldJointDef jointDef;
+    Joint joint;
     Play play;
 
     public void create(){
@@ -48,21 +52,34 @@ public class Character extends Sprite {
         CurAnim=StandR;
 
         CharDef=new BodyDef();
-        CharBox= new PolygonShape();
+        CharBox= new CircleShape();
         CharFixDef=new FixtureDef();
+        jointDef= new WeldJointDef();
 
-        CharBox.setAsBox(1f,2f);
+        //CharBox.setAsBox(1f,2f);
+        CharBox.setRadius(1f);
+
         CharDef.position.set(15, 15);
         CharFixDef.shape=CharBox;
         CharDef.type= BodyDef.BodyType.DynamicBody;
 
         CharBody=play.world.createBody(CharDef);
+
         CharFixDef.density=1f;
         CharFixDef.restitution=0f;
         CharFixDef.friction=0;
 
-
         CharBody.createFixture(CharFixDef);
+        CharDef.position.set(15,17);
+       // CharBody2=CharBody;
+        CharBody2=play.world.createBody(CharDef);
+        jointDef.bodyA=CharBody;
+        jointDef.bodyB=CharBody2;
+        jointDef.localAnchorA.set(0,2f);
+        joint=play.world.createJoint(jointDef);
+
+
+
     }
     public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump){
         nDir=Dir;
@@ -71,6 +88,7 @@ public class Character extends Sprite {
         fCharY=Y;
         nCharVX=VX;
         nCharVY=VY;
+
         if(nCharVX<0){
             nDir=1;
         }
@@ -122,7 +140,12 @@ public class Character extends Sprite {
     public Animation getCharAnim(){
         return(CurAnim);
     }
-    public Body getCharBody(){
-        return(CharBody);
-    }
+    /*public Joint getSpliff(){
+        CharBody2=play.world.createBody(CharDef);
+        jointDef.bodyA=CharBody;
+        jointDef.bodyB=CharBody2;
+        jointDef.localAnchorA.set(0,2f);
+        joint=play.world.createJoint(jointDef);
+        return(joint);
+    }*/
 }

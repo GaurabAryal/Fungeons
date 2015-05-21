@@ -20,8 +20,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -35,9 +37,11 @@ public class Play extends Game {
     World world = new World(gravity, false);
 
     BodyDef MapDef;
-    Body MapBody, CharBody;
+    Body MapBody, CharBody,CharBody2;
     FixtureDef MapFixDef;
     PolygonShape MapBox;
+    WeldJointDef jointDef = new WeldJointDef();
+    Joint joint;
 
     Box2DDebugRenderer b2Renderer;
 
@@ -169,14 +173,21 @@ public class Play extends Game {
                     MapDef.position.set((i*nTileWidth+nTileWidth/2)*PPM, (j*nTileHeight+ nTileHeight/2)*PPM);//sets the box to proper coordinates to correlate to the tiled map
                     MapBody = world.createBody(MapDef);
                     MapBox.setAsBox((nTileWidth*PPM/2)+1, nTileHeight*PPM/2);
-                    MapBody.createFixture(MapBox, 0f);
+                    MapBody.createFixture(MapBox, 1f);
                 }
             }
         }
-        CharBody=character.getCharBody();
         CharBody=world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
+        CharBody2=world.createBody(character.CharDef);
+        CharBody2.createFixture(character.CharFixDef);
         CharBody.setFixedRotation(true);
+        jointDef=character.jointDef;
+        jointDef.bodyA=CharBody;
+        jointDef.bodyB=CharBody2;
+        jointDef.localAnchorA.set(0,2f);
+        joint =world.createJoint(jointDef);
+
 
     }
 
@@ -193,6 +204,8 @@ public class Play extends Game {
         MapRenderer.render();
         b2Renderer.render(world, camera.combined);
 
+
+
         stage.draw();
 
         if(screenControl.nScreen==3) {
@@ -207,9 +220,17 @@ public class Play extends Game {
 
         if(touchpadMove.getKnobPercentX()>=0.50){
             nCharVX= (int) (10f);
+            if(bCanJump==true){
+                //CharBody.applyForceToCenter(0,0.1f,true);
+                //CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,0.1f);
+            }
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
             nCharVX= (int) (-10f);
+            if(bCanJump==true){
+               // CharBody.applyForceToCenter(0,0.1f,true);
+              //  CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,0.1f);
+            }
         }
         else{
             nCharVX=0;
@@ -229,7 +250,7 @@ public class Play extends Game {
             CurMove.set(CharBody.getLinearVelocity());
             bCanJump=false;
         }
-        CharBody.setLinearVelocity(nCharVX, CurMove.y);
+        CharBody.setLinearVelocity(nCharVX, CurMove.y);//add 0.2f to counteract sticking glitch
 
         fCharX=CharBody.getPosition().x;
         fCharY=CharBody.getPosition().y;
@@ -246,14 +267,17 @@ public class Play extends Game {
         }
         if(touchpadArrow.isTouched()==false && ArrowMove.x!=0&&ArrowMove.y!=0){
             arrow = new Arrow();
-            arrow.setVars(ArrowMove.x, ArrowMove.y, CharBody.getPosition().x, CharBody.getPosition().y);
+            arrow.setVars(ArrowMove.x, ArrowMove.y, CharBody2.getPosition().x-1, CharBody2.getPosition().y);
             arArrows.add(arrow);
             ArrowMove.set(0,0);
         }
+
+
+
         batch.begin();
         sChar=new Sprite(Frame);
         sChar.setSize(4,4);
-        sChar.setPosition(fCharX-2,fCharY-2);
+        sChar.setPosition(fCharX-2,fCharY-1);
         sChar.draw(batch);
 
         for(int i =0; i<arArrows.size; i++){
@@ -287,6 +311,7 @@ public class Play extends Game {
         for(int i=0;i<5;i++){
             world.step(1f/60f, 8, 3);
         }
+
         System.out.println(nCharVX+"               "+CharBody.getLinearVelocity().x);
     }
     @Override
