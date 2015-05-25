@@ -17,6 +17,7 @@ public class main extends Game {
     Game game;
     MainMenu mainMenu;
     GameRooms gameRooms;
+    GameRoom gameRoom;
     Play play;
     Query query;
     int nScreen = 1;
@@ -31,6 +32,9 @@ public class main extends Game {
         gameRooms = new GameRooms();
         gameRooms.create();
         gameRooms.setScreenControl(screenControl);
+        gameRoom = new GameRoom();
+       // gameRoom.create();
+        gameRoom.setScreenControl(screenControl);
         play = new Play();
         play.create();
         play.setScreenControl(screenControl);
@@ -47,6 +51,10 @@ public class main extends Game {
             gameRooms.render();
         } else if (nScreen == 3){
             play.render();
+        }
+        if(nScreen == 4){
+           // gameRoom.create();
+          gameRoom.render();
         }
     }
     @Override

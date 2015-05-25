@@ -14,4 +14,11 @@ public class ScreenControl extends Game {// basically holds an int
     public void setnScreen(int nScreen_){
         nScreen = nScreen_;
     }
+    String Name = "";
+    public void setName (String sName){
+        Name = sName;
+    }
+    public String getName(){
+        return Name;
+    }
 }
