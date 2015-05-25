@@ -21,6 +21,7 @@ public class Character extends Sprite {
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
     Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, CurAnim;
+    Sprite sArrowDraw, sArrowShoot;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
     Boolean bCanJump=true, bIsAiming;
@@ -33,11 +34,11 @@ public class Character extends Sprite {
     Joint joint;
     Play play;
 
+
     public void create(){
 
         play = new Play();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
-        System.out.println("sup");
         CharSheet=Atlas.findRegion("Fungeon Char 64 W");
         nImgHeight=CharSheet.getRegionHeight()/Rows;
         nImgWidth=CharSheet.getRegionWidth()/Columns;
@@ -50,6 +51,12 @@ public class Character extends Sprite {
         JumpR=new Animation(0.075f,Character[4]);
         JumpL=new Animation(0.075f,Character[5]);
         CurAnim=StandR;
+
+        CharSheet=Atlas.findRegion("Arrow arms ALT");
+        TextureRegion[][] ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
+        sArrowDraw=new Sprite(ArrowArms[0][0]);
+        sArrowShoot=new Sprite(ArrowArms[0][1]);
+
 
         CharDef=new BodyDef();
         CharBox= new CircleShape();
@@ -139,6 +146,16 @@ public class Character extends Sprite {
     }
     public Animation getCharAnim(){
         return(CurAnim);
+    }
+    public Sprite getArrowArms(){
+
+        if(play.touchpadArrow.isTouched()){
+            return(sArrowDraw);
+        }
+        else{
+            return(sArrowShoot);
+        }
+
     }
     /*public Joint getSpliff(){
         CharBody2=play.world.createBody(CharDef);

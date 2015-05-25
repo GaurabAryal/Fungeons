@@ -51,7 +51,7 @@ public class Play extends Game {
     OrthogonalTiledMapRenderer MapRenderer;
 
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth;
-    float Time=0, PPM=(1f/16f);
+    float Time=0, ArrowTime=1, PPM=(1f/16f), CharRotation;
     TextureRegion Frame;
 
     Animation CurAnim;
@@ -78,7 +78,7 @@ public class Play extends Game {
     Button.ButtonStyle btnJumpStyle;
 
     Stage stage;
-    Boolean bCanJump=false, bLight=true, bArrowShot=false;
+    Boolean bCanJump=false, bLight=true, bArrowShot=true;
 
     Character character = new Character();
     ScreenControl screenControl;
@@ -99,7 +99,7 @@ public class Play extends Game {
 
         TextureAtlas.AtlasRegion Region;
         int RegionHeight, RegionWidth;
-        Region=Atlas.findRegion("Arrow");
+        Region=Atlas.findRegion("Arrow ALT");
         sArrow = new Sprite(Region);
         sArrow.setSize(sArrow.getWidth()*PPM,sArrow.getHeight()*PPM);
         sArrow.setOrigin(sArrow.getWidth()/2,sArrow.getHeight()/2);
@@ -177,6 +177,7 @@ public class Play extends Game {
                 }
             }
         }
+
         CharBody=world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
         CharBody2=world.createBody(character.CharDef);
@@ -220,27 +221,14 @@ public class Play extends Game {
 
         if(touchpadMove.getKnobPercentX()>=0.50){
             nCharVX= (int) (10f);
-            if(bCanJump==true){
-                //CharBody.applyForceToCenter(0,0.1f,true);
-                //CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,0.1f);
-            }
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
             nCharVX= (int) (-10f);
-            if(bCanJump==true){
-               // CharBody.applyForceToCenter(0,0.1f,true);
-              //  CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,0.1f);
-            }
         }
         else{
             nCharVX=0;
         }
-        if(nCharVX<0){
-            nDir=1;
-        }
-        if(nCharVX>0){
-            nDir=2;
-        }
+
         if(nCharVY<0){
             bCanJump=MapCol.getCell((int) ((fCharX+Frame.getRegionWidth()/2)/nTileWidth*PPM), (int) ((fCharY) / nTileHeight*PPM))//Collide Down
                     .getTile().getProperties().containsKey("Hit");
@@ -256,29 +244,72 @@ public class Play extends Game {
         fCharY=CharBody.getPosition().y;
         nCharVY=(int)CharBody.getLinearVelocity().y;
         nCharVX=(int)CharBody.getLinearVelocity().x;
+            if (ArrowTime < 1 || bArrowShot == false) {
+                nCharVX = 0;
+                CharBody.setLinearVelocity(0, CurMove.y);
+            }
 
-        character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump);
-        System.out.println(fCharY+"     "+fCharX);
-        System.out.println(bCanJump);
-        System.out.println(nCharVX+"               "+CharBody.getLinearVelocity().x);
-
-        if(touchpadArrow.isTouched()){
-            ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);
+        if(nCharVX<0 || ArrowMove.x<0){
+            nDir=1;
         }
-        if(touchpadArrow.isTouched()==false && ArrowMove.x!=0&&ArrowMove.y!=0){
+        if(nCharVX>0 || ArrowMove.x>0){
+            nDir=2;
+        }
+        character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump);
+
+        if(touchpadArrow.isTouched() && ArrowTime>1){
+            ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);
+            CharRotation=(float) (Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
+            bArrowShot=false;
+        }
+        if(touchpadArrow.isTouched()==false && bArrowShot==false){
+            ArrowTime=0;
             arrow = new Arrow();
             arrow.setVars(ArrowMove.x, ArrowMove.y, CharBody2.getPosition().x-1, CharBody2.getPosition().y);
             arArrows.add(arrow);
+            bArrowShot=true;
             ArrowMove.set(0,0);
         }
-
-
+        if(bArrowShot==true){
+            ArrowTime+=Gdx.graphics.getDeltaTime();
+        }
+        if(ArrowMove.x>0){
+            nDir=2;
+        }
+        if(ArrowMove.x<0){
+            nDir=1;
+        }
 
         batch.begin();
-        sChar=new Sprite(Frame);
+        if(bArrowShot==false){
+            sChar=character.sArrowDraw;
+            sChar.setRotation(CharRotation);
+        }
+        else if(bArrowShot==true && ArrowTime<1){
+            sChar=character.sArrowShoot;
+            sChar.setRotation(CharRotation);
+        }
+
+        else{
+            sChar=new Sprite(Frame);
+        }
+
         sChar.setSize(4,4);
+        sChar.setOrigin(sChar.getWidth()/2,sChar.getHeight()/2);
         sChar.setPosition(fCharX-2,fCharY-1);
+        if(ArrowTime<1|| bArrowShot==false){
+            sChar.setPosition(fCharX-2,fCharY);
+        }
+
+        if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
+            sChar.flip(true,false);
+
+        }
         sChar.draw(batch);
+
+        if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
+            sChar.flip(true,false);
+        }
 
         for(int i =0; i<arArrows.size; i++){
             arrow=arArrows.get(i);
@@ -312,7 +343,7 @@ public class Play extends Game {
             world.step(1f/60f, 8, 3);
         }
 
-        System.out.println(nCharVX+"               "+CharBody.getLinearVelocity().x);
+        //System.out.println(nCharVX+"               "+CharBody.getLinearVelocity().x);
     }
     @Override
     public void dispose(){
