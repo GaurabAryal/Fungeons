@@ -2,6 +2,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,11 +14,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import pablo127.almonds.Parse;
+import pablo127.almonds.ParseUser;
 
 
 public class GameRoom extends Game {
@@ -122,7 +129,46 @@ public class GameRoom extends Game {
         //table.debugTable();
         table.setFillParent(true);
         stage.addActor(table);
-        //System.out.println(screenControl.getName()+ "FUUUCCCCKKKK");
+        Timer timer = new Timer();
+        Timer.Task task = timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run () {
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest;
+                httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                httpRequest.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
+                            jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            JSONArray results = (JSONArray) jsonObject.get("players");
+                            gamerooms.clear();
+                            for (int n = 0; n < results.length(); n++) {
+                                gamerooms.add(results.getString(n));
+                            }
+                            list.clear();
+                            list.setItems(gamerooms.toArray());
+                        }catch (Exception e){}
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+            }
+        }, 0, 5);
         txtName.setTextFieldListener(new TextField.TextFieldListener() {
             public void keyTyped(TextField textField, char key) {
                 if (key == '\n'){
@@ -130,6 +176,34 @@ public class GameRoom extends Game {
                     textField.getOnscreenKeyboard().show(false);
                     gamerooms.add(textField.getText().toString());
                     list.setItems(gamerooms.toArray());
+                    final Net.HttpRequest httpRequest;
+                    httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                    httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                    httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                    httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                    JSONObject json =new JSONObject();
+                    JSONObject skills =new JSONObject();
+                    skills.put("__op", "Add");
+                    skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString()+ ": "+txtName.getText())));
+                    json.put("players", skills);
+                    httpRequest.setContent(json.toString());
+                    Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){
+                        @Override
+                        public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                            System.out.println(httpResponse.toString());
+                        }
+
+                        @Override
+                        public void failed(Throwable t) {
+                            System.out.println(t.toString());
+                        }
+
+                        @Override
+                        public void cancelled() {
+
+                        }
+                    });
+
                     textField.setText("");
                 }
             }

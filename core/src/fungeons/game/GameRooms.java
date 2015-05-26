@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseObject;
+import pablo127.almonds.ParseUser;
 
 
 public class GameRooms extends Game {
@@ -111,30 +112,7 @@ public class GameRooms extends Game {
         String s = "1GTPRERceY";
         table = new Table(skin);
         ParseObject pO = new ParseObject("gamerooms");
-        final Net.HttpRequest httpRequest;
-        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-        httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+s);
-        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-        httpRequest.setContent("{\"" +
-                "player\": "+Integer.toString(i)+
-                "}");
-        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){
-            @Override
-            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                System.out.println(httpResponse.toString());
-            }
 
-            @Override
-            public void failed(Throwable t) {
-                System.out.println(t.toString());
-            }
-
-            @Override
-            public void cancelled() {
-
-            }
-        });
 //        for (int i =0; i < 1;i++) {
 //            pO.
 ////            pO.put("Name","GameRoom"+i);
@@ -157,7 +135,8 @@ public class GameRooms extends Game {
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-
+        ParseUser p = new ParseUser();
+        System.out.println(p.getUsername());
         list = new List(skin);
 
         gameroomTable = new Table(skin);
