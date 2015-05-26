@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -17,14 +19,17 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  */
 public class Character extends Sprite {
     int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
-    float fCharX=100, fCharY=100;
+    float fCharX=100, fCharY=100, ArrowTime, CharRotation,
+            Time;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
     Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, CurAnim;
-    Sprite sArrowDraw, sArrowShoot;
+    Sprite sChar;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
-    Boolean bCanJump=true, bIsAiming;
+    Boolean bCanJump=true, bArrowShot;
+    TextureRegion[][] ArrowArms;
+    Vector2 ArrowMove;
 
     BodyDef CharDef;
     Body CharBody, CharBody2;
@@ -53,9 +58,9 @@ public class Character extends Sprite {
         CurAnim=StandR;
 
         CharSheet=Atlas.findRegion("Arrow arms ALT");
-        TextureRegion[][] ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
-        sArrowDraw=new Sprite(ArrowArms[0][0]);
-        sArrowShoot=new Sprite(ArrowArms[0][1]);
+        ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
+       // Texture Shit=new Texture(ArrowArms[0][0]);
+        //sArrowShoot=new Sprite(ArrowArms[0][1]);
 
 
         CharDef=new BodyDef();
@@ -89,6 +94,7 @@ public class Character extends Sprite {
 
     }
     public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump){
+        Time += Gdx.graphics.getDeltaTime();
         nDir=Dir;
         bCanJump=CanJump;
         fCharX=X;
@@ -131,6 +137,9 @@ public class Character extends Sprite {
                 CurAnim=JumpR;
             }
         }
+
+//Arrow Animation Stuff
+
     }
     public Character(){
 
@@ -144,18 +153,40 @@ public class Character extends Sprite {
     public boolean getCanJump(){
         return(bCanJump);
     }
-    public Animation getCharAnim(){
-        return(CurAnim);
-    }
-    public Sprite getArrowArms(){
+    public Sprite getCharSprite(float time, float arrowTime, Vector2 arrowMove, Boolean arrowShot){
+        ArrowTime=arrowTime;
+        Time=time;
+        ArrowMove=arrowMove;
+        bArrowShot=arrowShot;
 
-        if(play.touchpadArrow.isTouched()){
-            return(sArrowDraw);
+        if(ArrowMove.x!=0){
+            CharRotation=(float)(Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
         }
+        System.out.println(CharRotation);
+        if(bArrowShot==false){
+            sChar=new Sprite(ArrowArms[0][0]);
+            sChar.setRotation(CharRotation);
+
+        }
+        else if(bArrowShot==true && ArrowTime<1){
+            sChar=new Sprite(ArrowArms[0][1]);
+            sChar.setRotation(CharRotation);
+        }
+
+
         else{
-            return(sArrowShoot);
+            sChar =new Sprite(CurAnim.getKeyFrame(Time, true));
         }
 
+        sChar.setSize(4,4);
+        sChar.setOrigin(sChar.getWidth()/2,sChar.getHeight()/2);
+        sChar.setPosition(fCharX-2,fCharY-1);
+
+
+        return(sChar);
+        /*if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
+            sChar.flip(true,false);
+        }*/
     }
     /*public Joint getSpliff(){
         CharBody2=play.world.createBody(CharDef);
