@@ -174,7 +174,7 @@ public class GameRoom extends Game {
                 if (key == '\n'){
                     if (gamerooms.size()>23)gamerooms.remove(0);
                     textField.getOnscreenKeyboard().show(false);
-                    gamerooms.add(textField.getText().toString());
+                    gamerooms.add(ParseUser.getCurrentUser().getUsername().toString()+ ": "+textField.getText().toString());
                     list.setItems(gamerooms.toArray());
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
