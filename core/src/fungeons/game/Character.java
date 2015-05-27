@@ -84,11 +84,7 @@ public class Character extends Sprite {
         CharBody.createFixture(CharFixDef);
         CharDef.position.set(15,17);
        // CharBody2=CharBody;
-        CharBody2=play.world.createBody(CharDef);
-        jointDef.bodyA=CharBody;
-        jointDef.bodyB=CharBody2;
-        jointDef.localAnchorA.set(0,2f);
-        joint=play.world.createJoint(jointDef);
+
 
 
 
@@ -162,7 +158,6 @@ public class Character extends Sprite {
         if(ArrowMove.x!=0){
             CharRotation=(float)(Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
         }
-        System.out.println(CharRotation);
         if(bArrowShot==false){
             sChar=new Sprite(ArrowArms[0][0]);
             sChar.setRotation(CharRotation);

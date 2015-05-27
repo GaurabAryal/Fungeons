@@ -5,7 +5,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -52,11 +51,9 @@ public class Play extends Game {
 
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth;
     float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation;
-    TextureRegion Frame;
 
-    Animation CurAnim;
     float fCharX =15,fCharY=15;
-    int nCharVX, nCharVY;
+    int nCharVX, nCharVY, nUp1Dn2=0;
     int nDir=2;
 
     TextureAtlas Atlas;
@@ -68,6 +65,10 @@ public class Play extends Game {
     Array<Arrow> arArrows = new Array<Arrow>();
     float ArrowX, ArrowY;
     double ArrowVX, ArrowVY;
+
+    float fPlatX, fPlatY;
+    Body PlatBody;
+    Array<Platform> arPlats = new Array <Platform>();
 
     Touchpad touchpadMove, touchpadArrow;
     Touchpad.TouchpadStyle touchpadMoveStyle;
@@ -81,6 +82,7 @@ public class Play extends Game {
     Boolean bCanJump=false, bLight=true, bArrowShot=true;
 
     Character character = new Character();
+    Platform platform = new Platform();
     ScreenControl screenControl;
 
 
@@ -156,7 +158,7 @@ public class Play extends Game {
         MapAlt.setVisible(false);
         nTileHeight=(int)MapCol.getTileHeight();
         nTileWidth=(int)MapCol.getTileWidth();
-        MapRenderer = new OrthogonalTiledMapRenderer(Map,PPM);
+        MapRenderer = new OrthogonalTiledMapRenderer(Map, PPM);
 
         b2Renderer=new Box2DDebugRenderer();
 
@@ -168,7 +170,6 @@ public class Play extends Game {
             for(int j=0; j<MapCol.getHeight(); j++){ // Awesome right?
                 if(MapCol.getCell(i,j).getTile().getProperties().containsKey("Hit")) {
                     MapDef= new BodyDef();
-                    MapFixDef= new FixtureDef();
                     MapBox= new PolygonShape();
                     MapDef.position.set((i*nTileWidth+nTileWidth/2)*PPM, (j*nTileHeight+ nTileHeight/2)*PPM);//sets the box to proper coordinates to correlate to the tiled map
                     MapBody = world.createBody(MapDef);
@@ -226,20 +227,29 @@ public class Play extends Game {
         else{
             nCharVX=0;
         }
-
-        if(nCharVY<0){
-            bCanJump=MapCol.getCell((int) ((fCharX+sChar.getWidth()/2)/nTileWidth*PPM), (int) ((fCharY) / nTileHeight*PPM))//Collide Down
-                    .getTile().getProperties().containsKey("Hit");
+        if(nCharVY>0){
+            nUp1Dn2=1;//determines if most previous motion was up or down, does not change when char is still
         }
-        if(btnJump.isPressed()){
-            CharBody.setLinearVelocity(CurMove.x,10);
+        if(nCharVY<0){
+            nUp1Dn2=2;
+        }
+
+        fCharX=CharBody.getPosition().x;
+        fCharY=CharBody.getPosition().y;
+
+        if(nCharVY==0){
+            if(nUp1Dn2==2) {
+                bCanJump=true;
+            }
+        }
+        if(btnJump.isPressed() && bCanJump==true){
+            CharBody.setLinearVelocity(CurMove.x,30);
             CurMove.set(CharBody.getLinearVelocity());
             bCanJump=false;
         }
         CharBody.setLinearVelocity(nCharVX, CurMove.y);//add 0.2f to counteract sticking glitch
 
-        fCharX=CharBody.getPosition().x;
-        fCharY=CharBody.getPosition().y;
+
         nCharVY=(int)CharBody.getLinearVelocity().y;
         nCharVX=(int)CharBody.getLinearVelocity().x;
             if (ArrowTime < 1 || bArrowShot == false) {
@@ -257,6 +267,8 @@ public class Play extends Game {
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
 
+        //Arrow Stuff Now--
+
         if(touchpadArrow.isTouched() && ArrowTime>1){
             ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);
             CharRotation=(float) (Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
@@ -273,6 +285,12 @@ public class Play extends Game {
         }
         if(bArrowShot==true){
             ArrowTime+=Gdx.graphics.getDeltaTime();
+        }
+
+        //Platform Stuff Now--
+        for(int i=0;i<arPlats.size;i++){
+            //Will eventually be for when the platforms have images
+
         }
 
         batch.begin();
@@ -304,13 +322,44 @@ public class Play extends Game {
             sArrow.setPosition(ArrowX, ArrowY);
             sArrow.draw(batch);
             arrow.setVars(ArrowVX, ArrowVY, ArrowX, ArrowY);
+
                 if(MapCol.getCell( (int)((ArrowX/PPM)/nTileWidth), (int)((ArrowY/PPM)/nTileHeight))//Collide on Left
                         .getTile().getProperties().containsKey("Hit") ||
-                        MapCol.getCell( (int)((sArrow.getWidth()+ArrowX)/PPM/nTileWidth), (int)((ArrowY/PPM)/nTileHeight))//Collide on Left
-                                .getTile().getProperties().containsKey("Hit")){
+                        MapCol.getCell( (int)((sArrow.getWidth()+ArrowX)/PPM/nTileWidth), (int)((ArrowY/PPM)/nTileHeight))//Collide on Right
+                        .getTile().getProperties().containsKey("Hit")){
+
+                    if(arPlats.size>0) {
+                        for (int j = 0; j < arPlats.size; j++) {
+                            platform = arPlats.get(j);
+                            Vector2 ArrowVec, pos;
+                            ArrowVec=new Vector2(ArrowX,ArrowY);
+                            pos=new Vector2(platform.getPosition());
+                            System.out.println(pos+"     3");
+                            if (ArrowVec.dst(pos)<10) {
+                                break;
+                            }
+                                    if(j==arPlats.size-1) {
+                                        platform=new Platform();
+                                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                                        PlatBody = world.createBody(platform.PlatDef);
+
+                                        arPlats.add(platform);
+                                    }
+
+                            }
+                        }
+
+                    else{
+                        platform = new Platform();
+                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                        PlatBody = world.createBody(platform.PlatDef);
+
+                        arPlats.add(platform);
+                    }
 
                     arArrows.removeIndex(i);
                     i--;
+
                 }
         }
 

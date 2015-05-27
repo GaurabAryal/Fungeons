@@ -5,7 +5,7 @@ package fungeons.game;
  */
 public class Arrow {
     float ArrowX, ArrowY;
-    double dRotation,ArrowVX, ArrowVY;
+    double ArrowVX, ArrowVY;
 
 
     public void setVars(double VX, double VY, float X, float Y){
@@ -13,10 +13,6 @@ public class Arrow {
         ArrowVY=VY;
         ArrowX=X;
         ArrowY=Y;
-    }
-
-    public double getRotation(){
-        return(dRotation);
     }
     public float getArrowX(){
         return(ArrowX);
