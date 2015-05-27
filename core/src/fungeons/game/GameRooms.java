@@ -30,7 +30,6 @@ import java.util.ArrayList;
 
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseObject;
-import pablo127.almonds.ParseUser;
 
 
 public class GameRooms extends Game {
@@ -135,8 +134,6 @@ public class GameRooms extends Game {
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-        ParseUser p = new ParseUser();
-        System.out.println(p.getUsername());
         list = new List(skin);
 
         gameroomTable = new Table(skin);

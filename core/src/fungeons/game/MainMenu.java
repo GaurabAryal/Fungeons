@@ -145,11 +145,6 @@ public class MainMenu extends Game {
                 ParseUser user = new ParseUser();
                 user.setUsername(txtUsername.getText());
                 user.setPassword(txtPassword.getText());
-                user.setEmail("email@example.com");
-
-// other fields can be set just like with ParseObject
-                user.put("phone", "650-253-0000");
-
                 user.signUpInBackground(new SignUpCallback() {
                     public void done(ParseException e) {
                         if (e == null) {
