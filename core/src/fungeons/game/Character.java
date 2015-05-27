@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -17,13 +19,17 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  */
 public class Character extends Sprite {
     int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
-    float fCharX=100, fCharY=100;
+    float fCharX=100, fCharY=100, ArrowTime, CharRotation,
+            Time;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
     Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, CurAnim;
+    Sprite sChar;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
-    Boolean bCanJump=true, bIsAiming;
+    Boolean bCanJump=true, bArrowShot;
+    TextureRegion[][] ArrowArms;
+    Vector2 ArrowMove;
 
     BodyDef CharDef;
     Body CharBody, CharBody2;
@@ -33,11 +39,11 @@ public class Character extends Sprite {
     Joint joint;
     Play play;
 
+
     public void create(){
 
         play = new Play();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
-        System.out.println("sup");
         CharSheet=Atlas.findRegion("Fungeon Char 64 W");
         nImgHeight=CharSheet.getRegionHeight()/Rows;
         nImgWidth=CharSheet.getRegionWidth()/Columns;
@@ -50,6 +56,12 @@ public class Character extends Sprite {
         JumpR=new Animation(0.075f,Character[4]);
         JumpL=new Animation(0.075f,Character[5]);
         CurAnim=StandR;
+
+        CharSheet=Atlas.findRegion("Arrow arms ALT");
+        ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
+       // Texture Shit=new Texture(ArrowArms[0][0]);
+        //sArrowShoot=new Sprite(ArrowArms[0][1]);
+
 
         CharDef=new BodyDef();
         CharBox= new CircleShape();
@@ -72,16 +84,13 @@ public class Character extends Sprite {
         CharBody.createFixture(CharFixDef);
         CharDef.position.set(15,17);
        // CharBody2=CharBody;
-        CharBody2=play.world.createBody(CharDef);
-        jointDef.bodyA=CharBody;
-        jointDef.bodyB=CharBody2;
-        jointDef.localAnchorA.set(0,2f);
-        joint=play.world.createJoint(jointDef);
+
 
 
 
     }
     public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump){
+        Time += Gdx.graphics.getDeltaTime();
         nDir=Dir;
         bCanJump=CanJump;
         fCharX=X;
@@ -124,6 +133,9 @@ public class Character extends Sprite {
                 CurAnim=JumpR;
             }
         }
+
+//Arrow Animation Stuff
+
     }
     public Character(){
 
@@ -137,8 +149,39 @@ public class Character extends Sprite {
     public boolean getCanJump(){
         return(bCanJump);
     }
-    public Animation getCharAnim(){
-        return(CurAnim);
+    public Sprite getCharSprite(float time, float arrowTime, Vector2 arrowMove, Boolean arrowShot){
+        ArrowTime=arrowTime;
+        Time=time;
+        ArrowMove=arrowMove;
+        bArrowShot=arrowShot;
+
+        if(ArrowMove.x!=0){
+            CharRotation=(float)(Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
+        }
+        if(bArrowShot==false){
+            sChar=new Sprite(ArrowArms[0][0]);
+            sChar.setRotation(CharRotation);
+
+        }
+        else if(bArrowShot==true && ArrowTime<1){
+            sChar=new Sprite(ArrowArms[0][1]);
+            sChar.setRotation(CharRotation);
+        }
+
+
+        else{
+            sChar =new Sprite(CurAnim.getKeyFrame(Time, true));
+        }
+
+        sChar.setSize(4,4);
+        sChar.setOrigin(sChar.getWidth()/2,sChar.getHeight()/2);
+        sChar.setPosition(fCharX-2,fCharY-1);
+
+
+        return(sChar);
+        /*if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
+            sChar.flip(true,false);
+        }*/
     }
     /*public Joint getSpliff(){
         CharBody2=play.world.createBody(CharDef);
