@@ -107,15 +107,21 @@ public class GameRooms extends Game {
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
-
+        int i = 11;
+        String s = "1GTPRERceY";
         table = new Table(skin);
-        /*for (int i =0; i < 20;i++) {
         ParseObject pO = new ParseObject("gamerooms");
-            pO.put("Name","some"+i);
-        pO.put("map",1);
-        pO.put("isJoinable",true);
-        pO.saveInBackground();
-        }*/
+
+//        for (int i =0; i < 1;i++) {
+//            pO.
+////            pO.put("Name","GameRoom"+i);
+////            pO.put("map",1);
+////            pO.put("isJoinable",true);
+////            p
+////            pO2.put("game", "GameRoom"+i);
+////            pO.saveInBackground();
+////            pO2.saveInBackground();
+//        }
         btnAddGameroom = new TextButton("+", skin);
         btnRefresh = new TextButton("Refresh", skin);
         btnExit = new TextButton("Exit",skin);
@@ -128,7 +134,6 @@ public class GameRooms extends Game {
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-
         list = new List(skin);
 
         gameroomTable = new Table(skin);
@@ -173,7 +178,7 @@ public class GameRooms extends Game {
                 pO.put("map", selectBox.getSelectedIndex());
                 pO.put("isJoinable", true);
                 pO.saveInBackground();
-                gamerooms.add(txtName.getText());
+                gamerooms.add(txtName.getText().toString());
                 window.remove();
             }
         });
@@ -182,10 +187,19 @@ public class GameRooms extends Game {
             public void changed(ChangeEvent event, Actor actor) {
                 gameTable.clearChildren();
                 window.clearChildren();
+                window.setVisible(false);
                 window.remove();
             }
         });
+        btnJoin.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                screenControl.setName(list.getSelected().toString());
+                screenControl.setnScreen(4);
+            }
+        });
         window.setModal(true);
+        window.setVisible(false);
         window.setPosition(nSWidth / 2, nSHeight / 2);
         window.setSize(500, 300);
 
@@ -250,12 +264,13 @@ public class GameRooms extends Game {
                                             gameTable.add("Closed");
                                         }
                                         gameTable.row();
-                                        gameTable.add(btnExit);
-                                        gameTable.add(btnJoin);
+                                        gameTable.add(btnExit).width(100).height(50);
+                                        gameTable.add(btnJoin).width(100).height(50);
                                         break;
                                     }
                                 }
                                 window.clear();
+                                window.setVisible(true);
                                 window.add(gameTable);
                                 stage.addActor(window);
                             }

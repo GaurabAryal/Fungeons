@@ -18,7 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import pablo127.almonds.LogInCallback;
 import pablo127.almonds.Parse;
+import pablo127.almonds.ParseException;
+import pablo127.almonds.ParseUser;
+import pablo127.almonds.SignUpCallback;
 
 /**
  * Created by Gaurab on 2015-04-13.
@@ -68,9 +72,10 @@ public class MainMenu extends Game {
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("Login!", skin);
 
-        final TextButton btnOffline = new TextButton("Register", skin);
+        final TextButton btnOffline = new TextButton("Offline", skin);
+        final TextButton btnRegister = new TextButton("Register", skin);
         final TextField txtUsername = new TextField("", skin);
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        final TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
         txtUsername.setAlignment(Align.left);
         txtUsername.setHeight(100);
@@ -99,7 +104,9 @@ public class MainMenu extends Game {
         table.add(txtPassword).width(300).height(50).padBottom(10);
         table.row();
         table.add(button).width(200).height(50).padBottom(10).padRight(25);
-        table.add(btnOffline).width(200).height(50).padBottom(10).padRight(25);
+        table.add(btnRegister).width(200).height(50).padBottom(10).padRight(25);
+        table.row();
+        table.add(btnOffline).width(200).height(50);
         table.center().top().pad(300);
         table.setFillParent(true);
         txtUsername.setHeight(500);
@@ -114,8 +121,8 @@ public class MainMenu extends Game {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                screenControl.setnScreen(2);
-                /*try {
+               // screenControl.setnScreen(2);
+                try {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
@@ -129,10 +136,32 @@ public class MainMenu extends Game {
                     });
                 } catch (Exception e) {
                     System.out.println(e);
-                }*/
+                }
             }
         });
-
+        btnRegister.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ParseUser user = new ParseUser();
+                user.setUsername(txtUsername.getText());
+                user.setPassword(txtPassword.getText());
+                user.signUpInBackground(new SignUpCallback() {
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            // Hooray! Let them use the app now.
+                            exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!");
+                            exitDialog.show(stage);
+                        } else {
+                            System.out.println(e.getMessage());
+                            exitDialog.text(e.getMessage()+ ". Please choose another Username");
+                            exitDialog.show(stage);
+                            // Sign up didn't succeed. Look at the ParseException
+                            // to figure out what went wrong
+                        }
+                    }
+                });
+            }
+        });
         btnOffline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -174,11 +203,12 @@ public class MainMenu extends Game {
         {
 
             setScale(2.5f, 2.5f);
-            button("OK");
+            button("OK",this.getTitle());
 
         }
         @Override
             protected void result(Object object){
+            System.out.println(object);
             screenControl.setnScreen(2);
             }
     }
