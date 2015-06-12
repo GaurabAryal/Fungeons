@@ -39,7 +39,6 @@ public class GameRooms extends Game {
     Skin skin;
     Stage stage;
     int nSHeight, nSWidth;
-    Query q = new Query();
     ScrollPane scrollPane;
     List list;
     Table gameroomTable;
@@ -160,19 +159,19 @@ public class GameRooms extends Game {
         window.addActor(gameroomTable);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
                 stage.addActor(window);
             }
         });
         btnRefresh.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
                 populateGmRms();
             }
         });
         btnAdd.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {// This will add a new gameroom to the server
                 ParseObject pO = new ParseObject("gamerooms");
                 pO.put("Name", txtName.getText());
                 pO.put("map", selectBox.getSelectedIndex());
@@ -184,7 +183,7 @@ public class GameRooms extends Game {
         });
         btnExit.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {//if you don't want to join a game, just exit it
                 gameTable.clearChildren();
                 window.clearChildren();
                 window.setVisible(false);
@@ -193,7 +192,7 @@ public class GameRooms extends Game {
         });
         btnJoin.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
                 screenControl.setName(list.getSelected().toString());
                 screenControl.setnScreen(4);
             }
@@ -210,7 +209,7 @@ public class GameRooms extends Game {
         screenControl = screenControl_;
     }
 
-    public void populateGmRms() {
+    public void populateGmRms() {//Grab all the gamerooms from the server
 
         String requestContent = null;
         final Net.HttpRequest httpRequest;
@@ -220,9 +219,7 @@ public class GameRooms extends Game {
         httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
         httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
         httpRequest.setContent(requestContent);
-        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-
-
+        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() { // Listens to the server response
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
                 gamerooms.clear();
