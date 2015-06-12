@@ -49,7 +49,7 @@ public class Character extends Sprite {
         nImgWidth=CharSheet.getRegionWidth()/Columns;
         TextureRegion[][] Character= CharSheet.split(nImgWidth, nImgHeight);
 
-        WalkR=new Animation(0.075f,Character[0]);
+        WalkR=new Animation(0.075f,Character[0]);//sets the different animations for walking jumping and standing still for the char
         WalkL=new Animation(0.075f,Character[1]);
         StandR=new Animation(0.2f,Character[2]);
         StandL=new Animation(0.2f,Character[3]);
@@ -97,7 +97,7 @@ public class Character extends Sprite {
         fCharY=Y;
         nCharVX=VX;
         nCharVY=VY;
-
+        // all of this determines which animation the character performs
         if(nCharVX<0){
             nDir=1;
         }
@@ -137,19 +137,8 @@ public class Character extends Sprite {
 //Arrow Animation Stuff
 
     }
-    public Character(){
-
-    }
-    public float getCharX(){
-        return(fCharX);
-    }
-    public float getCharY(){
-        return(fCharY);
-    }
-    public boolean getCanJump(){
-        return(bCanJump);
-    }
     public Sprite getCharSprite(float time, float arrowTime, Vector2 arrowMove, Boolean arrowShot){
+        //determines the sprite rendered (either arrow animations, or the current frame of the regular animations)
         ArrowTime=arrowTime;
         Time=time;
         ArrowMove=arrowMove;
@@ -177,18 +166,6 @@ public class Character extends Sprite {
         sChar.setOrigin(sChar.getWidth()/2,sChar.getHeight()/2);
         sChar.setPosition(fCharX-2,fCharY-1);
 
-
         return(sChar);
-        /*if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
-            sChar.flip(true,false);
-        }*/
     }
-    /*public Joint getSpliff(){
-        CharBody2=play.world.createBody(CharDef);
-        jointDef.bodyA=CharBody;
-        jointDef.bodyB=CharBody2;
-        jointDef.localAnchorA.set(0,2f);
-        joint=play.world.createJoint(jointDef);
-        return(joint);
-    }*/
 }

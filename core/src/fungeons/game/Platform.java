@@ -24,15 +24,15 @@ public class Platform {
 
         PlatBox.setAsBox(4, 0.5f);
         if(fArrowVX>0){
-            PlatDef.position.set(X-2,Y);
+            PlatDef.position.set(X-2,Y-0.25f);
         }
         if(fArrowVX<0){
-            PlatDef.position.set(X+2,Y);
+            PlatDef.position.set(X+4,Y-0.25f);
         }
 
         PlatBody=world.createBody(PlatDef);
         PlatBody.createFixture(PlatBox, 1f);
-        System.out.println(PlatBody.getPosition()+"     1");
+        System.out.println(fArrowVX);
         return(PlatBody);
 
     }
@@ -46,7 +46,6 @@ public class Platform {
         return(fPlatY);
     }
     public Vector2 getPosition(){
-        System.out.println(PlatBody.getPosition()+"     2");
         return(PlatBody.getPosition());
     }
 }
