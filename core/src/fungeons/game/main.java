@@ -19,7 +19,6 @@ public class main extends Game {
     GameRooms gameRooms;
     GameRoom gameRoom;
     Play play;
-    Query query;
     int nScreen = 1;
     ScreenControl screenControl;
     @Override

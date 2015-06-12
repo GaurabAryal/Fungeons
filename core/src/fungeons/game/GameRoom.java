@@ -34,14 +34,15 @@ public class GameRoom extends Game {
     Skin skin;
     Stage stage;
     int nSHeight, nSWidth;
-    Query q = new Query();
     ScrollPane scrollPane;
+    ScrollPane scrollPane2;
     List list;
+    List list2;
     Table gameroomTable;
     Table gameTable;
     Window.WindowStyle windowStyle;
     Window window;
-    String []arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
+    String[] arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
     boolean check = true;
     int ctpos = 0;
     int pos = 0;
@@ -51,6 +52,7 @@ public class GameRoom extends Game {
     TextButton btnExit;
     TextButton btnJoin;
     ArrayList<String> gamerooms = new ArrayList<String>();
+    ArrayList<String> players = new ArrayList<String>();
     TextButton btnRefresh;
     boolean fkboi = false;
 
@@ -59,7 +61,7 @@ public class GameRoom extends Game {
     ScreenControl screenControl;
 
     public void render() {
-        if (!fkboi){
+        if (!fkboi) {
             create();
         }
         Gdx.input.setInputProcessor(stage);
@@ -103,36 +105,43 @@ public class GameRoom extends Game {
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
-        window = new Window(screenControl.getName()+" Chat", skin);
+        window = new Window(screenControl.getName() + " Chat", skin);
         final TextField txtName = new TextField("", skin);
         txtName.setMessageText("Write a message...");
         list = new List<String>(skin);
+        list2 = new List<String>(skin);
         list.setItems(gamerooms.toArray());
 
         list.setSelected(list.getItems().size);
-        scrollPane = new ScrollPane(list,skin);
+
+        scrollPane = new ScrollPane(list, skin);
+        list2.setItems(players.toArray());
+        scrollPane2 = new ScrollPane(list2, skin);
         table = new Table(skin);
         gameroomTable = new Table(skin);
         gameTable = new Table(skin);
         table.left().top();
         table.add(window).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height((nSHeight * (int) (nSHeight / 1)) / nSHeight);
-        table.add(gameroomTable);
+        table.add(gameroomTable).top();
         //scrollPane.setFillParent(true);
         window.setMovable(false);
-        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight)-100);
+        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 100);
         window.row();
         window.add(txtName).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(nSHeight * 70 / nSHeight);
-        gameroomTable.add(btnAddGameroom).expand();
+        gameroomTable.add(btnAddGameroom).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 3) / nSHeight);
         gameroomTable.row();
-        gameroomTable.add(selectBox).expand();
+        gameroomTable.add(selectBox).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 7) / nSHeight);
+        gameroomTable.row();
+        gameroomTable.add(scrollPane2).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (11*nSHeight / 21) / nSHeight);
         table.debugCell();
         //table.debugTable();
         table.setFillParent(true);
         stage.addActor(table);
+        addPlayer();
         Timer timer = new Timer();
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
             @Override
-            public void run () {
+            public void run() { //Call the server to update messages every 5 seconds.
                 final String requestContent = null;
                 final Net.HttpRequest httpRequest;
                 httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
@@ -141,19 +150,20 @@ public class GameRoom extends Game {
                 httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
 
                 httpRequest.setContent(requestContent);
-                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                     @Override
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
                             jsonObject = new JSONObject(httpResponse.getResultAsString());
-                            JSONArray results = (JSONArray) jsonObject.get("players");
+                            JSONArray results = (JSONArray) jsonObject.get("messages");
                             gamerooms.clear();
                             for (int n = 0; n < results.length(); n++) {
                                 gamerooms.add(results.getString(n));
                             }
                             list.clear();
                             list.setItems(gamerooms.toArray());
-                        }catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                     }
 
                     @Override
@@ -167,27 +177,69 @@ public class GameRoom extends Game {
                     }
                 });
 
+
+            }
+        }, 0, 5);
+        Timer.Task task2 = timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {//update players every 5 seconds as well
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest;
+                httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                httpRequest.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
+                            jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            JSONArray results = (JSONArray) jsonObject.get("players");
+                            players.clear();
+                            for (int n = 0; n < results.length(); n++) {
+                                players.add(results.getString(n));
+                            }
+                            list2.clear();
+                            list2.setItems(players.toArray());
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+
             }
         }, 0, 5);
         txtName.setTextFieldListener(new TextField.TextFieldListener() {
             public void keyTyped(TextField textField, char key) {
-                if (key == '\n'){
-                    if (gamerooms.size()>23)gamerooms.remove(0);
+                if (key == '\n') {//when you press enter, update the chat messages list view and check the server if there have been new pushes
+                    if (gamerooms.size() > 23) gamerooms.remove(0);
                     textField.getOnscreenKeyboard().show(false);
-                    gamerooms.add(ParseUser.getCurrentUser().getUsername().toString()+ ": "+textField.getText().toString());
+                    gamerooms.add(ParseUser.getCurrentUser().getUsername().toString() + ": " + textField.getText().toString());
                     list.setItems(gamerooms.toArray());
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
                     httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
                     httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
                     httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-                    JSONObject json =new JSONObject();
-                    JSONObject skills =new JSONObject();
+                    JSONObject json = new JSONObject();
+                    JSONObject skills = new JSONObject();
                     skills.put("__op", "Add");
-                    skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString()+ ": "+txtName.getText())));
-                    json.put("players", skills);
+                    skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + txtName.getText())));
+                    json.put("messages", skills);
                     httpRequest.setContent(json.toString());
-                    Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){
+                    Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                         @Override
                         public void handleHttpResponse(Net.HttpResponse httpResponse) {
                             System.out.println(httpResponse.toString());
@@ -209,7 +261,108 @@ public class GameRoom extends Game {
             }
         });
     }
+    public void addPlayer(){//Add new player to the gameroom if they have not been added.
 
+        final String requestContent = null;
+        final Net.HttpRequest httpRequest;
+        httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+        httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+        httpRequest.setContent(requestContent);
+
+        System.out.println(" out wtf");
+        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+
+                System.out.println("wtf");
+                try {
+
+                    jsonObject = new JSONObject(httpResponse.getResultAsString());
+                    JSONArray results = (JSONArray) jsonObject.get("players");
+                    System.out.println(results.get(0) + "wtf");
+                    boolean bCheck = false;
+                    for (int n = 0; n < results.length(); n++) {
+                        if (results.getString(n).equals(ParseUser.getCurrentUser().getUsername())){
+                            bCheck = true;
+
+                        }
+                    }
+                    if (!bCheck){
+                        final Net.HttpRequest httpRequest;
+                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                        httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                        JSONObject json = new JSONObject();
+                        JSONObject skills = new JSONObject();
+                        skills.put("__op", "Add");
+                        skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() )));
+                        json.put("players", skills);
+                        httpRequest.setContent(json.toString());
+                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                            @Override
+                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                System.out.println(httpResponse.toString());
+                            }
+
+                            @Override
+                            public void failed(Throwable t) {
+                                System.out.println(t.toString());
+                            }
+
+                            @Override
+                            public void cancelled() {
+
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    if (e.getMessage().toString().contains("players")){
+                        final Net.HttpRequest httpRequest;
+                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                        httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                        JSONObject json = new JSONObject();
+                        JSONObject skills = new JSONObject();
+                        skills.put("__op", "Add");
+                        skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() )));
+                        json.put("players", skills);
+                        httpRequest.setContent(json.toString());
+                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                            @Override
+                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                System.out.println(httpResponse.toString());
+                            }
+
+                            @Override
+                            public void failed(Throwable t) {
+                                System.out.println(t.toString());
+                            }
+
+                            @Override
+                            public void cancelled() {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                System.out.println(t.toString());
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
+    }
     public void setScreenControl(ScreenControl screenControl_) {
         screenControl = screenControl_;
     }
