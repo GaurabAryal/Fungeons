@@ -32,7 +32,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Play extends Game {
     OrthographicCamera camera;
-    Vector2 gravity=new Vector2(0,-9.8f), CurMove=new Vector2(), ArrowMove=new Vector2();// we multiply the gravity by 32 because of an image scaling issue with our box2D world
+    Vector2 gravity=new Vector2(0,-9.8f), CurMove=new Vector2(), ArrowMove=new Vector2();
     World world = new World(gravity, false);
 
     BodyDef MapDef;
@@ -49,8 +49,8 @@ public class Play extends Game {
     TmxMapLoader MapLoader;
     OrthogonalTiledMapRenderer MapRenderer;
 
-    int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth;
-    float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation;
+    int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
+    float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
     float fCharX =15,fCharY=15;
     int nCharVX, nCharVY, nUp1Dn2=0;
@@ -66,7 +66,6 @@ public class Play extends Game {
     float ArrowX, ArrowY;
     double ArrowVX, ArrowVY;
 
-    float fPlatX, fPlatY;
     Body PlatBody;
     Array<Platform> arPlats = new Array <Platform>();
 
@@ -79,7 +78,7 @@ public class Play extends Game {
     Button.ButtonStyle btnJumpStyle;
 
     Stage stage;
-    Boolean bCanJump=false, bLight=true, bArrowShot=true;
+    Boolean bCanJump=false, bLight=true, bArrowShot=true, bZoomOut;
 
     Character character = new Character();
     Platform platform = new Platform();
@@ -91,19 +90,21 @@ public class Play extends Game {
         nScreenWidth= Gdx.graphics.getWidth();
         nScreenHeight=Gdx.graphics.getHeight();
         camera=new OrthographicCamera();
-        camera.viewportHeight=nScreenHeight*PPM/2;
+        camera.viewportHeight=nScreenHeight*PPM/2;//set the regular zoom of the camera
         camera.viewportWidth=nScreenWidth*PPM/2;
+        nZoomHeight=(int)(nScreenHeight*PPM);//set the zoom of the camera when it pans out for shooting arrows
+        nZoomWidth=(int)(nScreenWidth*PPM);
 
         character.create();
         stage=new Stage();
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
         batch= new SpriteBatch();
 
         TextureAtlas.AtlasRegion Region;
         int RegionHeight, RegionWidth;
         Region=Atlas.findRegion("Arrow ALT");
         sArrow = new Sprite(Region);
-        sArrow.setSize(sArrow.getWidth()*PPM,sArrow.getHeight()*PPM);
+        sArrow.setSize(sArrow.getWidth()*PPM,sArrow.getHeight()*PPM);//sets the size of the arrow texture relative to the box2d world scale
         sArrow.setOrigin(sArrow.getWidth()/2,sArrow.getHeight()/2);
 
         Region = Atlas.findRegion("Jump Button");
@@ -131,9 +132,9 @@ public class Play extends Game {
         MoveKnob1 = Region.split(RegionWidth,RegionHeight);
 
 
-        touchpadMoveSkin = new Skin();//making a touchpad which is kinda like an analog stick
-        touchpadMoveSkin.add("MoveKnob", MoveKnob1[0][0]);
-        touchpadMoveSkin.add("MoveBackground", MoveBG1[0][0]);
+        touchpadMoveSkin = new Skin();
+        touchpadMoveSkin.add("MoveKnob", MoveKnob1[0][0]);//we use texture regions here becuase the .getTexture() method was broken
+        touchpadMoveSkin.add("MoveBackground", MoveBG1[0][0]);//using texture regions actually worked so it seemed like the best option
         touchMoveKnob = touchpadMoveSkin.getDrawable("MoveKnob");
         touchMoveBackground = touchpadMoveSkin.getDrawable("MoveBackground");
         touchpadMoveStyle = new Touchpad.TouchpadStyle();
@@ -152,13 +153,15 @@ public class Play extends Game {
         stage.addActor(touchpadArrow);
 
         MapLoader=new TmxMapLoader();
-        Map=MapLoader.load("BunsTown.tmx");
-        MapCol= (TiledMapTileLayer) Map.getLayers().get(0);
-        MapAlt= (TiledMapTileLayer) Map.getLayers().get(1);
+        Map=MapLoader.load("BunsTown.tmx");//name of the tmx map file
+        MapCol= (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
+        MapAlt= (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
         MapAlt.setVisible(false);
         nTileHeight=(int)MapCol.getTileHeight();
         nTileWidth=(int)MapCol.getTileWidth();
-        MapRenderer = new OrthogonalTiledMapRenderer(Map, PPM);
+        MapRenderer = new OrthogonalTiledMapRenderer(Map, PPM);//Map renderer chooses map then the rendering scale, we used PPM for box2d to work properly
+        //the rendering scale does not change any sort of scaling for the actual map, just the rendering of it, so the tiles can render
+        // to be 2 pixels wide, when they are actually 32 pixels wide, or 64 pixels wide ect.  it makes collsion detection difficult
 
         b2Renderer=new Box2DDebugRenderer();
 
@@ -168,26 +171,29 @@ public class Play extends Game {
 
         for(int i =0; i< MapCol.getWidth(); i++){//makes a 2D grid of box2D rectangles overtop the tiled map
             for(int j=0; j<MapCol.getHeight(); j++){ // Awesome right?
-                if(MapCol.getCell(i,j).getTile().getProperties().containsKey("Hit")) {
-                    MapDef= new BodyDef();
+                if(MapCol.getCell(i,j).getTile().getProperties().containsKey("Hit")) {//we check for the hit key at i, and j coordinates on the tiled map
+                    MapDef= new BodyDef();//if a tile has the Hit key, we make a box2d body overtop of it
                     MapBox= new PolygonShape();
                     MapDef.position.set((i*nTileWidth+nTileWidth/2)*PPM, (j*nTileHeight+ nTileHeight/2)*PPM);//sets the box to proper coordinates to correlate to the tiled map
                     MapBody = world.createBody(MapDef);
-                    MapBox.setAsBox((nTileWidth*PPM/2)+1, nTileHeight*PPM/2);
+                    MapBox.setAsBox((nTileWidth*PPM/2)+1, nTileHeight*PPM/2);//we scale according to the tiled map with the rendering ration of PPM
+                    // we made the boxes slightly wider to compensate for so the character doesn't overlap with them at all
                     MapBody.createFixture(MapBox, 1f);
                 }
             }
         }
 
+        // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
+        // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
         CharBody=world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
         CharBody2=world.createBody(character.CharDef);
         CharBody2.createFixture(character.CharFixDef);
-        CharBody.setFixedRotation(true);
-        jointDef=character.jointDef;
-        jointDef.bodyA=CharBody;
-        jointDef.bodyB=CharBody2;
-        jointDef.localAnchorA.set(0,2f);
+        CharBody.setFixedRotation(true);// makes it so the body cannot rotate
+        jointDef=character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
+        jointDef.bodyA=CharBody;//get the first body that will be on the joint
+        jointDef.bodyB=CharBody2;//2nd body on the joint
+        jointDef.localAnchorA.set(0,2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
         joint =world.createJoint(jointDef);
 
 
@@ -204,21 +210,17 @@ public class Play extends Game {
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
         MapRenderer.render();
-        b2Renderer.render(world, camera.combined);
-
-
+        b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
         stage.draw();
 
         if(screenControl.nScreen==3) {
-            Gdx.input.setInputProcessor(stage);
+            Gdx.input.setInputProcessor(stage);//uesr changes the control of the start menu to this when screens change
         }
 
-        CurMove=(CharBody.getLinearVelocity());
-        fCharX=character.getCharX();
-        fCharY=character.getCharY();
+        CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
-        if(touchpadMove.getKnobPercentX()>=0.50){
+        if(touchpadMove.getKnobPercentX()>=0.50){//if the movement knob is move 50% left or right the character moves 10m/s left or right
             nCharVX= (int) (10f);
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
@@ -227,150 +229,181 @@ public class Play extends Game {
         else{
             nCharVX=0;
         }
-        if(nCharVY>0){
-            nUp1Dn2=1;//determines if most previous motion was up or down, does not change when char is still
+        if(CharBody.getLinearVelocity().y>0.5){//we don't use an integer here becuase if the character moves down a small amount
+            //they nUp1Dn2 wouldn't change and they would be stuck in the jumping animation, unable to jump, so we use a float, more senseitive to downward movemement
+            nUp1Dn2=1;//determines if most previous motion was up or down, does not change when char is still(Up is 1, Down is 2)
         }
         if(nCharVY<0){
             nUp1Dn2=2;
         }
 
-        fCharX=CharBody.getPosition().x;
-        fCharY=CharBody.getPosition().y;
+        CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
-        if(nCharVY==0){
-            if(nUp1Dn2==2) {
-                bCanJump=true;
-            }
-        }
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,30);
+            CharBody.setLinearVelocity(CurMove.x,35);
             CurMove.set(CharBody.getLinearVelocity());
             bCanJump=false;
+            //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }
-        CharBody.setLinearVelocity(nCharVX, CurMove.y);//add 0.2f to counteract sticking glitch
-
 
         nCharVY=(int)CharBody.getLinearVelocity().y;
-        nCharVX=(int)CharBody.getLinearVelocity().x;
-            if (ArrowTime < 1 || bArrowShot == false) {
+            if (ArrowTime < 1 || bArrowShot == false) {//if either the arrow is drawn, or it has been shot, but a second hasn't passed
+                //the character is unable to move
                 nCharVX = 0;
                 CharBody.setLinearVelocity(0, CurMove.y);
             }
 
         if(nCharVX<0 || ArrowMove.x<0){
             nDir=1;
-        }
+        }//sets which way the character is facing, 1 is left, 2 is right
         if(nCharVX>0 || ArrowMove.x>0){
             nDir=2;
         }
+
+        if(nCharVY==0){
+            if(nUp1Dn2==2) {
+                bCanJump=true;
+            }
+        }
+        //if the character is not moving up or down (Y velocity is 0) and nUp1Dn2 is 2 (character was most recently moving down) then
+        //bCanJump becomes true, this way the character can land and then jump, and the instant in the air when the y velocity is 0
+        //doesn't change anything because the character will move up, then y velocity is 0, then come down, so bCanJump will stay false
+        else{
+            bCanJump=false;
+        }
+        fCharX=CharBody.getPosition().x;
+        fCharY=CharBody.getPosition().y;
+
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump);
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
-
+        bZoomOut=false;
+            for(int i=-5;i<=5;i++){ //loop left and right 5 tiles each way on the map
+                if((int)((fCharX / PPM) / nTileWidth)+i>0 &&
+                        (int)((fCharX / PPM) / nTileWidth)+i<MapCol.getWidth()){ // makes sure to not go outside the map
+                if (MapCol.getCell((int)((fCharX / PPM) / nTileWidth)+i,(int)((fCharY/PPM)/nTileHeight))//Collide on Left
+                        .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
+                    bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
+                    break; //leaves loop incase next tile does not have hit property
+                }
+            }
+        }
+        if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
+            camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/3;
+            camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/3;
+        }
+        if(bZoomOut==false){//changes zoom in such a way that it will zoom back in quickly then slowly until it stops
+            camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
+            camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
+        }
+        camera.update();
         //Arrow Stuff Now--
 
-        if(touchpadArrow.isTouched() && ArrowTime>1){
-            ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);
-            CharRotation=(float) (Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
-            bArrowShot=false;
+        if(touchpadArrow.isTouched() && ArrowTime>1){//Arrow time prevents rapid arrow shooting
+            ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);//sets arrow velocity using touchpad
+            CharRotation=(float) (Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;//rotates arrow sprite
+            bArrowShot=false;//changes boolean to indicate the arrow is drawn
         }
 
         if(touchpadArrow.isTouched()==false && bArrowShot==false){
-            ArrowTime=0;
-            arrow = new Arrow();
-            arrow.setVars(ArrowMove.x, ArrowMove.y, CharBody2.getPosition().x-1, CharBody2.getPosition().y);
-            arArrows.add(arrow);
-            bArrowShot=true;
-            ArrowMove.set(0,0);
+            ArrowTime=0;//resets the arrow timer
+            arrow = new Arrow();//makes a new arrow
+            arrow.setVars(ArrowMove.x, ArrowMove.y, CharBody2.getPosition().x-1, CharBody2.getPosition().y);//sets variables of the new arrow
+            arArrows.add(arrow);//adds arrow to the arrow array
+            bArrowShot=true;//changes boolean to indicate arrow has been shot
+            ArrowMove.set(0,0);//resets arrow velocity vector
         }
         if(bArrowShot==true){
             ArrowTime+=Gdx.graphics.getDeltaTime();
         }
 
-        //Platform Stuff Now--
-        for(int i=0;i<arPlats.size;i++){
-            //Will eventually be for when the platforms have images
-
-        }
-
         batch.begin();
 
         if(ArrowTime<1|| bArrowShot==false){
-            sChar.setPosition(fCharX-2,fCharY);
+            sChar.setPosition(fCharX-2,fCharY);//if the character's sprite is the arrow shooting one, we change it's position because it is smaller than the other sprites
         }
 
         if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
-            sChar.flip(true,false);
+            sChar.flip(true,false);//flips sprite to face either way since we only have one image facing one way
         }
         sChar.draw(batch);
 
 
-        for(int i =0; i<arArrows.size; i++){
-            arrow=arArrows.get(i);
-            ArrowX=arrow.getArrowX();
-            ArrowY=arrow.getArrowY();
-            ArrowVX=arrow.getArrowVX();
-            ArrowVY=arrow.getArrowVY();
-            ArrowVY-=9.8/180f;
-            ArrowX+=ArrowVX;
-            ArrowY+=ArrowVY;
-            sArrow.setRotation((float) (Math.atan(ArrowVY/ArrowVX))* MathUtils.radiansToDegrees);
-            if(ArrowVX>0){
-                sArrow.setRotation(sArrow.getRotation()+180);
+        for(int i =0; i<arArrows.size; i++) {//loops through the array of arrows
+            arrow = arArrows.get(i);
+            ArrowX = arrow.getArrowX();
+            ArrowY = arrow.getArrowY();
+            ArrowVX = arrow.getArrowVX();
+            ArrowVY = arrow.getArrowVY();
+            ArrowVY -= 9.8 / 180f;//sets arrow gravity, we want them to fall pretty slow
+            ArrowX += ArrowVX;
+            ArrowY += ArrowVY;
+            sArrow.setRotation((float) (Math.atan(ArrowVY / ArrowVX)) * MathUtils.radiansToDegrees);//rotates arrow based on velocity
+            if (ArrowVX > 0) {
+                sArrow.setRotation(sArrow.getRotation() + 180);//flips arrow if it's going to the right due to the images orientation
             }
 
             sArrow.setPosition(ArrowX, ArrowY);
             sArrow.draw(batch);
             arrow.setVars(ArrowVX, ArrowVY, ArrowX, ArrowY);
+            System.out.println((int) ((ArrowX / PPM) / nTileWidth));
 
-                if(MapCol.getCell( (int)((ArrowX/PPM)/nTileWidth), (int)((ArrowY/PPM)/nTileHeight))//Collide on Left
+            if((int) ((ArrowX / PPM) / nTileWidth)>0 && (int)((ArrowX / PPM) / nTileWidth)<MapCol.getWidth()) {
+
+                if (MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth), (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
                         .getTile().getProperties().containsKey("Hit") ||
-                        MapCol.getCell( (int)((sArrow.getWidth()+ArrowX)/PPM/nTileWidth), (int)((ArrowY/PPM)/nTileHeight))//Collide on Right
-                        .getTile().getProperties().containsKey("Hit")){
+                        MapCol.getCell((int) ((sArrow.getWidth() + ArrowX) / PPM / nTileWidth), (int) ((ArrowY / PPM) / nTileHeight))//Collide on Right
+                                .getTile().getProperties().containsKey("Hit")) {
+                    //if there is a tile with the hit key to the left or right of the current arrow
 
-                    if(arPlats.size>0) {
-                        for (int j = 0; j < arPlats.size; j++) {
-                            platform = arPlats.get(j);
-                            Vector2 ArrowVec, pos;
-                            ArrowVec=new Vector2(ArrowX,ArrowY);
-                            pos=new Vector2(platform.getPosition());
-                            System.out.println(pos+"     3");
-                            if (ArrowVec.dst(pos)<10) {
-                                break;
+                    if (MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
+                            .getTile().getProperties().containsKey("Hit") == false ||
+                            MapCol.getCell((int) ((sArrow.getWidth() + ArrowX) / PPM / nTileWidth) + 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Right
+                                    .getTile().getProperties().containsKey("Hit") == false) {
+                        //if there is a tile to the left of the arrow or to the right of the arrow
+
+
+                        if (arPlats.size > 0) {//now we loop through all of the platforms created
+                            for (int j = 0; j < arPlats.size; j++) {
+                                platform = arPlats.get(j);//get current platform
+                                Vector2 ArrowVec, pos;
+                                ArrowVec = new Vector2(ArrowX, ArrowY);
+                                pos = new Vector2(platform.getPosition());//make a vector equal to the position of the platforms coordinates
+                                if (ArrowVec.dst(pos) < 9) {//if the distance between the two is less than 9, this does the pythagorean equation for you
+                                    break;//we break the loop because there is a platform too close, so we cannot make a new one
+                                }
+                                if (j == arPlats.size - 1) {//if we're at the end of the loop, there must be no platform too close to make a new one
+                                    platform = new Platform();// so we make a new platform
+                                    PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                                    PlatBody = world.createBody(platform.PlatDef);
+
+                                    arPlats.add(platform);// add new platform to the array
+                                }
                             }
-                                    if(j==arPlats.size-1) {
-                                        platform=new Platform();
-                                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
-                                        PlatBody = world.createBody(platform.PlatDef);
+                        } else {//if the platform array length is non existant we just make one becuase there is no platfomr for it to overlap with or anything like that
+                            platform = new Platform();
+                            PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                            PlatBody = world.createBody(platform.PlatDef);
 
-                                        arPlats.add(platform);
-                                    }
-
-                            }
+                            arPlats.add(platform);
                         }
-
-                    else{
-                        platform = new Platform();
-                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
-                        PlatBody = world.createBody(platform.PlatDef);
-
-                        arPlats.add(platform);
                     }
 
-                    arArrows.removeIndex(i);
-                    i--;
 
+                    arArrows.removeIndex(i);
+                    i--;//we had an issue where arrows would flicker if one is deleted, so we do this to prevent that
                 }
+            }
         }
 
         batch.end();
-        for(int i=0;i<5;i++){
-            world.step(1f/60f, 8, 3);
+        for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
+            world.step(1f/60f, 8, 3);//moves the box2d world
         }
 
     }
     @Override
-    public void dispose(){
+    public void dispose(){//disposes stuff
         batch.dispose();
         world.dispose();
         stage.dispose();
