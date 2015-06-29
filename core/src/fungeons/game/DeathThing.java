@@ -29,7 +29,7 @@ public class DeathThing {
 
     public void setVars(TiledMapTileLayer Col, Vector2 CharVec){
         if(VX>0) {
-            for (int i = 0; i <= 4; i++) {
+            for (int i = 0; i <= 3; i++) {
                 if (((int) ((X / PPM) / 64) + i) > 0 && ((int) ((X / PPM) / 64) + i) < Col.getWidth()) {
                     if (Col.getCell((int) ((X / PPM) / 64) + i, (int) ((Y / PPM) / 64))//Collide on Left
                             .getTile().getProperties().containsKey("Hit")) {
@@ -48,7 +48,7 @@ public class DeathThing {
             }
         }
         if(VX<0) {
-            for (int i = 0; i >= -4; i--) {
+            for (int i = 0; i >= -3; i--) {
                 if (((int) ((X / PPM) / 64) + i) > 0 && ((int) ((X / PPM) / 64) + i) < Col.getWidth()) {
                     if (Col.getCell((int) ((X / PPM) / 64) + i, (int) ((Y / PPM) / 64))//Collide on Left
                             .getTile().getProperties().containsKey("Hit")) {
@@ -67,7 +67,7 @@ public class DeathThing {
             }
         }
         if(VY>0) {
-            for (int i = 0; i <= 4; i++) {
+            for (int i = 0; i <= 3; i++) {
                 if (((int) ((Y / PPM) / 64) + i) > 0 && ((int) ((Y / PPM) / 64) + i) < Col.getHeight()) {
                     if (Col.getCell((int) ((X / PPM) / 64), (int) ((Y / PPM) / 64) + i)//Collide on Left
                             .getTile().getProperties().containsKey("Hit")) {
@@ -86,7 +86,7 @@ public class DeathThing {
             }
         }
         if(VY<0) {
-            for (int i = 0; i >= -4; i--) {
+            for (int i = 0; i >= -3; i--) {
                 if (((int) ((Y / PPM) / 64) + i) > 0 && ((int) ((Y / PPM) / 64) + i) < Col.getHeight()) {
                     if (Col.getCell((int) ((X / PPM) / 64), (int) ((Y / PPM) / 64) + i)//Collide on Left
                             .getTile().getProperties().containsKey("Hit")) {
