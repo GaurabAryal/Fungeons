@@ -19,15 +19,14 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  */
 public class Character extends Sprite {
     int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
-    float fCharX=100, fCharY=100, ArrowTime, CharRotation,
-            Time;
+    float fCharX=20, fCharY=5, ArrowTime, CharRotation,Time;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
-    Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, CurAnim;
+    Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, DeathR, DeathL, DeathHat, CurAnim, OldAnim;
     Sprite sChar;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
-    Boolean bCanJump=true, bArrowShot;
+    Boolean bCanJump=true, bArrowShot, bDead;
     TextureRegion[][] ArrowArms;
     Vector2 ArrowMove;
 
@@ -56,12 +55,15 @@ public class Character extends Sprite {
         JumpR=new Animation(0.075f,Character[4]);
         JumpL=new Animation(0.075f,Character[5]);
         CurAnim=StandR;
-
         CharSheet=Atlas.findRegion("Arrow arms ALT");
         ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
-       // Texture Shit=new Texture(ArrowArms[0][0]);
-        //sArrowShoot=new Sprite(ArrowArms[0][1]);
 
+        CharSheet=Atlas.findRegion("Char Death Animation ALT");
+        TextureRegion[][] Death=CharSheet.split(CharSheet.getRegionWidth()/10,CharSheet.getRegionHeight()/3);
+        DeathR=new Animation(0.21f, Death[0]);
+        DeathL = new Animation(0.21f, Death[1]);
+        DeathHat = new Animation(0.1f, Death[2]);
+        OldAnim=DeathHat;
 
         CharDef=new BodyDef();
         CharBox= new CircleShape();
@@ -71,7 +73,7 @@ public class Character extends Sprite {
         //CharBox.setAsBox(1f,2f);
         CharBox.setRadius(1f);
 
-        CharDef.position.set(15, 15);
+        CharDef.position.set(30, 4);
         CharFixDef.shape=CharBox;
         CharDef.type= BodyDef.BodyType.DynamicBody;
 
@@ -82,21 +84,23 @@ public class Character extends Sprite {
         CharFixDef.friction=0;
 
         CharBody.createFixture(CharFixDef);
-        CharDef.position.set(15,17);
+        CharDef.position.set(30,6);
        // CharBody2=CharBody;
 
 
 
 
     }
-    public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump){
+    public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump, Boolean dead){
         Time += Gdx.graphics.getDeltaTime();
         nDir=Dir;
         bCanJump=CanJump;
+        bDead=dead;
         fCharX=X;
         fCharY=Y;
         nCharVX=VX;
         nCharVY=VY;
+
         // all of this determines which animation the character performs
         if(nCharVX<0){
             nDir=1;
@@ -133,16 +137,33 @@ public class Character extends Sprite {
                 CurAnim=JumpR;
             }
         }
+        if(bDead==true){
+            if(nDir==1){
+                CurAnim=DeathL;
+            }
+            if(nDir==2){
+                CurAnim=DeathR;
 
+            }
+        }
+        if(CurAnim!=OldAnim){
+            Time=0;
+            OldAnim=CurAnim;
+        }
+        if(CurAnim.isAnimationFinished(Time)&&bDead==true){//assess whether the char is dead and if the time exceeds the time it takes to reach the end of the animation
+            CurAnim=DeathHat;
+            nDir=0;
+        }
 //Arrow Animation Stuff
 
     }
     public Sprite getCharSprite(float time, float arrowTime, Vector2 arrowMove, Boolean arrowShot){
         //determines the sprite rendered (either arrow animations, or the current frame of the regular animations)
+
         ArrowTime=arrowTime;
-        Time=time;
         ArrowMove=arrowMove;
         bArrowShot=arrowShot;
+
 
         if(ArrowMove.x!=0){
             CharRotation=(float)(Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
@@ -159,11 +180,12 @@ public class Character extends Sprite {
 
 
         else{
+
             sChar =new Sprite(CurAnim.getKeyFrame(Time, true));
         }
 
         sChar.setSize(4,4);
-        sChar.setOrigin(sChar.getWidth()/2,sChar.getHeight()/2);
+        sChar.setOriginCenter();
         sChar.setPosition(fCharX-2,fCharY-1);
 
         return(sChar);
