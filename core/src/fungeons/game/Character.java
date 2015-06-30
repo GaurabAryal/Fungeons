@@ -18,8 +18,8 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  * Created by Ben on 2015-04-28.
  */
 public class Character extends Sprite {
-    int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth;
-    float fCharX=20, fCharY=5, ArrowTime, CharRotation,Time;
+    int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth, nUp1Dn2;
+    float fCharX=20, fCharY=5, ArrowTime, CharRotation,Time, GroundTime=0;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
     Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, DeathR, DeathL, DeathHat, CurAnim, OldAnim;
@@ -93,6 +93,7 @@ public class Character extends Sprite {
     }
     public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump, Boolean dead){
         Time += Gdx.graphics.getDeltaTime();
+
         nDir=Dir;
         bCanJump=CanJump;
         bDead=dead;
@@ -111,6 +112,7 @@ public class Character extends Sprite {
         if(nCharVY!=0){
             bCanJump=false;
         }
+
         if(nDir==1){//left
             if(bCanJump==true){
                 if(nCharVX!=0){
@@ -154,6 +156,7 @@ public class Character extends Sprite {
             CurAnim=DeathHat;
             nDir=0;
         }
+
 //Arrow Animation Stuff
 
     }
@@ -189,5 +192,33 @@ public class Character extends Sprite {
         sChar.setPosition(fCharX-2,fCharY-1);
 
         return(sChar);
+    }
+    public Boolean getJump(float VY){
+        if(VY<0.1 && VY>-0.1){
+            GroundTime+=Gdx.graphics.getDeltaTime();
+        }
+        if(VY<-0.1 || VY>0.1){
+            GroundTime=0;
+        }
+
+        if(VY>0.5){
+            nUp1Dn2=1;
+        }
+        if(nCharVY<0){
+            nUp1Dn2=2;
+        }
+        if(nCharVY==0){
+            if(nUp1Dn2==2) {
+                bCanJump=true;
+            }
+        }
+        else{
+            bCanJump=false;
+        }
+
+        if(GroundTime>=0.09){
+            bCanJump=true;
+        }
+        return(bCanJump);
     }
 }

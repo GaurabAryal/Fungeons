@@ -120,7 +120,7 @@ public class DeathThing {
                 Y-=1;
             }
         }
-        if(CharVec.dst(X,Y)<=12){
+        if(CharVec.dst(X,Y)<=13.45){
             bDead=true;
 
         }

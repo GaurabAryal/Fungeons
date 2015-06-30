@@ -53,7 +53,7 @@ public class Play extends Game {
     float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
     float fCharX =20,fCharY=5;
-    int nCharVX, nCharVY, nUp1Dn2=0;
+    int nCharVX, nCharVY;
     int nDir=2;
 
     TextureAtlas Atlas;
@@ -237,16 +237,11 @@ public class Play extends Game {
         else{
             nCharVX=0;
         }
-        if(CharBody.getLinearVelocity().y>0.5){//we don't use an integer here becuase if the character moves down a small amount
-            //they nUp1Dn2 wouldn't change and they would be stuck in the jumping animation, unable to jump, so we use a float, more senseitive to downward movemement
-            nUp1Dn2=1;//determines if most previous motion was up or down, does not change when char is still(Up is 1, Down is 2)
-        }
-        if(nCharVY<0){
-            nUp1Dn2=2;
-        }
+
 
         CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
+        bCanJump=character.getJump(CharBody.getLinearVelocity().y);
         if(btnJump.isPressed() && bCanJump==true){
             CharBody.setLinearVelocity(CurMove.x,35);
             CurMove.set(CharBody.getLinearVelocity());
@@ -268,17 +263,7 @@ public class Play extends Game {
             nDir=2;
         }
 
-        if(nCharVY==0){
-            if(nUp1Dn2==2) {
-                bCanJump=true;
-            }
-        }
-        //if the character is not moving up or down (Y velocity is 0) and nUp1Dn2 is 2 (character was most recently moving down) then
-        //bCanJump becomes true, this way the character can land and then jump, and the instant in the air when the y velocity is 0
-        //doesn't change anything because the character will move up, then y velocity is 0, then come down, so bCanJump will stay false
-        else{
-            bCanJump=false;
-        }
+
         if(bDead==false) {
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
