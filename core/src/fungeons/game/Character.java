@@ -26,7 +26,7 @@ public class Character extends Sprite {
     Sprite sChar;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
-    Boolean bCanJump=true, bArrowShot, bDead;
+    Boolean bCanJump=true, bArrowShot, bDead=false;
     TextureRegion[][] ArrowArms;
     Vector2 ArrowMove;
 
@@ -167,23 +167,23 @@ public class Character extends Sprite {
         ArrowMove=arrowMove;
         bArrowShot=arrowShot;
 
+            if (ArrowMove.x != 0) {
+                CharRotation = (float) (Math.atan(ArrowMove.y / ArrowMove.x)) * MathUtils.radiansToDegrees;
+            }
+            if (bArrowShot == false) {
+                sChar = new Sprite(ArrowArms[0][0]);
+                sChar.setRotation(CharRotation);
 
-        if(ArrowMove.x!=0){
-            CharRotation=(float)(Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;
-        }
-        if(bArrowShot==false){
-            sChar=new Sprite(ArrowArms[0][0]);
-            sChar.setRotation(CharRotation);
-
-        }
-        else if(bArrowShot==true && ArrowTime<1){
-            sChar=new Sprite(ArrowArms[0][1]);
-            sChar.setRotation(CharRotation);
-        }
+            } else if (bArrowShot == true && ArrowTime < 1) {
+                sChar = new Sprite(ArrowArms[0][1]);
+                sChar.setRotation(CharRotation);
+            }
 
 
         else{
-
+            sChar =new Sprite(CurAnim.getKeyFrame(Time, true));
+        }
+        if(bDead==true){
             sChar =new Sprite(CurAnim.getKeyFrame(Time, true));
         }
 

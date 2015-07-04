@@ -216,7 +216,7 @@ public class Play extends Game {
         MapRenderer.render();
         b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
-
+        System.out.println(Time);
 
         if(screenControl.nScreen==3) {
             Gdx.input.setInputProcessor(stage);//uesr changes the control of the start menu to this when screens change
@@ -276,8 +276,12 @@ public class Play extends Game {
 
 
         if(bDead==true){
-            world.destroyBody(CharBody);
-            world.destroyBody(CharBody2);
+         //   world.destroyBody(CharBody);
+           // world.destroyBody(CharBody2);
+            //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
+            CharBody.setLinearVelocity(0,0);
+            bArrowShot=true;
+            stage.clear();
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
         }
 
@@ -301,7 +305,6 @@ public class Play extends Game {
             camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
             camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
         }
-        camera.update();
         //Arrow Stuff Now--
 
         if(touchpadArrow.isTouched() && ArrowTime>1){//Arrow time prevents rapid arrow shooting
@@ -335,6 +338,7 @@ public class Play extends Game {
 
 
         for(int i =0; i<arArrows.size; i++) {//loops through the array of arrows
+
             arrow = arArrows.get(i);
             ArrowX = arrow.getArrowX();
             ArrowY = arrow.getArrowY();
@@ -369,6 +373,7 @@ public class Play extends Game {
 
                         if (arPlats.size > 0) {//now we loop through all of the platforms created
                             for (int j = 0; j < arPlats.size; j++) {
+
                                 platform = arPlats.get(j);//get current platform
                                 Vector2 ArrowVec, pos;
                                 ArrowVec = new Vector2(ArrowX, ArrowY);
