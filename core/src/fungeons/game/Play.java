@@ -52,18 +52,18 @@ public class Play extends Game {
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
     float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
-    float fCharX =15,fCharY=15;
-    int nCharVX, nCharVY, nUp1Dn2=0;
+    float fCharX =20,fCharY=5;
+    int nCharVX, nCharVY;
     int nDir=2;
 
     TextureAtlas Atlas;
     TextureRegion[][] MoveBG1, MoveKnob1, btnJump1;
 
     SpriteBatch batch;
-    Sprite sArrow, sChar;
+    Sprite sArrow, sChar, sDThing;
     Arrow arrow;
     Array<Arrow> arArrows = new Array<Arrow>();
-    float ArrowX, ArrowY;
+    float ArrowX, ArrowY, DThingX, DThingY;
     double ArrowVX, ArrowVY;
 
     Body PlatBody;
@@ -78,10 +78,11 @@ public class Play extends Game {
     Button.ButtonStyle btnJumpStyle;
 
     Stage stage;
-    Boolean bCanJump=false, bLight=true, bArrowShot=true, bZoomOut;
+    Boolean bCanJump=true, bLight=true, bArrowShot=true, bZoomOut, bDead;
 
     Character character = new Character();
     Platform platform = new Platform();
+    DeathThing death = new DeathThing();
     ScreenControl screenControl;
 
 
@@ -96,6 +97,7 @@ public class Play extends Game {
         nZoomWidth=(int)(nScreenWidth*PPM);
 
         character.create();
+        death.create();
         stage=new Stage();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
         batch= new SpriteBatch();
@@ -106,6 +108,8 @@ public class Play extends Game {
         sArrow = new Sprite(Region);
         sArrow.setSize(sArrow.getWidth()*PPM,sArrow.getHeight()*PPM);//sets the size of the arrow texture relative to the box2d world scale
         sArrow.setOrigin(sArrow.getWidth()/2,sArrow.getHeight()/2);
+
+        sDThing=new Sprite();
 
         Region = Atlas.findRegion("Jump Button");
         RegionHeight=Region.getRegionHeight();
@@ -212,11 +216,15 @@ public class Play extends Game {
         MapRenderer.render();
         b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
-        stage.draw();
+        System.out.println(Time);
 
         if(screenControl.nScreen==3) {
             Gdx.input.setInputProcessor(stage);//uesr changes the control of the start menu to this when screens change
         }
+
+        //char stuff
+
+        bDead=death.getDead();
 
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
@@ -229,16 +237,11 @@ public class Play extends Game {
         else{
             nCharVX=0;
         }
-        if(CharBody.getLinearVelocity().y>0.5){//we don't use an integer here becuase if the character moves down a small amount
-            //they nUp1Dn2 wouldn't change and they would be stuck in the jumping animation, unable to jump, so we use a float, more senseitive to downward movemement
-            nUp1Dn2=1;//determines if most previous motion was up or down, does not change when char is still(Up is 1, Down is 2)
-        }
-        if(nCharVY<0){
-            nUp1Dn2=2;
-        }
+
 
         CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
+        bCanJump=character.getJump(CharBody.getLinearVelocity().y);
         if(btnJump.isPressed() && bCanJump==true){
             CharBody.setLinearVelocity(CurMove.x,35);
             CurMove.set(CharBody.getLinearVelocity());
@@ -260,23 +263,29 @@ public class Play extends Game {
             nDir=2;
         }
 
-        if(nCharVY==0){
-            if(nUp1Dn2==2) {
-                bCanJump=true;
-            }
-        }
-        //if the character is not moving up or down (Y velocity is 0) and nUp1Dn2 is 2 (character was most recently moving down) then
-        //bCanJump becomes true, this way the character can land and then jump, and the instant in the air when the y velocity is 0
-        //doesn't change anything because the character will move up, then y velocity is 0, then come down, so bCanJump will stay false
-        else{
-            bCanJump=false;
-        }
-        fCharX=CharBody.getPosition().x;
-        fCharY=CharBody.getPosition().y;
 
-        character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump);
+        if(bDead==false) {
+            fCharX = CharBody.getPosition().x;
+            fCharY = CharBody.getPosition().y;
+        }
+
+
+        character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
+
+
+        if(bDead==true){
+         //   world.destroyBody(CharBody);
+           // world.destroyBody(CharBody2);
+            //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
+            CharBody.setLinearVelocity(0,0);
+            bArrowShot=true;
+            stage.clear();
+            //do more death stuff.  might even just call a function that will have everything we need to do at death in it
+        }
+
+
         bZoomOut=false;
             for(int i=-5;i<=5;i++){ //loop left and right 5 tiles each way on the map
                 if((int)((fCharX / PPM) / nTileWidth)+i>0 &&
@@ -296,7 +305,6 @@ public class Play extends Game {
             camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
             camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
         }
-        camera.update();
         //Arrow Stuff Now--
 
         if(touchpadArrow.isTouched() && ArrowTime>1){//Arrow time prevents rapid arrow shooting
@@ -330,6 +338,7 @@ public class Play extends Game {
 
 
         for(int i =0; i<arArrows.size; i++) {//loops through the array of arrows
+
             arrow = arArrows.get(i);
             ArrowX = arrow.getArrowX();
             ArrowY = arrow.getArrowY();
@@ -346,7 +355,6 @@ public class Play extends Game {
             sArrow.setPosition(ArrowX, ArrowY);
             sArrow.draw(batch);
             arrow.setVars(ArrowVX, ArrowVY, ArrowX, ArrowY);
-            System.out.println((int) ((ArrowX / PPM) / nTileWidth));
 
             if((int) ((ArrowX / PPM) / nTileWidth)>0 && (int)((ArrowX / PPM) / nTileWidth)<MapCol.getWidth()) {
 
@@ -365,6 +373,7 @@ public class Play extends Game {
 
                         if (arPlats.size > 0) {//now we loop through all of the platforms created
                             for (int j = 0; j < arPlats.size; j++) {
+
                                 platform = arPlats.get(j);//get current platform
                                 Vector2 ArrowVec, pos;
                                 ArrowVec = new Vector2(ArrowX, ArrowY);
@@ -395,12 +404,15 @@ public class Play extends Game {
                 }
             }
         }
+        death.setVars(MapCol, CharBody.getPosition());
+        sDThing=death.getSprite(Time);
+        sDThing.draw(batch);
 
         batch.end();
         for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
             world.step(1f/60f, 8, 3);//moves the box2d world
         }
-
+        stage.draw();
     }
     @Override
     public void dispose(){//disposes stuff

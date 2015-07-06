@@ -32,7 +32,6 @@ public class Platform {
 
         PlatBody=world.createBody(PlatDef);
         PlatBody.createFixture(PlatBox, 1f);
-        System.out.println(fArrowVX);
         return(PlatBody);
 
     }
