@@ -4,8 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -98,6 +100,7 @@ public class GameRoom extends Game {
         nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+
         stage = new Stage(new ScreenViewport());
         btnAddGameroom = new TextButton("START", skin);
         final SelectBox selectBox = new SelectBox(skin);
@@ -106,9 +109,8 @@ public class GameRoom extends Game {
         window = new Window(screenControl.getName()+" Chat", skin);
         final TextField txtName = new TextField("", skin);
         txtName.setMessageText("Write a message...");
-        list = new List<String>(skin);
+        list = new List<Label>(skin);
         list.setItems(gamerooms.toArray());
-
         list.setSelected(list.getItems().size);
         scrollPane = new ScrollPane(list,skin);
         table = new Table(skin);
@@ -119,7 +121,7 @@ public class GameRoom extends Game {
         table.add(gameroomTable);
         //scrollPane.setFillParent(true);
         window.setMovable(false);
-        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight)-100);
+        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 100);
         window.row();
         window.add(txtName).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(nSHeight * 70 / nSHeight);
         gameroomTable.add(btnAddGameroom).expand();
@@ -130,6 +132,10 @@ public class GameRoom extends Game {
         table.setFillParent(true);
         stage.addActor(table);
         Timer timer = new Timer();
+
+        skin.getFont("default-font").scale(0.6f);
+        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
             @Override
             public void run () {
@@ -150,6 +156,7 @@ public class GameRoom extends Game {
                             gamerooms.clear();
                             for (int n = 0; n < results.length(); n++) {
                                 gamerooms.add(results.getString(n));
+
                             }
                             list.clear();
                             list.setItems(gamerooms.toArray());
@@ -184,7 +191,7 @@ public class GameRoom extends Game {
                     JSONObject json =new JSONObject();
                     JSONObject skills =new JSONObject();
                     skills.put("__op", "Add");
-                    skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString()+ ": "+txtName.getText())));
+                    skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + txtName.getText())));
                     json.put("players", skills);
                     httpRequest.setContent(json.toString());
                     Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener(){

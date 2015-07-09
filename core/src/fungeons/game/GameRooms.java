@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -129,10 +130,11 @@ public class GameRooms extends Game {
         final TextButton btnAdd = new TextButton("Add", skin);
 
         populateGmRms();
-        nSHeight = Gdx.graphics.getHeight();
-        nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin.getFont("default-font").scale(0.6f);
+        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         stage = new Stage(new ScreenViewport());
         list = new List(skin);
 
@@ -142,7 +144,7 @@ public class GameRooms extends Game {
 
         window = new Window("test", windowStyle);
         window.setMovable(true);
-        window.padTop(20);
+        window.padTop(nSHeight/16);
         selectBox.setPosition(100, 100);
         selectBox.setHeight(50f);
         selectBox.setWidth(100f);
@@ -280,7 +282,7 @@ public class GameRooms extends Game {
                         }
                     });
                     table.add(btnAddGameroom).height(100).width(100);
-                    table.row();
+                    table.row().height(nSHeight/16);
                     //scrollPane.setFillParent(true);
 
                     table.add(scrollPane).width(nSWidth).colspan(2);
