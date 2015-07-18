@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by Ben on 2015-06-23.
@@ -18,6 +19,8 @@ public class DeathThing {
     Sprite DThingSprite;
     Boolean bDead=false;
     float Time, VX=9f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
+    Array<Vector2> arTraps=new Array<Vector2>();
+    Vector2 CharVec = new Vector2(0,0);
     public void create(){
         Atlas = new TextureAtlas("Fungeons_2.pack");
         Region=Atlas.findRegion("Death thing");
@@ -27,7 +30,8 @@ public class DeathThing {
 
     }//for change direction, check the dir your going then one we hit a wall, check 90 degrees rotation, if thats a wall go the other way, if not then go that way
 
-    public void setVars(TiledMapTileLayer Col, Vector2 CharVec){
+    public void setVars(TiledMapTileLayer Col, Vector2 CharVec_){
+        CharVec.set(CharVec_);
         if(VX>0) {
             for (int i = 0; i <= 3; i++) {
                     if (Col.getCell((int) ((X / PPM) / 64) + i, (int) ((Y / PPM) / 64))//Collide on Left
@@ -36,10 +40,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -6*PPM;
+                                VY = -5*PPM;
                                 break;
                             } else {
-                                VY = 6*PPM;
+                                VY = 5*PPM;
                             }
                         }
                     }
@@ -54,10 +58,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -6*PPM;
+                                VY = -5*PPM;
                                 break;
                             } else {
-                                VY = 6*PPM;
+                                VY = 5*PPM;
                             }
                         }
                     }
@@ -116,10 +120,7 @@ public class DeathThing {
                 Y-=1;
             }
         }
-        if(CharVec.dst(X,Y)<=13.45){
-            bDead=true;
 
-        }
     }
     public Sprite getSprite(float time){
         Time=time;
@@ -130,7 +131,18 @@ public class DeathThing {
         DThingSprite.setPosition(X-DThingSprite.getWidth()/2,Y-DThingSprite.getHeight()/2);
         return(DThingSprite);
     }
-    public Boolean getDead(){
+    public Boolean getDead(Array<Vector2> arTraps_, float CharX, float CharY){
+        arTraps=arTraps_;
+        CharVec.set(CharX,CharY);
+        for(int i=0;i<arTraps.size;i++){
+            if(arTraps.get(i).dst(CharVec)<=10){
+                bDead=true;
+            }
+        }
+        if(CharVec.dst(X,Y)<=14.5){
+            bDead=true;
+
+        }
         return(bDead);
     }
     public float getX(){

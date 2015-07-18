@@ -13,12 +13,13 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 /**
  * Created by Ben on 2015-04-28.
  */
 public class Character extends Sprite {
-    int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth, nUp1Dn2;
+    int  nDeltaY=0, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth, nUp1Dn2;
     float fCharX=20, fCharY=5, ArrowTime, CharRotation,Time, GroundTime=0;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
@@ -109,12 +110,12 @@ public class Character extends Sprite {
         else if(nCharVX>0){
             nDir=2;
         }
-        if(nCharVY!=0){
+       /* if(nCharVY!=0){
             bCanJump=false;
-        }
+        }*/
 
         if(nDir==1){//left
-            if(bCanJump==true){
+            if(nCharVY==0  && bCanJump==true){
                 if(nCharVX!=0){
                     CurAnim=WalkL;
                 }
@@ -122,12 +123,12 @@ public class Character extends Sprite {
                     CurAnim=StandL;
                 }
             }
-            else{
+            else if(nCharVY!=0 || bCanJump==false){
                 CurAnim=JumpL;
             }
         }
         if(nDir==2){//right
-            if(bCanJump==true){
+            if(nCharVY==0  && bCanJump==true ){
                 if(nCharVX!=0){
                     CurAnim=WalkR;
                 }
@@ -135,7 +136,7 @@ public class Character extends Sprite {
                     CurAnim=StandR;
                 }
             }
-            else{
+            else if(nCharVY!=0 || bCanJump==false){
                 CurAnim=JumpR;
             }
         }
@@ -156,6 +157,8 @@ public class Character extends Sprite {
             CurAnim=DeathHat;
             nDir=0;
         }
+
+
 
 //Arrow Animation Stuff
 
@@ -193,12 +196,17 @@ public class Character extends Sprite {
 
         return(sChar);
     }
-    public Boolean getJump(float VY){
+    public Boolean getJump(float VY, Button Jump){
+
         if(VY<0.1 && VY>-0.1){
             GroundTime+=Gdx.graphics.getDeltaTime();
         }
         if(VY<-0.1 || VY>0.1){
             GroundTime=0;
+            nDeltaY+=VY;//figured we could use this if structure for multiple things lol
+        }
+        else{
+            nDeltaY=0;
         }
 
         if(VY>0.5){
@@ -212,7 +220,10 @@ public class Character extends Sprite {
                 bCanJump=true;
             }
         }
-        else{
+        else if(nCharVY!=0 && Jump.isPressed()==false){
+            bCanJump=false;
+        }
+        if(nDeltaY>=40){
             bCanJump=false;
         }
 

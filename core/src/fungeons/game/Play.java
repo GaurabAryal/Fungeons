@@ -52,7 +52,7 @@ public class Play extends Game {
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
     float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
-    float fCharX =20,fCharY=5;
+    float fCharX =20,fCharY=5, DeltaY;
     int nCharVX, nCharVY;
     int nDir=2;
 
@@ -80,9 +80,13 @@ public class Play extends Game {
     Stage stage;
     Boolean bCanJump=true, bLight=true, bArrowShot=true, bZoomOut, bDead;
 
+    Sprite sSaw, sFire, sSpike, sSpikeBlock;
+
     Character character = new Character();
     Platform platform = new Platform();
     DeathThing death = new DeathThing();
+    Trap_Buzzsaw saw = new Trap_Buzzsaw();
+    Array<Vector2> arTraps = new Array<Vector2>();
     ScreenControl screenControl;
 
 
@@ -186,6 +190,7 @@ public class Play extends Game {
                 }
             }
         }
+        sSaw=saw.getSprite(Atlas);
 
         // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
         // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
@@ -216,15 +221,13 @@ public class Play extends Game {
         MapRenderer.render();
         b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
-        System.out.println(Time);
-
         if(screenControl.nScreen==3) {
             Gdx.input.setInputProcessor(stage);//uesr changes the control of the start menu to this when screens change
         }
 
         //char stuff
-
-        bDead=death.getDead();
+        arTraps=saw.getTrapArray();
+        bDead=death.getDead(arTraps,fCharX,fCharY+1);
 
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
@@ -241,11 +244,10 @@ public class Play extends Game {
 
         CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
-        bCanJump=character.getJump(CharBody.getLinearVelocity().y);
+        bCanJump=character.getJump(CharBody.getLinearVelocity().y, btnJump);
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,35);
+            CharBody.setLinearVelocity(CurMove.x,15);
             CurMove.set(CharBody.getLinearVelocity());
-            bCanJump=false;
             //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }
 
@@ -408,6 +410,14 @@ public class Play extends Game {
         sDThing=death.getSprite(Time);
         sDThing.draw(batch);
 
+        if(bZoomOut==false) {
+            saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+        }
+        for(int i=0;i<arTraps.size;i++){
+            sSaw.setPosition(arTraps.get(i).x-sSaw.getWidth()/2,arTraps.get(i).y-sSaw.getHeight()/2);
+            sSaw.setRotation(sSaw.getRotation()-40);
+            sSaw.draw(batch);
+        }
         batch.end();
         for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
             world.step(1f/60f, 8, 3);//moves the box2d world

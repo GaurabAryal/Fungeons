@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -109,7 +108,7 @@ public class GameRoom extends Game {
         window = new Window(screenControl.getName()+" Chat", skin);
         final TextField txtName = new TextField("", skin);
         txtName.setMessageText("Write a message...");
-        list = new List<Label>(skin);
+        list = new List<String>(skin);
         list.setItems(gamerooms.toArray());
         list.setSelected(list.getItems().size);
         scrollPane = new ScrollPane(list,skin);
