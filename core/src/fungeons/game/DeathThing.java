@@ -145,11 +145,5 @@ public class DeathThing {
         }
         return(bDead);
     }
-    public float getX(){
-        return(X);
-    }
-    public float getY(){
-        return(Y);
-    }
 }
 
