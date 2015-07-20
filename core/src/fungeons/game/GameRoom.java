@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -125,7 +126,7 @@ public class GameRoom extends Game {
         table.add(gameroomTable).top();
         //scrollPane.setFillParent(true);
         window.setMovable(false);
-        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 100);
+        window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 200);
         window.row();
         window.add(txtName).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(nSHeight * 70 / nSHeight);
         gameroomTable.add(btnAddGameroom).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 3) / nSHeight);
@@ -139,6 +140,9 @@ public class GameRoom extends Game {
         stage.addActor(table);
         addPlayer();
         Timer timer = new Timer();
+        System.out.print(nSHeight + " " + nSWidth + " "+nSWidth / 1794 * 1.0f);
+        skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
+        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() { //Call the server to update messages every 5 seconds.
