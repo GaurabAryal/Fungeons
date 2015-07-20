@@ -246,7 +246,7 @@ public class Play extends Game {
 
         bCanJump=character.getJump(CharBody.getLinearVelocity().y, btnJump);
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,15);
+            CharBody.setLinearVelocity(CurMove.x,14);
             CurMove.set(CharBody.getLinearVelocity());
             //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }

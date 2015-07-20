@@ -127,7 +127,7 @@ public class Trap_Buzzsaw {
         TextureRegion[][] Saws=Region.split(Region.getRegionWidth()/2,Region.getRegionHeight());
 
         sSaw=new Sprite(Saws[0][0]);
-        sSaw.setSize(sSaw.getWidth()*PPM*2,sSaw.getHeight()*PPM*2);
+        sSaw.setSize(sSaw.getWidth()*PPM*1.8f,sSaw.getHeight()*PPM*1.8f);
         sSaw.setOrigin(sSaw.getWidth()/2,sSaw.getHeight()/2);
 
         return(sSaw);
