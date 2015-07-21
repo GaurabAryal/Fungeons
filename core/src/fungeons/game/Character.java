@@ -223,7 +223,7 @@ public class Character extends Sprite {
         else if(nCharVY!=0 && Jump.isPressed()==false){
             bCanJump=false;
         }
-        if(nDeltaY>=40){
+        if(nDeltaY>=60){
             bCanJump=false;
         }
 

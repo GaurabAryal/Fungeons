@@ -40,10 +40,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -5*PPM;
+                                VY = -4*PPM;
                                 break;
                             } else {
-                                VY = 5*PPM;
+                                VY = 4*PPM;
                             }
                         }
                     }
@@ -58,10 +58,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -5*PPM;
+                                VY = -4*PPM;
                                 break;
                             } else {
-                                VY = 5*PPM;
+                                VY = 4*PPM;
                             }
                         }
                     }
@@ -76,10 +76,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -9 * PPM;
+                                VX = -8 * PPM;
                                 break;
                             } else {
-                                VX = 9 * PPM;
+                                VX = 8 * PPM;
                             }
                         }
                     }
@@ -94,10 +94,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -9 * PPM;
+                                VX = -8 * PPM;
                                 break;
                             } else {
-                                VX = 9 * PPM;
+                                VX = 8 * PPM;
                             }
                         }
                     }
@@ -135,7 +135,7 @@ public class DeathThing {
         arTraps=arTraps_;
         CharVec.set(CharX,CharY);
         for(int i=0;i<arTraps.size;i++){
-            if(arTraps.get(i).dst(CharVec)<=10){
+            if(arTraps.get(i).dst(CharVec)<=8.9){
                 bDead=true;
             }
         }
