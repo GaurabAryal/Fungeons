@@ -55,14 +55,14 @@ public class GameRoom extends Game {
     ArrayList<String> gamerooms = new ArrayList<String>();
     ArrayList<String> players = new ArrayList<String>();
     TextButton btnRefresh;
-    boolean fkboi = false;
+    boolean bCanCreate = false;
 
     JSONObject resultObject;
 
     ScreenControl screenControl;
 
     public void render() {
-        if (!fkboi) {
+        if (!bCanCreate) {
             create();
         }
         Gdx.input.setInputProcessor(stage);
@@ -96,7 +96,7 @@ public class GameRoom extends Game {
 
     @Override
     public void create() {
-        fkboi = true;
+        bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();

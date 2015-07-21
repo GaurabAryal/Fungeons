@@ -7,6 +7,8 @@ import com.badlogic.gdx.Game;
  */
 public class ScreenControl extends Game {// basically holds an int
     int nScreen;
+    boolean Owner;
+    String Name = "";
     @Override
     public void create() {
         nScreen = 1;
@@ -14,11 +16,15 @@ public class ScreenControl extends Game {// basically holds an int
     public void setnScreen(int nScreen_){
         nScreen = nScreen_;
     }
-    String Name = "";
-    public void setName (String sName){
+
+    public void setName (String sName, boolean bOwner){
         Name = sName;
+        Owner = bOwner;
     }
     public String getName(){
         return Name;
+    }
+    public boolean getOwner(){
+        return Owner;
     }
 }

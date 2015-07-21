@@ -3,10 +3,8 @@ package fungeons.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -131,17 +129,16 @@ public class GameRooms extends Game {
         populateGmRms();
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-        skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
-        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         stage = new Stage(new ScreenViewport());
         list = new List(skin);
 
         gameroomTable = new Table(skin);
         gameTable = new Table(skin);
-        windowStyle = new Window.WindowStyle(new BitmapFont(), Color.WHITE, skin.newDrawable("white", Color.BLACK));
 
-        window = new Window("test", windowStyle);
+        window = new Window("test", skin);
+        skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
+        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         window.setMovable(true);
         window.padTop(nSHeight/16);
         selectBox.setPosition(100, 100);
@@ -162,6 +159,8 @@ public class GameRooms extends Game {
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
+                System.out.println("Added");
+                window.setVisible(true);
                 stage.addActor(window);
             }
         });
@@ -179,8 +178,9 @@ public class GameRooms extends Game {
                 pO.put("map", selectBox.getSelectedIndex());
                 pO.put("isJoinable", true);
                 pO.saveInBackground();
-                gamerooms.add(txtName.getText().toString());
                 window.remove();
+                screenControl.setName(txtName.getText(), true);
+                screenControl.setnScreen(4);
             }
         });
         btnExit.addListener(new ChangeListener() {
@@ -195,7 +195,7 @@ public class GameRooms extends Game {
         btnJoin.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
-                screenControl.setName(list.getSelected().toString());
+                screenControl.setName(list.getSelected().toString(),false);
                 screenControl.setnScreen(4);
             }
         });
