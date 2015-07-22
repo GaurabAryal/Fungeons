@@ -125,6 +125,7 @@ public class GameRooms extends Game {
         btnExit = new TextButton("Exit",skin);
         btnJoin = new TextButton ("Join",skin);
         final TextButton btnAdd = new TextButton("Add", skin);
+        final TextButton btnExitAdd = new TextButton("Exit", skin);
 
         populateGmRms();
         sbBatch = new SpriteBatch();
@@ -145,22 +146,25 @@ public class GameRooms extends Game {
         selectBox.setHeight(50f);
         selectBox.setWidth(100f);
         selectBox.setSelected("Fun City");
-        gameroomTable.add(nameLabel);
-        gameroomTable.add(txtName).width(100);
-        gameroomTable.row();
-        gameroomTable.add(mapLabel);
-        gameroomTable.add(selectBox);
-        gameroomTable.row();
-        gameroomTable.add(btnAdd).height(100).width(100);
-        gameroomTable.setHeight(window.getHeight());
-        gameroomTable.setWidth(window.getWidth());
-        gameroomTable.setFillParent(true);
-        window.addActor(gameroomTable);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
                 System.out.println("Added");
+                window.setModal(true);
                 window.setVisible(true);
+                gameroomTable.setPosition(0,0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
+                gameroomTable.add(nameLabel);
+                gameroomTable.add(txtName).width(100);
+                gameroomTable.row();
+                gameroomTable.add(mapLabel);
+                gameroomTable.add(selectBox);
+                gameroomTable.row();
+                gameroomTable.add(btnAdd).height(100).width(100);
+                gameroomTable.add(btnExitAdd).height(100).width(100);
+                gameroomTable.setHeight(window.getHeight());
+                gameroomTable.setWidth(window.getWidth());
+                gameroomTable.setFillParent(true);
+                window.addActor(gameroomTable);
                 stage.addActor(window);
             }
         });
@@ -183,6 +187,16 @@ public class GameRooms extends Game {
                 screenControl.setnScreen(4);
             }
         });
+
+        btnExitAdd.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
+               window.clearChildren();
+               window.setVisible(false);
+               window.remove();
+            }
+        });
+
         btnExit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//if you don't want to join a game, just exit it
