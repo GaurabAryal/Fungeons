@@ -6,6 +6,7 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -49,7 +51,7 @@ public class GameRoom extends Game {
     int pos = 0;
     Table table;
     JSONObject jsonObject;
-    TextButton btnAddGameroom;
+    TextButton btnStart;
     TextButton btnExit;
     TextButton btnJoin;
     ArrayList<String> gamerooms = new ArrayList<String>();
@@ -102,7 +104,7 @@ public class GameRoom extends Game {
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-        btnAddGameroom = new TextButton("START", skin);
+        btnStart = new TextButton("START", skin);
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
@@ -129,7 +131,7 @@ public class GameRoom extends Game {
         window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 200);
         window.row();
         window.add(txtName).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(nSHeight * 70 / nSHeight);
-        gameroomTable.add(btnAddGameroom).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 3) / nSHeight);
+        gameroomTable.add(btnStart).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 3) / nSHeight);
         gameroomTable.row();
         gameroomTable.add(selectBox).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 7) / nSHeight);
         gameroomTable.row();
@@ -262,6 +264,38 @@ public class GameRoom extends Game {
 
                     textField.setText("");
                 }
+            }
+        });
+        btnStart.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
+            if (screenControl.Owner){
+                final Net.HttpRequest httpRequest;
+                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/1GTPRERceY");
+                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                JSONObject json = new JSONObject();
+                json.put("start", true);
+                httpRequest.setContent(json.toString());
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        System.out.println(httpResponse.toString());
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+            }
             }
         });
     }

@@ -181,6 +181,7 @@ public class GameRooms extends Game {
                 pO.put("Name", txtName.getText());
                 pO.put("map", selectBox.getSelectedIndex());
                 pO.put("isJoinable", true);
+                pO.put("start", false);
                 pO.saveInBackground();
                 window.remove();
                 screenControl.setName(txtName.getText(), true);
