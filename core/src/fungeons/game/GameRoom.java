@@ -314,8 +314,6 @@ public class GameRoom extends Game {
         Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
-
-                System.out.println("wtf");
                 try {
 
                     jsonObject = new JSONObject(httpResponse.getResultAsString());
