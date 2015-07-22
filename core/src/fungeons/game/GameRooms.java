@@ -28,7 +28,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pablo127.almonds.Parse;
+import pablo127.almonds.ParseException;
 import pablo127.almonds.ParseObject;
+import pablo127.almonds.SaveCallback;
 
 
 public class GameRooms extends Game {
@@ -183,9 +185,19 @@ public class GameRooms extends Game {
                 pO.put("isJoinable", true);
                 pO.put("start", false);
                 pO.saveInBackground();
-                window.remove();
-                screenControl.setName(txtName.getText(), true);
-                screenControl.setnScreen(4);
+
+                ParseObject pO2 = new ParseObject("chat");
+                pO2.put("game",txtName.getText());
+                pO2.save(new SaveCallback() {
+
+                    @Override
+                    public void done(ParseException e) {
+                        window.remove();
+                        screenControl.setName(txtName.getText(),true);
+                        screenControl.setnScreen(4);
+                    }
+                });
+
             }
         });
 
@@ -227,7 +239,6 @@ public class GameRooms extends Game {
     }
 
     public void populateGmRms() {//Grab all the gamerooms from the server
-
         String requestContent = null;
         final Net.HttpRequest httpRequest;
         httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
@@ -294,7 +305,7 @@ public class GameRooms extends Game {
                         }
                     });
                     table.add(btnAddGameroom).height(100).width(100);
-                    table.row().height(nSHeight/16);
+                    table.row().height(nSHeight);
                     //scrollPane.setFillParent(true);
 
                     table.add(scrollPane).width(nSWidth).colspan(2);
