@@ -80,7 +80,6 @@ public class GameRooms extends Game {
 
     @Override
     public void pause() {
-
     }
 
     @Override

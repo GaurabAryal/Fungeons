@@ -84,9 +84,34 @@ public class GameRoom extends Game {
 
     @Override
     public void pause() {
+        final Net.HttpRequest httpRequest;
+        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+        httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
+        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+        JSONObject json = new JSONObject();
+        JSONObject skills = new JSONObject();
+        skills.put("__op", "Remove");
+        skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() )));
+        json.put("players", skills);
+        httpRequest.setContent(json.toString());
+        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                screenControl.setnScreen(1);
+            }
 
+            @Override
+            public void failed(Throwable t) {
+                System.out.println(t.toString());
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
     }
-
     @Override
     public void resume() {
 
@@ -94,11 +119,13 @@ public class GameRoom extends Game {
 
     @Override
     public void dispose() {
-
+        System.out.println("damn");
     }
 
     @Override
     public void create() {
+
+        Gdx.app.log("err","msg");
         chatObjectId();//grab chat obj id right away
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
@@ -299,7 +326,7 @@ public class GameRoom extends Game {
             }
         });
     }
-    public void addPlayer(){//Add new player to the gameroom if they have not been added.
+    public void addPlayer(){//Honestly needs a lot of clean up LOL. Dont need to add/remove players if the size is the same lmao.
 
         final String requestContent = null;
         final Net.HttpRequest httpRequest;

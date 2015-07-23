@@ -64,5 +64,11 @@ public class main extends Game {
     public void dispose(){
 
     }
+    @Override
+    public void pause(){
+        if (screenControl.nScreen==4){
+            gameRoom.pause();
+        }
+    }
 
 }
