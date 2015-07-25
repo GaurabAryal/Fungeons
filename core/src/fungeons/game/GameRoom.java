@@ -254,6 +254,42 @@ public class GameRoom extends Game {
 
             }
         }, 1, 5);
+        Timer.Task start = timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {//Check for start every sec
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest;
+                httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
+                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                httpRequest.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
+                            jsonObject = new JSONObject(httpResponse.getResultAsString());
+
+                            System.out.println(jsonObject.get("start").toString());
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+
+            }
+        }, 1, 1);
         txtName.setTextFieldListener(new TextField.TextFieldListener() {
             public void keyTyped(TextField textField, char key) {
                 if (key == '\n') {//when you press enter, update the chat messages list view and check the server if there have been new pushes

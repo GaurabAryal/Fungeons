@@ -25,15 +25,22 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 
+import java.text.DecimalFormat;
+
 public class Play extends Game {
     OrthographicCamera camera;
     Vector2 gravity=new Vector2(0,-9.8f), CurMove=new Vector2(), ArrowMove=new Vector2();
     World world = new World(gravity, false);
+
+    DecimalFormat twoDec = new DecimalFormat("#0.00");
+    Label timeLabel;
+
 
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
@@ -105,6 +112,15 @@ public class Play extends Game {
         stage=new Stage();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
         batch= new SpriteBatch();
+
+        /*****Scoreeeee*******/
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        timeLabel = new Label("", skin);
+        timeLabel.setPosition(0,nScreenHeight-10);
+        stage.addActor(timeLabel);
+
+
+
 
         TextureAtlas.AtlasRegion Region;
         int RegionHeight, RegionWidth;
@@ -275,13 +291,13 @@ public class Play extends Game {
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
-
-
+        Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         if(bDead==true){
          //   world.destroyBody(CharBody);
            // world.destroyBody(CharBody2);
             //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
-            CharBody.setLinearVelocity(0,0);
+
+            CharBody.setLinearVelocity(0, 0);
             bArrowShot=true;
             stage.clear();
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
