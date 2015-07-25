@@ -270,8 +270,9 @@ public class GameRoom extends Game {
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
                             jsonObject = new JSONObject(httpResponse.getResultAsString());
-
-                            System.out.println(jsonObject.get("start").toString());
+                            if (jsonObject.get("start").equals("true")){
+                                screenControl.setnScreen(3);
+                            }
                         } catch (Exception e) {
                         }
                     }
