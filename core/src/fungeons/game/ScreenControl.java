@@ -8,6 +8,7 @@ import com.badlogic.gdx.Game;
 public class ScreenControl extends Game {// basically holds an int
     int nScreen;
     boolean Owner;
+    String chatId ="";
     String Name = "";
     @Override
     public void create() {
@@ -15,11 +16,15 @@ public class ScreenControl extends Game {// basically holds an int
     }
     public void setnScreen(int nScreen_){
         nScreen = nScreen_;
+        System.out.println("welp");
     }
 
     public void setName (String sName, boolean bOwner){
         Name = sName;
         Owner = bOwner;
+    }
+    public void setChatId(String _chatId){
+        chatId = _chatId;
     }
     public String getName(){
         return Name;
@@ -27,4 +32,8 @@ public class ScreenControl extends Game {// basically holds an int
     public boolean getOwner(){
         return Owner;
     }
+    public String getChatId(){
+        return chatId;
+    }
+
 }

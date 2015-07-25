@@ -3,6 +3,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -31,7 +32,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
+import java.util.Arrays;
+
+import pablo127.almonds.Parse;
+import pablo127.almonds.ParseUser;
 
 public class Play extends Game {
     OrthographicCamera camera;
@@ -291,7 +299,8 @@ public class Play extends Game {
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
-        Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
+        //Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
+
         if(bDead==true){
          //   world.destroyBody(CharBody);
            // world.destroyBody(CharBody2);
@@ -301,6 +310,41 @@ public class Play extends Game {
             bArrowShot=true;
             stage.clear();
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
+
+            /*****************SERVER STUFF IF ONLINE****************/
+            //Basically checks if chat id has some value to it, if it does then we know we came from a gameroom. be sure to reset it after ded
+            //Upload scoresssssss, beast. basically sketch way. array with player name and then their score. so it wont be in order but when displaying, it'll be alright
+            //less of a hassle
+            if (!screenControl.getChatId().isEmpty()){
+                System.out.println("here");
+                final Net.HttpRequest httpRequest;
+                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+screenControl.getChatId());
+                screenControl.setChatId("");
+                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                JSONObject json = new JSONObject();
+                JSONObject skills = new JSONObject();
+                skills.put("__op", "Add");
+                skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + twoDec.format(Time))));
+                json.put("scores", skills);
+                httpRequest.setContent(json.toString());
+                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+            }
         }
 
 

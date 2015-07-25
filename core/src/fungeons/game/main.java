@@ -32,7 +32,7 @@ public class main extends Game {
         gameRooms.create();
         gameRooms.setScreenControl(screenControl);
         gameRoom = new GameRoom();
-       // gameRoom.create();
+      // gameRoom.create();
         gameRoom.setScreenControl(screenControl);
         play = new Play();
         play.create();

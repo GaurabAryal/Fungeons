@@ -119,7 +119,7 @@ public class GameRoom extends Game {
 
     @Override
     public void dispose() {
-        System.out.println("damn");
+
     }
 
     @Override
@@ -169,7 +169,7 @@ public class GameRoom extends Game {
         //table.debugTable();
         table.setFillParent(true);
         stage.addActor(table);
-        Timer timer = new Timer();
+        final Timer timer = new Timer();
         skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
         skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
@@ -269,9 +269,14 @@ public class GameRoom extends Game {
                     @Override
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
+
                             jsonObject = new JSONObject(httpResponse.getResultAsString());
-                            if (jsonObject.get("start").equals("true")){
+
+                            if (jsonObject.get("start").toString().equals("true")){
+                                screenControl.setChatId(chatObjId);
                                 screenControl.setnScreen(3);
+
+                                timer.stop();
                             }
                         } catch (Exception e) {
                         }
