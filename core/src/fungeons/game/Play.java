@@ -48,7 +48,7 @@ public class Play extends Game {
 
     DecimalFormat twoDec = new DecimalFormat("#0.00");
     Label timeLabel;
-
+    String chatId;
 
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
@@ -124,9 +124,8 @@ public class Play extends Game {
         /*****Scoreeeee*******/
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         timeLabel = new Label("", skin);
-        timeLabel.setPosition(0,nScreenHeight-10);
+        timeLabel.setPosition(0, nScreenHeight - 10);
         stage.addActor(timeLabel);
-
 
 
 
@@ -316,10 +315,40 @@ public class Play extends Game {
             //Upload scoresssssss, beast. basically sketch way. array with player name and then their score. so it wont be in order but when displaying, it'll be alright
             //less of a hassle
             if (!screenControl.getChatId().isEmpty()){
-                System.out.println("here");
+                chatId = screenControl.getChatId();
+                // check if you are the last one, if you are, you need to remove the gameroom.
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest2;
+                httpRequest2 = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest2.setUrl("https://api.parse.com/1/classes/chat/"+chatId);
+                httpRequest2.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest2.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                httpRequest2.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest2, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            System.out.println(jsonObject.toString());
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
                 final Net.HttpRequest httpRequest;
                 httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+screenControl.getChatId());
+                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
                 screenControl.setChatId("");
                 httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
                 httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
@@ -344,6 +373,8 @@ public class Play extends Game {
 
                     }
                 });
+
+
             }
         }
 
