@@ -330,7 +330,6 @@ public class Play extends Game {
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
                             JSONObject jsonObject = new JSONObject(httpResponse.getResultAsString());
-                            System.out.println(jsonObject.toString());
                         } catch (Exception e) {
                         }
                     }
