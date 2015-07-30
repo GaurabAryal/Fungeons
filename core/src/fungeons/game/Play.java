@@ -330,6 +330,34 @@ public class Play extends Game {
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
                             JSONObject jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            if (jsonObject.getString("scores").length()>=3){
+                                final String requestContent = null;
+                                final Net.HttpRequest httpRequest;
+                                httpRequest = new Net.HttpRequest(Net.HttpMethods.DELETE);
+                                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
+                                screenControl.setChatId("");
+                                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                                httpRequest.setContent(requestContent);
+                                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                    @Override
+                                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                    }
+
+                                    @Override
+                                    public void failed(Throwable t) {
+                                        System.out.println(t.toString());
+                                    }
+
+                                    @Override
+                                    public void cancelled() {
+
+                                    }
+                                });
+
+                            }
+                            System.out.println(jsonObject.get("scores"));
                         } catch (Exception e) {
                         }
                     }
@@ -345,7 +373,7 @@ public class Play extends Game {
                     }
                 });
 
-                final Net.HttpRequest httpRequest;
+                                final Net.HttpRequest httpRequest;
                 httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
                 httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
                 screenControl.setChatId("");
