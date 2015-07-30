@@ -130,8 +130,6 @@ public class MainMenu extends Game {
                                 if (u.getUsername()!=null) {
                                     exitDialog.text("Welcome, " + u.getUsername() + "!");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
-
-                                    System.out.println(screenControl.nScreen);
                                 }
                             }
                         }

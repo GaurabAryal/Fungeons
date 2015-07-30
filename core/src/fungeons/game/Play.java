@@ -357,7 +357,63 @@ public class Play extends Game {
                                 });
 
                             }
-                            System.out.println(jsonObject.get("scores"));
+                            else{
+                                //add scores to the chat
+                                final Net.HttpRequest httpRequest;
+                                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
+                                screenControl.setChatId("");
+                                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                                JSONObject json = new JSONObject();
+                                JSONObject skills = new JSONObject();
+                                skills.put("__op", "Add");
+                                skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + twoDec.format(Time))));
+                                json.put("scores", skills);
+                                httpRequest.setContent(json.toString());
+                                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                    @Override
+                                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                        final Net.HttpRequest httpRequest;
+                                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                                        httpRequest.setUrl("https://api.parse.com/1/classes/_User/" + ParseUser.getCurrentUser().getObjectId());
+                                        screenControl.setChatId("");
+                                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                                        JSONObject json = new JSONObject();
+                                        JSONObject skills = new JSONObject();
+                                        skills.put("__op", "Add");
+                                        skills.put("objects", new JSONArray(Arrays.asList( "Gamename" + ": " + twoDec.format(Time))));
+                                        json.put("games", skills);
+                                        httpRequest.setContent(json.toString());
+                                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                            @Override
+                                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                            }
+
+                                            @Override
+                                            public void failed(Throwable t) {
+                                                System.out.println(t.toString());
+                                            }
+
+                                            @Override
+                                            public void cancelled() {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void failed(Throwable t) {
+                                        System.out.println(t.toString());
+                                    }
+
+                                    @Override
+                                    public void cancelled() {
+
+                                    }
+                                });
+                            }
                         } catch (Exception e) {
                         }
                     }
@@ -373,33 +429,6 @@ public class Play extends Game {
                     }
                 });
 
-                                final Net.HttpRequest httpRequest;
-                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
-                screenControl.setChatId("");
-                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-                JSONObject json = new JSONObject();
-                JSONObject skills = new JSONObject();
-                skills.put("__op", "Add");
-                skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + twoDec.format(Time))));
-                json.put("scores", skills);
-                httpRequest.setContent(json.toString());
-                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-                    @Override
-                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                    }
-
-                    @Override
-                    public void failed(Throwable t) {
-                        System.out.println(t.toString());
-                    }
-
-                    @Override
-                    public void cancelled() {
-
-                    }
-                });
 
 
             }
