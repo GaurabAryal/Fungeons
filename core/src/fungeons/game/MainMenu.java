@@ -53,7 +53,7 @@ public class MainMenu extends Game {
     }
     @Override
     public void create(){
-        Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");
+        Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");//initialize parse with our keys
         batch = new SpriteBatch();
         LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
         LoginSong.setVolume(1f);
@@ -120,17 +120,17 @@ public class MainMenu extends Game {
         //http://stackoverflow.com/questions/21488311/libgdx-how-to-create-a-button
         button.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
                // screenControl.setnScreen(2);
                 try {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
                                 ParseUser u = ParseUser.getCurrentUser();
-                                exitDialog.text("Welcome, " + u.getUsername() + "!");
-                                exitDialog.show(stage);
-
-                                System.out.println(screenControl.nScreen);
+                                if (u.getUsername()!=null) {
+                                    exitDialog.text("Welcome, " + u.getUsername() + "!");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                    exitDialog.show(stage);
+                                }
                             }
                         }
                     });
@@ -141,7 +141,7 @@ public class MainMenu extends Game {
         });
         btnRegister.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) { // Register bt
                 ParseUser user = new ParseUser();
                 user.setUsername(txtUsername.getText());
                 user.setPassword(txtPassword.getText());

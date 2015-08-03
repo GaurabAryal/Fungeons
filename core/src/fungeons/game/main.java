@@ -19,7 +19,6 @@ public class main extends Game {
     GameRooms gameRooms;
     GameRoom gameRoom;
     Play play;
-    Query query;
     int nScreen = 1;
     ScreenControl screenControl;
     @Override
@@ -33,7 +32,7 @@ public class main extends Game {
         gameRooms.create();
         gameRooms.setScreenControl(screenControl);
         gameRoom = new GameRoom();
-       // gameRoom.create();
+      // gameRoom.create();
         gameRoom.setScreenControl(screenControl);
         play = new Play();
         play.create();
@@ -64,6 +63,12 @@ public class main extends Game {
     @Override
     public void dispose(){
 
+    }
+    @Override
+    public void pause(){
+        if (screenControl.nScreen==4){
+            gameRoom.pause();
+        }
     }
 
 }

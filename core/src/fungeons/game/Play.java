@@ -3,6 +3,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -25,15 +26,29 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.Arrays;
+
+import pablo127.almonds.Parse;
+import pablo127.almonds.ParseUser;
+
 public class Play extends Game {
     OrthographicCamera camera;
     Vector2 gravity=new Vector2(0,-9.8f), CurMove=new Vector2(), ArrowMove=new Vector2();
     World world = new World(gravity, false);
+
+    DecimalFormat twoDec = new DecimalFormat("#0.00");
+    Label timeLabel;
+    String chatId;
 
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
@@ -105,6 +120,14 @@ public class Play extends Game {
         stage=new Stage();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
         batch= new SpriteBatch();
+
+        /*****Scoreeeee*******/
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        timeLabel = new Label("", skin);
+        timeLabel.setPosition(0, nScreenHeight - 10);
+        stage.addActor(timeLabel);
+
+
 
         TextureAtlas.AtlasRegion Region;
         int RegionHeight, RegionWidth;
@@ -275,16 +298,140 @@ public class Play extends Game {
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
-
+        //Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
 
         if(bDead==true){
          //   world.destroyBody(CharBody);
            // world.destroyBody(CharBody2);
             //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
-            CharBody.setLinearVelocity(0,0);
+
+            CharBody.setLinearVelocity(0, 0);
             bArrowShot=true;
             stage.clear();
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
+
+            /*****************SERVER STUFF IF ONLINE****************/
+            //Basically checks if chat id has some value to it, if it does then we know we came from a gameroom. be sure to reset it after ded
+            //Upload scoresssssss, beast. basically sketch way. array with player name and then their score. so it wont be in order but when displaying, it'll be alright
+            //less of a hassle
+            if (!screenControl.getChatId().isEmpty()){
+                chatId = screenControl.getChatId();
+                // check if you are the last one, if you are, you need to remove the gameroom.
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest2;
+                httpRequest2 = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest2.setUrl("https://api.parse.com/1/classes/chat/"+chatId);
+                httpRequest2.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest2.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                httpRequest2.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest2, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            if (jsonObject.getString("scores").length()>=3){
+                                final String requestContent = null;
+                                final Net.HttpRequest httpRequest;
+                                httpRequest = new Net.HttpRequest(Net.HttpMethods.DELETE);
+                                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
+                                screenControl.setChatId("");
+                                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+
+                                httpRequest.setContent(requestContent);
+                                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                    @Override
+                                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                    }
+
+                                    @Override
+                                    public void failed(Throwable t) {
+                                        System.out.println(t.toString());
+                                    }
+
+                                    @Override
+                                    public void cancelled() {
+
+                                    }
+                                });
+
+                            }
+                            else{
+                                //add scores to the chat
+                                final Net.HttpRequest httpRequest;
+                                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                                httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
+                                screenControl.setChatId("");
+                                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                                JSONObject json = new JSONObject();
+                                JSONObject skills = new JSONObject();
+                                skills.put("__op", "Add");
+                                skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() + ": " + twoDec.format(Time))));
+                                json.put("scores", skills);
+                                httpRequest.setContent(json.toString());
+                                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                    @Override
+                                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                        final Net.HttpRequest httpRequest;
+                                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                                        httpRequest.setUrl("https://api.parse.com/1/classes/_User/" + ParseUser.getCurrentUser().getObjectId());
+                                        screenControl.setChatId("");
+                                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                                        JSONObject json = new JSONObject();
+                                        JSONObject skills = new JSONObject();
+                                        skills.put("__op", "Add");
+                                        skills.put("objects", new JSONArray(Arrays.asList( "Gamename" + ": " + twoDec.format(Time))));
+                                        json.put("games", skills);
+                                        httpRequest.setContent(json.toString());
+                                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                                            @Override
+                                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                            }
+
+                                            @Override
+                                            public void failed(Throwable t) {
+                                                System.out.println(t.toString());
+                                            }
+
+                                            @Override
+                                            public void cancelled() {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void failed(Throwable t) {
+                                        System.out.println(t.toString());
+                                    }
+
+                                    @Override
+                                    public void cancelled() {
+
+                                    }
+                                });
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+
+
+            }
         }
 
 

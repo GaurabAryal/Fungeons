@@ -3,10 +3,8 @@ package fungeons.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -30,7 +28,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pablo127.almonds.Parse;
+import pablo127.almonds.ParseException;
 import pablo127.almonds.ParseObject;
+import pablo127.almonds.SaveCallback;
 
 
 public class GameRooms extends Game {
@@ -40,7 +40,6 @@ public class GameRooms extends Game {
     Skin skin;
     Stage stage;
     int nSHeight, nSWidth;
-    Query q = new Query();
     ScrollPane scrollPane;
     List list;
     Table gameroomTable;
@@ -81,7 +80,6 @@ public class GameRooms extends Game {
 
     @Override
     public void pause() {
-
     }
 
     @Override
@@ -128,65 +126,92 @@ public class GameRooms extends Game {
         btnExit = new TextButton("Exit",skin);
         btnJoin = new TextButton ("Join",skin);
         final TextButton btnAdd = new TextButton("Add", skin);
+        final TextButton btnExitAdd = new TextButton("Exit", skin);
 
         populateGmRms();
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-        skin.getFont("default-font").scale(0.6f);
-        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         stage = new Stage(new ScreenViewport());
         list = new List(skin);
 
         gameroomTable = new Table(skin);
         gameTable = new Table(skin);
-        windowStyle = new Window.WindowStyle(new BitmapFont(), Color.WHITE, skin.newDrawable("white", Color.BLACK));
 
-        window = new Window("test", windowStyle);
+        window = new Window("test", skin);
+        skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
+        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         window.setMovable(true);
         window.padTop(nSHeight/16);
         selectBox.setPosition(100, 100);
         selectBox.setHeight(50f);
         selectBox.setWidth(100f);
         selectBox.setSelected("Fun City");
-        gameroomTable.add(nameLabel);
-        gameroomTable.add(txtName).width(100);
-        gameroomTable.row();
-        gameroomTable.add(mapLabel);
-        gameroomTable.add(selectBox);
-        gameroomTable.row();
-        gameroomTable.add(btnAdd).height(100).width(100);
-        gameroomTable.setHeight(window.getHeight());
-        gameroomTable.setWidth(window.getWidth());
-        gameroomTable.setFillParent(true);
-        window.addActor(gameroomTable);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
+                System.out.println("Added");
+                window.setModal(true);
+                window.setVisible(true);
+                gameroomTable.setPosition(0,0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
+                gameroomTable.add(nameLabel);
+                gameroomTable.add(txtName).width(100);
+                gameroomTable.row();
+                gameroomTable.add(mapLabel);
+                gameroomTable.add(selectBox);
+                gameroomTable.row();
+                gameroomTable.add(btnAdd).height(100).width(100);
+                gameroomTable.add(btnExitAdd).height(100).width(100);
+                gameroomTable.setHeight(window.getHeight());
+                gameroomTable.setWidth(window.getWidth());
+                gameroomTable.setFillParent(true);
+                window.addActor(gameroomTable);
                 stage.addActor(window);
             }
         });
         btnRefresh.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
                 populateGmRms();
             }
         });
         btnAdd.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {// This will add a new gameroom to the server
                 ParseObject pO = new ParseObject("gamerooms");
                 pO.put("Name", txtName.getText());
                 pO.put("map", selectBox.getSelectedIndex());
                 pO.put("isJoinable", true);
+                pO.put("start", false);
                 pO.saveInBackground();
-                gamerooms.add(txtName.getText().toString());
-                window.remove();
+
+                ParseObject pO2 = new ParseObject("chat");
+                pO2.put("game",txtName.getText());
+                pO2.save(new SaveCallback() {
+
+                    @Override
+                    public void done(ParseException e) {
+                        window.remove();
+                        screenControl.setName(txtName.getText(),true);
+                        screenControl.setnScreen(4);
+                    }
+                });
+
             }
         });
+
+        btnExitAdd.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
+               window.clearChildren();
+               window.setVisible(false);
+               window.remove();
+            }
+        });
+
         btnExit.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {//if you don't want to join a game, just exit it
                 gameTable.clearChildren();
                 window.clearChildren();
                 window.setVisible(false);
@@ -195,8 +220,8 @@ public class GameRooms extends Game {
         });
         btnJoin.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                screenControl.setName(list.getSelected().toString());
+            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
+                screenControl.setName(list.getSelected().toString(),false);
                 screenControl.setnScreen(4);
             }
         });
@@ -212,8 +237,7 @@ public class GameRooms extends Game {
         screenControl = screenControl_;
     }
 
-    public void populateGmRms() {
-
+    public void populateGmRms() {//Grab all the gamerooms from the server
         String requestContent = null;
         final Net.HttpRequest httpRequest;
         httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
@@ -222,9 +246,7 @@ public class GameRooms extends Game {
         httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
         httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
         httpRequest.setContent(requestContent);
-        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-
-
+        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() { // Listens to the server response
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
                 gamerooms.clear();
@@ -282,7 +304,7 @@ public class GameRooms extends Game {
                         }
                     });
                     table.add(btnAddGameroom).height(100).width(100);
-                    table.row().height(nSHeight/16);
+                    table.row().height(nSHeight);
                     //scrollPane.setFillParent(true);
 
                     table.add(scrollPane).width(nSWidth).colspan(2);
