@@ -174,12 +174,12 @@ public class Play extends Game {
         touchpadMoveStyle.knob.setMinWidth(125);
         touchpadMoveStyle.background = touchMoveBackground;
         touchpadMove = new Touchpad(0, touchpadMoveStyle);
-        touchpadMove.setSize(300, 300);
+        touchpadMove.setSize((int)(nScreenWidth/4.3), (int)(nScreenHeight/2.4));
         touchpadMove.setPosition(0, 0);
 
         touchpadArrow= new Touchpad(0,touchpadMoveStyle);
-        touchpadArrow.setPosition(nScreenWidth-300,0);
-        touchpadArrow.setSize(300,300);
+        touchpadArrow.setPosition(nScreenWidth-(int)(nScreenHeight/2.4),0);
+        touchpadArrow.setSize((int)(nScreenWidth/4.3), (int)(nScreenHeight/2.4));
         stage.addActor(touchpadMove);
         stage.addActor(touchpadArrow);
 
@@ -437,16 +437,16 @@ public class Play extends Game {
 
 
         bZoomOut=false;
-            for(int i=-5;i<=5;i++){ //loop left and right 5 tiles each way on the map
-                if((int)((fCharX / PPM) / nTileWidth)+i>0 &&
-                        (int)((fCharX / PPM) / nTileWidth)+i<MapCol.getWidth()){ // makes sure to not go outside the map
-                if (MapCol.getCell((int)((fCharX / PPM) / nTileWidth)+i,(int)((fCharY/PPM)/nTileHeight))//Collide on Left
-                        .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
-                    bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
-                    break; //leaves loop incase next tile does not have hit property
+            for(int i=-5;i<=5;i++) { //loop left and right 5 tiles each way on the map
+                try {
+                    if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
+                            .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
+                        bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
+                        break; //leaves loop incase next tile does not have hit property
+                    }
                 }
+                catch(NullPointerException e){}
             }
-        }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
             camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/3;
             camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/3;
@@ -506,7 +506,7 @@ public class Play extends Game {
             sArrow.draw(batch);
             arrow.setVars(ArrowVX, ArrowVY, ArrowX, ArrowY);
 
-            if((int) ((ArrowX / PPM) / nTileWidth)>0 && (int)((ArrowX / PPM) / nTileWidth)<MapCol.getWidth()) {
+            try {
 
                 if (MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth), (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
                         .getTile().getProperties().containsKey("Hit") ||
@@ -553,6 +553,8 @@ public class Play extends Game {
                     i--;//we had an issue where arrows would flicker if one is deleted, so we do this to prevent that
                 }
             }
+            catch(NullPointerException e){}
+
         }
         death.setVars(MapCol, CharBody.getPosition());
         sDThing=death.getSprite(Time);
