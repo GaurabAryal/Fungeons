@@ -6,6 +6,8 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -16,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import pablo127.almonds.LogInCallback;
@@ -32,6 +36,11 @@ public class MainMenu extends Game {
     Stage stage;
     Music LoginSong;
     SpriteBatch batch;
+    TextureAtlas Atlas;
+    TextureAtlas.AtlasRegion Region;
+    TextureRegion BGWall;
+
+   // BitmapFont mockFont= new BitmapFont(Gdx.files.internal("mockFont.fnt"));
     //Texture img =  new Texture("bgimg2.jpeg");
 
     ScreenControl screenControl;
@@ -45,6 +54,8 @@ public class MainMenu extends Game {
         batch.begin();
        // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.draw();
+
+        System.out.println(Region.getRegionHeight());
         batch.end();
 
     }
@@ -61,6 +72,19 @@ public class MainMenu extends Game {
         LoginSong.play();
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
+        Drawable dBGWall=new TextureRegionDrawable();
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        Region=Atlas.findRegion("BG Wall Brick");
+        BGWall= Region;
+      /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
+            for(int j=0;j<(Gdx.graphics.getHeight()+100)/Region.getRegionHeight();j++){
+                BGWall[i][j].setRegion(Region);
+
+            }
+        }*/
+        dBGWall= new TextureRegionDrawable(BGWall);
+
+        System.out.println(Region.getRegionHeight());
 
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
@@ -111,6 +135,7 @@ public class MainMenu extends Game {
         table.setFillParent(true);
         txtUsername.setHeight(500);
         stage.addActor(table);
+        table.setBackground(dBGWall);
         txtUsername.setTextFieldListener(new TextField.TextFieldListener() {
             public void keyTyped(TextField textField, char key) {
                 if (key == '\n') textField.getOnscreenKeyboard().show(false);
