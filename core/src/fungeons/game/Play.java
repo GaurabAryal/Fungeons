@@ -51,6 +51,7 @@ public class Play extends Game {
     String chatId;
 
     JSONObject jsonObject;
+    boolean bWent = false;
 
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
@@ -337,7 +338,7 @@ public class Play extends Game {
                             System.out.println("wat" );
                             jsonObject = new JSONObject(httpResponse.getResultAsString());
                             System.out.println(jsonObject.getString("scores")+jsonObject.getString("scores").split(",").length + "lenght");
-                            if (jsonObject.getString("scores").split(",").length>=3){
+                            if (jsonObject.getString("scores").split(",").length>=2){
                                 final String requestContent = null;
                                 final Net.HttpRequest httpRequest;
                                 httpRequest = new Net.HttpRequest(Net.HttpMethods.DELETE);
@@ -364,12 +365,13 @@ public class Play extends Game {
                                 });
 
                             }
-                            else{
+                            else if (!bWent){
                                 //add scores to the chat
+                                bWent = true;
+                                screenControl.setChatId("");
                                 final Net.HttpRequest httpRequest;
                                 httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
                                 httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatId);
-                                screenControl.setChatId("");
                                 httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
                                 httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
                                 JSONObject json = new JSONObject();
