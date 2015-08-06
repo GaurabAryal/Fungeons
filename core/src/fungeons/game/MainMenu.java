@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -39,6 +40,7 @@ public class MainMenu extends Game {
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
     TextureRegion BGWall;
+    Drawable dbtnWhite;
 
    // BitmapFont mockFont= new BitmapFont(Gdx.files.internal("mockFont.fnt"));
     //Texture img =  new Texture("bgimg2.jpeg");
@@ -72,10 +74,11 @@ public class MainMenu extends Game {
         LoginSong.play();
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        Drawable dBGWall=new TextureRegionDrawable();
+        Drawable dBGWall;
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
+
       /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
             for(int j=0;j<(Gdx.graphics.getHeight()+100)/Region.getRegionHeight();j++){
                 BGWall[i][j].setRegion(Region);
@@ -83,8 +86,15 @@ public class MainMenu extends Game {
             }
         }*/
         dBGWall= new TextureRegionDrawable(BGWall);
-
+        Region=Atlas.findRegion("Button 1");
+        TextureRegion btnWhite = Region;
+        dbtnWhite = new TextureRegionDrawable(btnWhite);
+        skin.add("btnWhite",dbtnWhite);
+        BitmapFont font = new BitmapFont(Gdx.files.internal("mockFont.fnt"));
+        font.setScale(2);//will implement when Texture pack is fixed
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,skin.getFont("default-font"));
         System.out.println(Region.getRegionHeight());
+        skin.add("btnWhiteStyle",btnWhiteStyle);
 
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
@@ -94,10 +104,10 @@ public class MainMenu extends Game {
         final Label userLabel = new Label("Username: ", skin);
         final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
-        final TextButton button = new TextButton("Login!", skin);
+        final TextButton button = new TextButton("Login!", skin, "btnWhiteStyle");
 
-        final TextButton btnOffline = new TextButton("Offline", skin);
-        final TextButton btnRegister = new TextButton("Register", skin);
+        final TextButton btnOffline = new TextButton("Offline", skin, "btnWhiteStyle");
+        final TextButton btnRegister = new TextButton("Register", skin, "btnWhiteStyle");
         final TextField txtUsername = new TextField("", skin);
         final TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
