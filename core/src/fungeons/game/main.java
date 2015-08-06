@@ -19,6 +19,7 @@ public class main extends Game {
     GameRooms gameRooms;
     GameRoom gameRoom;
     Play play;
+    ScoresDisplay scoresDisplay;
     int nScreen = 1;
     ScreenControl screenControl;
     @Override
@@ -34,6 +35,8 @@ public class main extends Game {
         gameRoom = new GameRoom();
       // gameRoom.create();
         gameRoom.setScreenControl(screenControl);
+        scoresDisplay = new ScoresDisplay();
+        scoresDisplay.setScreenControl(screenControl);
         play = new Play();
         play.create();
         play.setScreenControl(screenControl);
@@ -54,6 +57,9 @@ public class main extends Game {
         if(nScreen == 4){
            // gameRoom.create();
           gameRoom.render();
+        }
+        if (nScreen == 5){
+            scoresDisplay.render();
         }
     }
     @Override
