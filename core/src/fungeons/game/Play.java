@@ -154,8 +154,8 @@ public class Play extends Game {
         btnJumpStyle.down=btnJumpImg;
         btnJumpStyle.up=btnJumpImg;
         btnJump= new Button(btnJumpStyle);
-        btnJump.setSize(125,125);
-        btnJump.setPosition(nScreenWidth-450,0);
+        btnJump.setSize((int)(nScreenWidth/10.24),(int)(nScreenWidth/10.24));
+        btnJump.setPosition(nScreenWidth-(int)(nScreenWidth/2.84),0);
         stage.addActor(btnJump);
 
         Region = Atlas.findRegion("TouchPad BackGround",-1);
