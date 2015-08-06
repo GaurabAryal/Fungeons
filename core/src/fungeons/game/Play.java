@@ -50,6 +50,8 @@ public class Play extends Game {
     Label timeLabel;
     String chatId;
 
+    JSONObject jsonObject;
+
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
     FixtureDef MapFixDef;
@@ -315,7 +317,9 @@ public class Play extends Game {
             //Upload scoresssssss, beast. basically sketch way. array with player name and then their score. so it wont be in order but when displaying, it'll be alright
             //less of a hassle
             if (!screenControl.getChatId().isEmpty()){
+
                 chatId = screenControl.getChatId();
+                System.out.println(chatId);
                 // check if you are the last one, if you are, you need to remove the gameroom.
                 final String requestContent = null;
                 final Net.HttpRequest httpRequest2;
@@ -329,9 +333,11 @@ public class Play extends Game {
                     @Override
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         try {
-                            JSONObject jsonObject = new JSONObject(httpResponse.getResultAsString());
-                            System.out.println("wat"+jsonObject.getString("scores").length() + "shit");
-                            if (jsonObject.getString("scores").length()>=3){
+
+                            System.out.println("wat" );
+                            jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            System.out.println(jsonObject.getString("scores")+jsonObject.getString("scores").split(",").length + "lenght");
+                            if (jsonObject.getString("scores").split(",").length>=3){
                                 final String requestContent = null;
                                 final Net.HttpRequest httpRequest;
                                 httpRequest = new Net.HttpRequest(Net.HttpMethods.DELETE);
@@ -375,33 +381,33 @@ public class Play extends Game {
                                 Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                                     @Override
                                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                                        final Net.HttpRequest httpRequest;
-                                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                                        httpRequest.setUrl("https://api.parse.com/1/classes/_User/" + ParseUser.getCurrentUser().getObjectId());
-                                        screenControl.setChatId("");
-                                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-                                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-                                        JSONObject json = new JSONObject();
-                                        JSONObject skills = new JSONObject();
-                                        skills.put("__op", "Add");
-                                        skills.put("objects", new JSONArray(Arrays.asList( "Gamename" + ": " + twoDec.format(Time))));
-                                        json.put("games", skills);
-                                        httpRequest.setContent(json.toString());
-                                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-                                            @Override
-                                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                                            }
-
-                                            @Override
-                                            public void failed(Throwable t) {
-                                                System.out.println(t.toString());
-                                            }
-
-                                            @Override
-                                            public void cancelled() {
-
-                                            }
-                                        });
+//                                        final Net.HttpRequest httpRequest;
+//                                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+//                                        httpRequest.setUrl("https://api.parse.com/1/classes/_User/" + ParseUser.getCurrentUser().getObjectId());
+//                                        screenControl.setChatId("");
+//                                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+//                                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+//                                        JSONObject json = new JSONObject();
+//                                        JSONObject skills = new JSONObject();
+//                                        skills.put("__op", "Add");
+//                                        skills.put("objects", new JSONArray(Arrays.asList( "Gamename" + ": " + twoDec.format(Time))));
+//                                        json.put("games", skills);
+//                                        httpRequest.setContent(json.toString());
+//                                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+//                                            @Override
+//                                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+//                                            }
+//
+//                                            @Override
+//                                            public void failed(Throwable t) {
+//                                                System.out.println(t.toString());
+//                                            }
+//
+//                                            @Override
+//                                            public void cancelled() {
+//
+//                                            }
+//                                        });
                                     }
 
                                     @Override
