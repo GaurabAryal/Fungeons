@@ -91,26 +91,36 @@ public class MainMenu extends Game {
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
         skin.add("btnWhite",dbtnWhite);
-        BitmapFont font = new BitmapFont(Gdx.files.internal("mockFont.fnt"));
-        font.setScale(2.5f);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,font);
+
+        BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        BitmapFont ChatFont = new BitmapFont(Gdx.files.internal("FungeonsFontChatW.fnt"));
+        ButtonFont.setScale(2.5f);//will implement when Texture pack is fixed
+        ChatFont.setScale(1.9f);
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,ButtonFont);
+        Label.LabelStyle chatLabelStyle = new Label.LabelStyle(ChatFont,Color.WHITE);
+        TextField.TextFieldStyle chatFieldStyle = new TextField.TextFieldStyle(ChatFont, Color.WHITE,
+                skin.get(TextField.TextFieldStyle.class).cursor,skin.get(TextField.TextFieldStyle.class).selection,
+                skin.get(TextField.TextFieldStyle.class).background);
 
         skin.add("btnWhiteStyle",btnWhiteStyle);
+        skin.add("LabelFont",chatLabelStyle);
+        skin.add("TextFieldFont",chatFieldStyle);
+
         skin.getFont("default-font").setScale(1.9f);//for text buttons :D
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
         Gdx.input.setInputProcessor(stage);
         final ExitDialog exitDialog = new ExitDialog(" Success ", skin);
 
-        final Label passwordLabel = new Label("Password: ", skin);
-        final Label userLabel = new Label("Username: ", skin);
+        final Label passwordLabel = new Label("Password: ", skin, "LabelFont");
+        final Label userLabel = new Label("Username: ", skin, "LabelFont");
       //  final Label someSpace = new Label("         ", skin);
-        final TextField txtPassword = new TextField("", skin);
-        final TextButton button = new TextButton("Login!", skin, "btnWhiteStyle");
+        final TextField txtPassword = new TextField("", skin, "TextFieldFont");
+        final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
 
-        final TextButton btnOffline = new TextButton("Offline", skin, "btnWhiteStyle");
-        final TextButton btnRegister = new TextButton("Register", skin, "btnWhiteStyle");
-        final TextField txtUsername = new TextField("", skin);
+        final TextButton btnOffline = new TextButton("OFFLINE", skin, "btnWhiteStyle");
+        final TextButton btnRegister = new TextButton("REGISTER", skin, "btnWhiteStyle");
+        final TextField txtUsername = new TextField("", skin, "TextFieldFont");
         final TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
         txtUsername.setAlignment(Align.left);
