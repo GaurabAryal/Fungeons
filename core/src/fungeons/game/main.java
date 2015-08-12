@@ -1,6 +1,7 @@
 package fungeons.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class main extends Game {
     Skin skin;
     Stage stage;
-    Music LoginSong;
+    Music MenuSong, GameSong, CurrentSong;
     SpriteBatch batch;
     Texture img;
     Game game;
@@ -24,7 +25,9 @@ public class main extends Game {
     ScreenControl screenControl;
     @Override
     public void create () {
-
+        MenuSong= Gdx.audio.newMusic(Gdx.files.internal("Menu Music.mp2"));
+        GameSong=Gdx.audio.newMusic(Gdx.files.internal("In Game Music.mp2"));
+        MenuSong.play();
         screenControl = new ScreenControl();
         mainMenu = new MainMenu();
         mainMenu.create();
@@ -53,6 +56,10 @@ public class main extends Game {
             gameRooms.render();
         } else if (nScreen == 3){
             play.render();
+            if(MenuSong.isPlaying()==true){
+                MenuSong.stop();
+                GameSong.play();
+            }
         }
         if(nScreen == 4){
            // gameRoom.create();
@@ -60,6 +67,10 @@ public class main extends Game {
         }
         if (nScreen == 5){
             scoresDisplay.render();
+        }
+        if(nScreen!=5 && nScreen!=3 && GameSong.isPlaying()==true){
+            GameSong.stop();
+            MenuSong.play();
         }
     }
     @Override

@@ -2,7 +2,6 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -35,7 +34,6 @@ import pablo127.almonds.SignUpCallback;
 public class MainMenu extends Game {
     Skin skin;
     Stage stage;
-    Music LoginSong;
     SpriteBatch batch;
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
@@ -69,10 +67,7 @@ public class MainMenu extends Game {
         int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");//initialize parse with our keys
         batch = new SpriteBatch();
-        LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
-        LoginSong.setVolume(1f);
-        LoginSong.setLooping(true);
-        LoginSong.play();
+
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Drawable dBGWall;
