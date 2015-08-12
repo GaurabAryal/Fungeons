@@ -2,7 +2,6 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -35,7 +34,6 @@ import pablo127.almonds.SignUpCallback;
 public class MainMenu extends Game {
     Skin skin;
     Stage stage;
-    Music LoginSong;
     SpriteBatch batch;
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
@@ -66,12 +64,10 @@ public class MainMenu extends Game {
     }
     @Override
     public void create(){
+        int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");//initialize parse with our keys
         batch = new SpriteBatch();
-        LoginSong = Gdx.audio.newMusic(Gdx.files.internal("login.mp3"));
-        LoginSong.setVolume(1f);
-        LoginSong.setLooping(true);
-        LoginSong.play();
+
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Drawable dBGWall;
@@ -90,29 +86,30 @@ public class MainMenu extends Game {
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
         skin.add("btnWhite",dbtnWhite);
-        BitmapFont font = new BitmapFont(Gdx.files.internal("mockFont.fnt"));
-        font.setScale(2);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,skin.getFont("default-font"));
-        System.out.println(Region.getRegionHeight());
-        skin.add("btnWhiteStyle",btnWhiteStyle);
 
+        BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        ButtonFont.setScale(2.5f);//will implement when Texture pack is fixed
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,ButtonFont);
+
+        skin.add("btnWhiteStyle",btnWhiteStyle);
+        skin.getFont("default-font").setScale(1.9f);//for text buttons :D
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
         Gdx.input.setInputProcessor(stage);
-        final ExitDialog exitDialog = new ExitDialog("Success", skin);
+        final ExitDialog exitDialog = new ExitDialog(" Success ", skin);
+
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
-        final Label someSpace = new Label("         ", skin);
+      //  final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
-        final TextButton button = new TextButton("Login!", skin, "btnWhiteStyle");
+        final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
 
-        final TextButton btnOffline = new TextButton("Offline", skin, "btnWhiteStyle");
-        final TextButton btnRegister = new TextButton("Register", skin, "btnWhiteStyle");
+        final TextButton btnOffline = new TextButton("OFFLINE", skin, "btnWhiteStyle");
+        final TextButton btnRegister = new TextButton("REGISTER", skin, "btnWhiteStyle");
         final TextField txtUsername = new TextField("", skin);
         final TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         txtUsername.setMessageText("ex.John101");
         txtUsername.setAlignment(Align.left);
-        txtUsername.setHeight(100);
         textButtonStyle.fontColor = Color.BLACK;
         textButtonStyle.up = skin.newDrawable("white", Color.WHITE);
         textButtonStyle.down = skin.newDrawable("white", Color.WHITE);
@@ -120,17 +117,36 @@ public class MainMenu extends Game {
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
 
         skin.add("default", textButtonStyle);
-        userLabel.setFontScaleX(1f);
-        userLabel.setFontScaleY(1f);
-        passwordLabel.setFontScaleX(1f);
-        passwordLabel.setFontScaleY(1f);
-        someSpace.setFontScaleX(2f);
-        someSpace.setFontScaleY(2f);
+    //    skin.getFont("default-font").setScale(2);
+   //     userLabel.setFontScale(1.9f);
+//        userLabel.setFontScaleY(1f);
+   //     passwordLabel.setFontScale(1.9f);
+   //     passwordLabel.setFontScaleY(1f);
+   //     someSpace.setFontScale(2f);
+      //  someSpace.setFontScaleY(2f);
         txtPassword.setMessageText("*****");
         txtPassword.setPasswordCharacter('*');
         txtPassword.setPasswordMode(true);
         txtUsername.pack();
         txtUsername.setHeight(100);
+
+        table.row().padTop(nScreenHeight/10);
+        table.add(userLabel).padBottom(nScreenHeight / 14);
+        table.add(txtUsername).width(nScreenWidth / 4).height(nScreenHeight / 10).padBottom(nScreenHeight / 14).padRight(nScreenWidth/12);
+        table.add(passwordLabel).padBottom(nScreenHeight / 14);
+        table.add(txtPassword).width(nScreenWidth / 4).height(nScreenHeight / 10).padBottom(nScreenHeight / 14);
+        table.row();
+        table.add(button).width((int)(nScreenWidth/1.8)).height(nScreenHeight/7).padBottom(nScreenHeight/12).center().colspan(4);
+        table.row();
+        table.add(btnRegister).width((int) (nScreenWidth / 1.8)).height(nScreenHeight / 7).padBottom(nScreenHeight / 12).center().colspan(4);
+        table.row();
+
+        table.add(btnOffline).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().right().colspan(4);
+        table.center().top().pad(nScreenHeight/16,nScreenWidth/16,nScreenHeight/16, nScreenWidth/16);
+
+        table.setFillParent(true);
+       // skin.getFont("default-font").setScale(1.9f/1f);
+        /*
         table.add(userLabel).padBottom(10).padRight(25);
         table.add(txtUsername).width(300).height(50).padBottom(10);
         table.row();
@@ -144,6 +160,8 @@ public class MainMenu extends Game {
         table.center().top().pad(300);
         table.setFillParent(true);
         txtUsername.setHeight(500);
+        */
+
         stage.addActor(table);
         table.setBackground(dBGWall);
         txtUsername.setTextFieldListener(new TextField.TextFieldListener() {
@@ -163,7 +181,7 @@ public class MainMenu extends Game {
                             if (user != null) {
                                 ParseUser u = ParseUser.getCurrentUser();
                                 if (u.getUsername()!=null) {
-                                    exitDialog.text("Welcome, " + u.getUsername() + "!");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }
                             }
