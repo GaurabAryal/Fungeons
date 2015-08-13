@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseException;
@@ -202,8 +203,8 @@ public class GameRooms extends Game {
                 pO.put("isJoinable", true);
                 pO.put("start", false);
                 pO.saveInBackground();
-
                 ParseObject pO2 = new ParseObject("chat");
+                pO2.put("gameroom",1);
                 pO2.put("game",txtName.getText());
                 pO2.save(new SaveCallback() {
 

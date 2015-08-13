@@ -198,6 +198,7 @@ public class MainMenu extends Game {
                 ParseUser user = new ParseUser();
                 user.setUsername(txtUsername.getText());
                 user.setPassword(txtPassword.getText());
+                user.setEmail(txtUsername.getText()+"@example.com");
                 user.signUpInBackground(new SignUpCallback() {
                     public void done(ParseException e) {
                         if (e == null) {
@@ -261,6 +262,7 @@ public class MainMenu extends Game {
         }
         @Override
             protected void result(Object object){
+
             System.out.println(object);
             screenControl.setnScreen(2);
             }
