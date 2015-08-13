@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -125,6 +124,7 @@ public class GameRooms extends Game {
         int i = 11;
         String s = "1GTPRERceY";
         table = new Table(skin);
+        table.setBackground(dBGWall);
         ParseObject pO = new ParseObject("gamerooms");
 
 //        for (int i =0; i < 1;i++) {
@@ -155,10 +155,10 @@ public class GameRooms extends Game {
         gameroomTable = new Table(skin);
 
         gameTable = new Table(skin);
+        gameroomTable.setBackground(dBGWall);
 
         window = new Window("test", skin);
-        skin.getFont("default-font").scale(nSWidth / 1794 * 1.2f);
-        skin.getFont("default-font").getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        skin.getFont("default-font").scale(nSHeight / 480);
         window.setMovable(true);
         window.padTop(nSHeight / 16);
         selectBox.setPosition(100, 100);
@@ -282,6 +282,7 @@ public class GameRooms extends Game {
                     table.add(btnRefresh).height(100).width(100);
                     //table.row();
                     scrollPane = new ScrollPane(list,skin);
+                    scrollPane.setColor(0.2f,0.2f,0.2f,0.7f);//makes it translucent asaposed to opaque or transparent
                     scrollPane.addListener(new EventListener() {
                         @Override
                         public boolean handle(Event event) {

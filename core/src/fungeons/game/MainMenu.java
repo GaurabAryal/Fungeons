@@ -88,11 +88,11 @@ public class MainMenu extends Game {
         skin.add("btnWhite",dbtnWhite);
 
         BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
-        ButtonFont.setScale(2.5f);//will implement when Texture pack is fixed
+        ButtonFont.setScale(nScreenWidth/512);//will implement when Texture pack is fixed
         TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,ButtonFont);
 
         skin.add("btnWhiteStyle",btnWhiteStyle);
-        skin.getFont("default-font").setScale(1.9f);//for text buttons :D
+        skin.getFont("default-font").setScale(nScreenWidth/674f);//for text buttons :D
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
         Gdx.input.setInputProcessor(stage);
