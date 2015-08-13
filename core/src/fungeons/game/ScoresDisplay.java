@@ -72,7 +72,7 @@ public class ScoresDisplay extends Game {
 
         if (!bCanCreate)create();
         Gdx.input.setInputProcessor(stage);
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         sbBatch.begin();
