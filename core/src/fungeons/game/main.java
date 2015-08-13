@@ -59,6 +59,7 @@ public class main extends Game {
             if(MenuSong.isPlaying()==true){
                 MenuSong.stop();
                 GameSong.play();
+                GameSong.setLooping(true);
             }
         }
         if(nScreen == 4){
@@ -71,6 +72,7 @@ public class main extends Game {
         if(nScreen!=5 && nScreen!=3 && GameSong.isPlaying()==true){
             GameSong.stop();
             MenuSong.play();
+            MenuSong.setLooping(true);
         }
     }
     @Override
