@@ -145,5 +145,9 @@ public class DeathThing {
         }
         return(bDead);
     }
+    public void dispose(){
+        Atlas.dispose();
+        arTraps.clear();
+    }
 }
 

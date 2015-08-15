@@ -193,6 +193,7 @@ public class Character extends Sprite {
         sChar.setSize(4,4);
         sChar.setOriginCenter();
         sChar.setPosition(fCharX-2,fCharY-1);
+    //    sChar.setColor((float)Math.sin(Time)/2+0.5f,(float)Math.cos(2*Time)/2+0.5f, (float)Math.sin(3*Time)/2+0.5f, 1f);
 
         return(sChar);
     }
@@ -231,5 +232,8 @@ public class Character extends Sprite {
             bCanJump=true;
         }
         return(bCanJump);
+    }
+    public void dispose(){
+        Atlas.dispose();
     }
 }

@@ -55,7 +55,6 @@ public class MainMenu extends Game {
        // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.draw();
 
-        System.out.println(Region.getRegionHeight());
         batch.end();
 
     }
@@ -219,7 +218,7 @@ public class MainMenu extends Game {
         btnOffline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                stage.dispose();
+             //   stage.dispose();
                 screenControl.setnScreen(3);
             }
         });

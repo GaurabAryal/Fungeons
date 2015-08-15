@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -24,12 +25,17 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 
 import org.json.JSONArray;
@@ -43,21 +49,21 @@ import pablo127.almonds.ParseUser;
 
 public class Play extends Game {
     OrthographicCamera camera;
-    Vector2 gravity=new Vector2(0,-9.8f), CurMove=new Vector2(), ArrowMove=new Vector2();
-    World world = new World(gravity, false);
+    Vector2 gravity= new Vector2(0,-9.8f), CurMove, ArrowMove;
+    World world=new World(gravity,false);
 
-    DecimalFormat twoDec = new DecimalFormat("#0.00");
+    DecimalFormat twoDec;
     Label timeLabel;
     String chatId;
 
     JSONObject jsonObject;
-    boolean bWent = false;
+    boolean bWent;
 
     BodyDef MapDef;
     Body MapBody, CharBody,CharBody2;
     FixtureDef MapFixDef;
     PolygonShape MapBox;
-    WeldJointDef jointDef = new WeldJointDef();
+    WeldJointDef jointDef;
     Joint joint;
 
     Box2DDebugRenderer b2Renderer;
@@ -68,11 +74,11 @@ public class Play extends Game {
     OrthogonalTiledMapRenderer MapRenderer;
 
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
-    float Time=1, ArrowTime=1, PPM=(1f/16f), CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
+    float Time, DeadTime, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
-    float fCharX =20,fCharY=5, DeltaY;
+    float fCharX,fCharY;
     int nCharVX, nCharVY;
-    int nDir=2;
+    int nDir;
 
     TextureAtlas Atlas;
     TextureRegion[][] MoveBG1, MoveKnob1, btnJump1;
@@ -80,49 +86,79 @@ public class Play extends Game {
     SpriteBatch batch;
     Sprite sArrow, sChar, sDThing;
     Arrow arrow;
-    Array<Arrow> arArrows = new Array<Arrow>();
-    float ArrowX, ArrowY, DThingX, DThingY;
+    Array<Arrow> arArrows;
+    float ArrowX, ArrowY;
     double ArrowVX, ArrowVY;
 
     Body PlatBody;
-    Array<Platform> arPlats = new Array <Platform>();
+    Array<Platform> arPlats;
 
     Touchpad touchpadMove, touchpadArrow;
     Touchpad.TouchpadStyle touchpadMoveStyle;
     Skin touchpadMoveSkin, btnJumpSkin;
     Drawable touchMoveKnob, touchMoveBackground, btnJumpImg;
+    Window deathWindow;
 
     Button btnJump;
     Button.ButtonStyle btnJumpStyle;
 
-    Stage stage;
-    Boolean bCanJump=true, bLight=true, bArrowShot=true, bZoomOut, bDead;
+    Stage stage, stage2;
+    Boolean bCanJump, bLight=true, bArrowShot, bZoomOut, bDead;
 
     Sprite sSaw, sFire, sSpike, sSpikeBlock;
 
-    Character character = new Character();
-    Platform platform = new Platform();
-    DeathThing death = new DeathThing();
-    Trap_Buzzsaw saw = new Trap_Buzzsaw();
-    Array<Vector2> arTraps = new Array<Vector2>();
+    Character character;
+    Platform platform;
+    DeathThing death;
+    Trap_Buzzsaw saw;
+    Array<Vector2> arTraps;
     ScreenControl screenControl;
 
 
     @Override
     public void create() {
-        nScreenWidth= Gdx.graphics.getWidth();
-        nScreenHeight=Gdx.graphics.getHeight();
-        camera=new OrthographicCamera();
-        camera.viewportHeight=nScreenHeight*PPM/2;//set the regular zoom of the camera
-        camera.viewportWidth=nScreenWidth*PPM/2;
-        nZoomHeight=(int)(nScreenHeight*PPM);//set the zoom of the camera when it pans out for shooting arrows
-        nZoomWidth=(int)(nScreenWidth*PPM);
+
+        world=new World(gravity,false);
+
+        nScreenWidth = Gdx.graphics.getWidth();
+        nScreenHeight = Gdx.graphics.getHeight();
+        camera = new OrthographicCamera();
+        camera.viewportHeight = nScreenHeight * PPM / 2;//set the regular zoom of the camera
+        camera.viewportWidth = nScreenWidth * PPM / 2;
+        nZoomHeight = (int) (nScreenHeight * PPM);//set the zoom of the camera when it pans out for shooting arrows
+        nZoomWidth = (int) (nScreenWidth * PPM);
+
+        CurMove=new Vector2();
+        ArrowMove=new Vector2();
+        jointDef = new WeldJointDef();
+        PPM=(1f/16f);
+        Time=1;
+        DeadTime=-1;
+        ArrowTime=1;
+        nDir=2;
+        fCharX=30;
+        fCharY=4;
+        bWent=false;
+        bCanJump=true;
+        bArrowShot=true;
+        bDead=false;
+        twoDec = new DecimalFormat("#0.00");
+
+        character = new Character();
+        platform = new Platform();
+        death = new DeathThing();
+        saw = new Trap_Buzzsaw();
+        arTraps = new Array<Vector2>();
+        arPlats = new Array <Platform>();
+        arArrows = new Array<Arrow>();
+
 
         character.create();
         death.create();
-        stage=new Stage();
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
-        batch= new SpriteBatch();
+        stage = new Stage();
+        stage2 = new Stage();
+        Atlas = new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
+        batch = new SpriteBatch();
 
         /*****Scoreeeee*******/
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -130,40 +166,76 @@ public class Play extends Game {
         timeLabel.setPosition(0, nScreenHeight - 10);
         stage.addActor(timeLabel);
 
+        deathWindow = new Window("Too Bad", skin);
 
 
         TextureAtlas.AtlasRegion Region;
         int RegionHeight, RegionWidth;
-        Region=Atlas.findRegion("Arrow ALT");
+        Region = Atlas.findRegion("Arrow ALT");
         sArrow = new Sprite(Region);
-        sArrow.setSize(sArrow.getWidth()*PPM,sArrow.getHeight()*PPM);//sets the size of the arrow texture relative to the box2d world scale
-        sArrow.setOrigin(sArrow.getWidth()/2,sArrow.getHeight()/2);
+        sArrow.setSize(sArrow.getWidth() * PPM, sArrow.getHeight() * PPM);//sets the size of the arrow texture relative to the box2d world scale
+        sArrow.setOrigin(sArrow.getWidth() / 2, sArrow.getHeight() / 2);
 
-        sDThing=new Sprite();
+        sDThing = new Sprite();
+        Drawable dbtnWhite;
+        Region = Atlas.findRegion("Button 1");
+        TextureRegion btnWhite = Region;
+        dbtnWhite = new TextureRegionDrawable(btnWhite);
+        BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        ButtonFont.setScale(nScreenWidth / 1024f);//will implement when Texture pack is fixed
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite, dbtnWhite, dbtnWhite, ButtonFont);
+        skin.add("btnWhiteStyle", btnWhiteStyle);
+
+        TextButton btnRetry = new TextButton("RETRY", btnWhiteStyle);
+        TextButton btnMaps = new TextButton("CHANGE MAP", btnWhiteStyle);
+        TextButton btnMain = new TextButton("MAIN MENU", btnWhiteStyle);
+
+        Drawable dBGWall;
+        Region=Atlas.findRegion("BG Wall Brick");
+        TextureRegion BGWall = Region;
+        dBGWall = new TextureRegionDrawable(BGWall);
+       // deathWindow.setBackground(dBGWall);
+
+        deathWindow.setSize(nScreenWidth / 3f, nScreenHeight / 2f);
+        deathWindow.setPosition((nScreenWidth/2)-(deathWindow.getWidth()/2),(nScreenHeight/2)-(deathWindow.getHeight()/2));
+        deathWindow.setColor(0.2f, 0.2f, 0.2f, 0.9f);
+        deathWindow.row();
+        btnRetry.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 8).padTop(deathWindow.getHeight() / 8);
+        deathWindow.row();
+        btnMaps.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.row();
+        btnMain.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.setVisible(false);
+        deathWindow.setBackground(dBGWall);
+
+        stage2.addActor(deathWindow);
 
         Region = Atlas.findRegion("Jump Button");
-        RegionHeight=Region.getRegionHeight();
-        RegionWidth=Region.getRegionWidth();
+        RegionHeight = Region.getRegionHeight();
+        RegionWidth = Region.getRegionWidth();
         btnJump1 = Region.split(RegionWidth, RegionHeight);
-        btnJumpSkin= new Skin();
+        btnJumpSkin = new Skin();
         btnJumpSkin.add("button", btnJump1[0][0]);
-        btnJumpImg=btnJumpSkin.getDrawable("button");
-        btnJumpStyle=new Button.ButtonStyle();
-        btnJumpStyle.down=btnJumpImg;
-        btnJumpStyle.up=btnJumpImg;
-        btnJump= new Button(btnJumpStyle);
-        btnJump.setSize((int)(nScreenWidth/10.24),(int)(nScreenWidth/10.24));
-        btnJump.setPosition(nScreenWidth-(int)(nScreenWidth/2.84),0);
+        btnJumpImg = btnJumpSkin.getDrawable("button");
+        btnJumpStyle = new Button.ButtonStyle();
+        btnJumpStyle.down = btnJumpImg;
+        btnJumpStyle.up = btnJumpImg;
+        btnJump = new Button(btnJumpStyle);
+        btnJump.setSize((int) (nScreenWidth / 10.24), (int) (nScreenWidth / 10.24));
+        btnJump.setPosition(nScreenWidth - (int) (nScreenWidth / 2.84), 0);
         stage.addActor(btnJump);
 
-        Region = Atlas.findRegion("TouchPad BackGround",-1);
-        RegionHeight=Region.getRegionHeight();
-        RegionWidth=Region.getRegionWidth();
-        MoveBG1 = Region.split(RegionWidth,RegionHeight);
-        Region = Atlas.findRegion("Touchpad Knob",-1);
-        RegionHeight=Region.getRegionHeight();
-        RegionWidth=Region.getRegionWidth();
-        MoveKnob1 = Region.split(RegionWidth,RegionHeight);
+        Region = Atlas.findRegion("TouchPad BackGround", -1);
+        RegionHeight = Region.getRegionHeight();
+        RegionWidth = Region.getRegionWidth();
+        MoveBG1 = Region.split(RegionWidth, RegionHeight);
+        Region = Atlas.findRegion("Touchpad Knob", -1);
+        RegionHeight = Region.getRegionHeight();
+        RegionWidth = Region.getRegionWidth();
+        MoveKnob1 = Region.split(RegionWidth, RegionHeight);
 
 
         touchpadMoveSkin = new Skin();
@@ -177,59 +249,84 @@ public class Play extends Game {
         touchpadMoveStyle.knob.setMinWidth(125);
         touchpadMoveStyle.background = touchMoveBackground;
         touchpadMove = new Touchpad(0, touchpadMoveStyle);
-        touchpadMove.setSize((int)(nScreenWidth/4.3), (int)(nScreenHeight/2.4));
+        touchpadMove.setSize((int) (nScreenWidth / 4.3), (int) (nScreenHeight / 2.4));
         touchpadMove.setPosition(0, 0);
 
-        touchpadArrow= new Touchpad(0,touchpadMoveStyle);
-        touchpadArrow.setPosition(nScreenWidth-(int)(nScreenHeight/2.4),0);
-        touchpadArrow.setSize((int)(nScreenWidth/4.3), (int)(nScreenHeight/2.4));
+        touchpadArrow = new Touchpad(0, touchpadMoveStyle);
+        touchpadArrow.setPosition(nScreenWidth - (int) (nScreenHeight / 2.4), 0);
+        touchpadArrow.setSize((int) (nScreenWidth / 4.3), (int) (nScreenHeight / 2.4));
         stage.addActor(touchpadMove);
         stage.addActor(touchpadArrow);
 
-        MapLoader=new TmxMapLoader();
-        Map=MapLoader.load("BunsTown.tmx");//name of the tmx map file
-        MapCol= (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
-        MapAlt= (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
+        MapLoader = new TmxMapLoader();
+        Map = MapLoader.load("BunsTown.tmx");//name of the tmx map file
+        MapCol = (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
+        MapAlt = (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
         MapAlt.setVisible(false);
-        nTileHeight=(int)MapCol.getTileHeight();
-        nTileWidth=(int)MapCol.getTileWidth();
+        nTileHeight = (int) MapCol.getTileHeight();
+        nTileWidth = (int) MapCol.getTileWidth();
         MapRenderer = new OrthogonalTiledMapRenderer(Map, PPM);//Map renderer chooses map then the rendering scale, we used PPM for box2d to work properly
         //the rendering scale does not change any sort of scaling for the actual map, just the rendering of it, so the tiles can render
         // to be 2 pixels wide, when they are actually 32 pixels wide, or 64 pixels wide ect.  it makes collsion detection difficult
 
-        b2Renderer=new Box2DDebugRenderer();
+        b2Renderer = new Box2DDebugRenderer();
 
-        MapDef= new BodyDef();
-        MapFixDef= new FixtureDef();
-        MapBox= new PolygonShape();
+        MapDef = new BodyDef();
+        MapFixDef = new FixtureDef();
+        MapBox = new PolygonShape();
 
-        for(int i =0; i< MapCol.getWidth(); i++){//makes a 2D grid of box2D rectangles overtop the tiled map
-            for(int j=0; j<MapCol.getHeight(); j++){ // Awesome right?
-                if(MapCol.getCell(i,j).getTile().getProperties().containsKey("Hit")) {//we check for the hit key at i, and j coordinates on the tiled map
-                    MapDef= new BodyDef();//if a tile has the Hit key, we make a box2d body overtop of it
-                    MapBox= new PolygonShape();
-                    MapDef.position.set((i*nTileWidth+nTileWidth/2)*PPM, (j*nTileHeight+ nTileHeight/2)*PPM);//sets the box to proper coordinates to correlate to the tiled map
+        for (int i = 0; i < MapCol.getWidth(); i++) {//makes a 2D grid of box2D rectangles overtop the tiled map
+            for (int j = 0; j < MapCol.getHeight(); j++) { // Awesome right?
+                if (MapCol.getCell(i, j).getTile().getProperties().containsKey("Hit")) {//we check for the hit key at i, and j coordinates on the tiled map
+                    MapDef = new BodyDef();//if a tile has the Hit key, we make a box2d body overtop of it
+                    MapBox = new PolygonShape();
+                    MapDef.position.set((i * nTileWidth + nTileWidth / 2) * PPM, (j * nTileHeight + nTileHeight / 2) * PPM);//sets the box to proper coordinates to correlate to the tiled map
                     MapBody = world.createBody(MapDef);
-                    MapBox.setAsBox((nTileWidth*PPM/2)+1, nTileHeight*PPM/2);//we scale according to the tiled map with the rendering ration of PPM
+                    MapBox.setAsBox((nTileWidth * PPM / 2) + 1, nTileHeight * PPM / 2);//we scale according to the tiled map with the rendering ration of PPM
                     // we made the boxes slightly wider to compensate for so the character doesn't overlap with them at all
                     MapBody.createFixture(MapBox, 1f);
                 }
             }
         }
-        sSaw=saw.getSprite(Atlas);
+        sSaw = saw.getSprite(Atlas);
 
         // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
         // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
-        CharBody=world.createBody(character.CharDef);//grabs the character definition from character file
+        CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
-        CharBody2=world.createBody(character.CharDef);
+        CharBody2 = world.createBody(character.CharDef);
         CharBody2.createFixture(character.CharFixDef);
         CharBody.setFixedRotation(true);// makes it so the body cannot rotate
-        jointDef=character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
-        jointDef.bodyA=CharBody;//get the first body that will be on the joint
-        jointDef.bodyB=CharBody2;//2nd body on the joint
-        jointDef.localAnchorA.set(0,2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
-        joint =world.createJoint(jointDef);
+        jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
+        jointDef.bodyA = CharBody;//get the first body that will be on the joint
+        jointDef.bodyB = CharBody2;//2nd body on the joint
+        jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
+        joint = world.createJoint(jointDef);
+
+
+
+        btnMain.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                dispose();
+                create();
+
+                screenControl.setnScreen(1);
+            }
+        });
+        btnRetry.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                dispose();
+                create();
+            }
+        });
+        btnMaps.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //add once map screen is in place
+            }
+        });
 
 
     }
@@ -246,10 +343,6 @@ public class Play extends Game {
         MapRenderer.setView(camera);
         MapRenderer.render();
         b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
-
-        if(screenControl.nScreen==3) {
-            Gdx.input.setInputProcessor(stage);//uesr changes the control of the start menu to this when screens change
-        }
 
         //char stuff
         arTraps=saw.getTrapArray();
@@ -292,10 +385,10 @@ public class Play extends Game {
         }
 
 
-        if(bDead==false) {
+    //    if(bDead==false) {
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
-        }
+     //   }
 
 
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
@@ -304,6 +397,9 @@ public class Play extends Game {
         //Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
 
         if(bDead==true){
+            if(DeadTime==-1){
+                DeadTime=Time;
+            }
          //   world.destroyBody(CharBody);
            // world.destroyBody(CharBody2);
             //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
@@ -311,6 +407,10 @@ public class Play extends Game {
             CharBody.setLinearVelocity(0, 0);
             bArrowShot=true;
             stage.clear();
+            Gdx.input.setInputProcessor(stage2);
+            if((Time-DeadTime)>4) {
+                deathWindow.setVisible(true);
+            }
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
 
             /*****************SERVER STUFF IF ONLINE****************/
@@ -636,18 +736,34 @@ public class Play extends Game {
             sSaw.setRotation(sSaw.getRotation()-40);
             sSaw.draw(batch);
         }
+
+
         batch.end();
         for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
             world.step(1f/60f, 8, 3);//moves the box2d world
         }
         stage.draw();
+        stage2.draw();
     }
     @Override
     public void dispose(){//disposes stuff
-       // batch.dispose();
+        batch.dispose();
         world.dispose();
         stage.dispose();
         Map.dispose();
+        MapRenderer.dispose();
+        b2Renderer.dispose();
+        Atlas.dispose();
+        touchpadMoveSkin.dispose();
+        btnJumpSkin.dispose();
+        touchpadMoveSkin.dispose();
+        death.dispose();
+        character.dispose();
+
+
+//        batch.dispose();
+       // stage.dispose();
+        stage2.dispose();
     }
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
