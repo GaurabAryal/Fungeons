@@ -53,9 +53,8 @@ public class Play extends Game {
     World world=new World(gravity,false);
 
     DecimalFormat twoDec;
-    Label timeLabel;
+    Label timeLabel, timeLabel2;
     String chatId;
-
     JSONObject jsonObject;
     boolean bWent;
 
@@ -74,7 +73,7 @@ public class Play extends Game {
     OrthogonalTiledMapRenderer MapRenderer;
 
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
-    float Time, DeadTime, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
+    float Time, DeadTime,TimeDisplay, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
     float fCharX,fCharY;
     int nCharVX, nCharVY;
@@ -119,6 +118,7 @@ public class Play extends Game {
     public void create() {
 
         world=new World(gravity,false);
+        PPM=(1f/16f);
 
         nScreenWidth = Gdx.graphics.getWidth();
         nScreenHeight = Gdx.graphics.getHeight();
@@ -131,7 +131,7 @@ public class Play extends Game {
         CurMove=new Vector2();
         ArrowMove=new Vector2();
         jointDef = new WeldJointDef();
-        PPM=(1f/16f);
+
         Time=1;
         DeadTime=-1;
         ArrowTime=1;
@@ -142,6 +142,7 @@ public class Play extends Game {
         bCanJump=true;
         bArrowShot=true;
         bDead=false;
+        bZoomOut=false;
         twoDec = new DecimalFormat("#0.00");
 
         character = new Character();
@@ -162,8 +163,10 @@ public class Play extends Game {
 
         /*****Scoreeeee*******/
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        timeLabel = new Label("", skin);
-        timeLabel.setPosition(0, nScreenHeight - 10);
+        skin.getFont("default-font").setScale(nScreenHeight/256f);
+        timeLabel = new Label("0.00", skin);
+        timeLabel2=new Label("0.00", skin);
+        timeLabel.setPosition(5, nScreenHeight - timeLabel.getHeight());
         stage.addActor(timeLabel);
 
         deathWindow = new Window("Too Bad", skin);
@@ -182,7 +185,7 @@ public class Play extends Game {
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
         BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
-        ButtonFont.setScale(nScreenWidth / 1024f);//will implement when Texture pack is fixed
+        ButtonFont.setScale(nScreenWidth / 712f);//will implement when Texture pack is fixed
         TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite, dbtnWhite, dbtnWhite, ButtonFont);
         skin.add("btnWhiteStyle", btnWhiteStyle);
 
@@ -196,17 +199,19 @@ public class Play extends Game {
         dBGWall = new TextureRegionDrawable(BGWall);
        // deathWindow.setBackground(dBGWall);
 
-        deathWindow.setSize(nScreenWidth / 3f, nScreenHeight / 2f);
+        deathWindow.setSize(nScreenWidth / 2f, nScreenHeight / 1.6f);
         deathWindow.setPosition((nScreenWidth/2)-(deathWindow.getWidth()/2),(nScreenHeight/2)-(deathWindow.getHeight()/2));
         deathWindow.setColor(0.2f, 0.2f, 0.2f, 0.9f);
         deathWindow.row();
-        btnRetry.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 12f);
+        deathWindow.row();
+        btnRetry.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
         deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 8).padTop(deathWindow.getHeight() / 8);
         deathWindow.row();
-        btnMaps.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        btnMaps.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
         deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 8);
         deathWindow.row();
-        btnMain.setSize(deathWindow.getWidth() / 1.5f, deathWindow.getHeight() / 6f);
+        btnMain.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
         deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 8);
         deathWindow.setVisible(false);
         deathWindow.setBackground(dBGWall);
@@ -337,6 +342,10 @@ public class Play extends Game {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Time += Gdx.graphics.getDeltaTime();           // #15
+
+
+      //  timeLabel.setText(String.valueOf(TimeDisplay));
+
         camera.position.set(fCharX, fCharY,0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -385,11 +394,15 @@ public class Play extends Game {
         }
 
 
-    //    if(bDead==false) {
-            fCharX = CharBody.getPosition().x;
-            fCharY = CharBody.getPosition().y;
-     //   }
-
+        if(bDead==false) {
+            TimeDisplay=Time;
+            timeLabel.setText(twoDec.format(Time));
+            timeLabel2.setText("Time:  "+twoDec.format(Time));
+         //   timeLabel.setText(String.format("%.2f",Time));
+          //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
+        }
+        fCharX = CharBody.getPosition().x;
+        fCharY = CharBody.getPosition().y;
 
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
@@ -606,14 +619,11 @@ public class Play extends Game {
 
         bZoomOut=false;
             for(int i=-5;i<=5;i++) { //loop left and right 5 tiles each way on the map
-                try {
                     if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
                             .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
                         bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
                         break; //leaves loop incase next tile does not have hit property
                     }
-                }
-                catch(NullPointerException e){}
             }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
             camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/3;
@@ -623,6 +633,7 @@ public class Play extends Game {
             camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
             camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
         }
+
         //Arrow Stuff Now--
 
         if(touchpadArrow.isTouched() && ArrowTime>1){//Arrow time prevents rapid arrow shooting
@@ -737,7 +748,6 @@ public class Play extends Game {
             sSaw.draw(batch);
         }
 
-
         batch.end();
         for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
             world.step(1f/60f, 8, 3);//moves the box2d world
@@ -750,6 +760,7 @@ public class Play extends Game {
         batch.dispose();
         world.dispose();
         stage.dispose();
+        stage2.dispose();
         Map.dispose();
         MapRenderer.dispose();
         b2Renderer.dispose();
@@ -763,7 +774,7 @@ public class Play extends Game {
 
 //        batch.dispose();
        // stage.dispose();
-        stage2.dispose();
+
     }
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
