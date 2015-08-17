@@ -43,7 +43,7 @@ public class GameRooms extends Game {
 
     Skin skin;
     Stage stage;
-    int nSHeight, nSWidth;
+    int nSHeight, nSWidth, Results = -1;
     ScrollPane scrollPane;
     List list;
     Table gameroomTable;
@@ -268,72 +268,74 @@ public class GameRooms extends Game {
         Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() { // Listens to the server response
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                gamerooms.clear();
-                table.clearChildren();
                 try {
                     jsonObject = new JSONObject(httpResponse.getResultAsString());
                     JSONArray results = (JSONArray) jsonObject.get("results");
-                    for (int n = 0; n < results.length(); n++) {
-                        resultObject = (JSONObject) results.get(n);
-                        gamerooms.add(resultObject.get("Name").toString());
-                    }
-                    list.clearItems();
-                    list.setItems(gamerooms.toArray());
-                    table.add(btnRefresh).height(100).width(100);
-                    //table.row();
-                    scrollPane = new ScrollPane(list,skin);
-                    scrollPane.setColor(0.2f,0.2f,0.2f,0.7f);//makes it translucent asaposed to opaque or transparent
-                    scrollPane.addListener(new EventListener() {
-                        @Override
-                        public boolean handle(Event event) {
-
-                            if(pos>((int) scrollPane.getScrollY()+9) || pos<((int)scrollPane.getScrollY()-9)){
-                                //System.out.println(scrollPane.getScrollY() +"    "+ pos);
-                                ctpos=0;
-                            }
-                            else if (ctpos>3 ){
-                                JSONArray results = (JSONArray) jsonObject.get("results");
-                                for (int n = 0; n < results.length(); n++) {
-                                    resultObject = (JSONObject) results.get(n);
-                                    //System.out.println(list.getSelected().toString() + resultObject.get("Name").toString());
-                                    if (resultObject.get("Name").toString().equals(list.getSelected().toString())&&gameTable.getRows()<3) {
-                                        resultObject = (JSONObject) results.get(n);
-                                        gameTable.add(resultObject.get("Name").toString());
-                                        gameTable.row();
-                                        gameTable.add(arsMaps[Integer.parseInt(resultObject.get("map").toString())]);
-                                        gameTable.row();
-                                        if (resultObject.get("isJoinable").toString().equals("true")) {
-                                            gameTable.add("Open");
-                                        } else {
-                                            gameTable.add("Closed");
-                                        }
-                                        gameTable.row();
-                                        gameTable.add(btnExit).width(100).height(50);
-                                        gameTable.add(btnJoin).width(100).height(50);
-                                        break;
-                                    }
-                                }
-                                window.clear();
-                                window.setVisible(true);
-                                window.add(gameTable);
-                                stage.addActor(window);
-                            }
-                            pos = (int) scrollPane.getScrollY();
-                            ctpos++;
-                            return false;
+                    if (results.length()!= Results) {
+                        Results = results.length();
+                        gamerooms.clear();
+                        table.clearChildren();
+                        for (int n = 0; n < results.length(); n++) {
+                            resultObject = (JSONObject) results.get(n);
+                            gamerooms.add(resultObject.get("Name").toString());
                         }
-                    });
-                    table.add(btnAddGameroom).height(100).width(100);
-                    table.row().height(nSHeight);
-                    //scrollPane.setFillParent(true);
+                        list.clearItems();
+                        list.setItems(gamerooms.toArray());
+                        table.add(btnRefresh).height(100).width(100);
+                        //table.row();
+                        scrollPane = new ScrollPane(list, skin);
+                        scrollPane.setColor(0.2f, 0.2f, 0.2f, 0.7f);//makes it translucent asaposed to opaque or transparent
+                        scrollPane.addListener(new EventListener() {
+                            @Override
+                            public boolean handle(Event event) {
 
-                    table.add(scrollPane).width(nSWidth).colspan(2);
+                                if (pos > ((int) scrollPane.getScrollY() + 9) || pos < ((int) scrollPane.getScrollY() - 9)) {
+                                    //System.out.println(scrollPane.getScrollY() +"    "+ pos);
+                                    ctpos = 0;
+                                } else if (ctpos > 3) {
+                                    JSONArray results = (JSONArray) jsonObject.get("results");
+                                    for (int n = 0; n < results.length(); n++) {
+                                        resultObject = (JSONObject) results.get(n);
+                                        //System.out.println(list.getSelected().toString() + resultObject.get("Name").toString());
+                                        if (resultObject.get("Name").toString().equals(list.getSelected().toString()) && gameTable.getRows() < 3) {
+                                            resultObject = (JSONObject) results.get(n);
+                                            gameTable.add(resultObject.get("Name").toString());
+                                            gameTable.row();
+                                            gameTable.add(arsMaps[Integer.parseInt(resultObject.get("map").toString())]);
+                                            gameTable.row();
+                                            if (resultObject.get("isJoinable").toString().equals("true")) {
+                                                gameTable.add("Open");
+                                            } else {
+                                                gameTable.add("Closed");
+                                            }
+                                            gameTable.row();
+                                            gameTable.add(btnExit).width(100).height(50);
+                                            gameTable.add(btnJoin).width(100).height(50);
+                                            break;
+                                        }
+                                    }
+                                    window.clear();
+                                    window.setVisible(true);
+                                    window.add(gameTable);
+                                    stage.addActor(window);
+                                }
+                                pos = (int) scrollPane.getScrollY();
+                                ctpos++;
+                                return false;
+                            }
+                        });
+                        table.add(btnAddGameroom).height(100).width(100);
+                        table.row().height(nSHeight);
+                        //scrollPane.setFillParent(true);
 
-                    table.setFillParent(true);
-                    //   table.setPosition(nSWidth/2,nSHeight);
+                        table.add(scrollPane).width(nSWidth).colspan(2);
 
-                    table.center().top().pad(0);
-                    stage.addActor(table);
+                        table.setFillParent(true);
+                        //   table.setPosition(nSWidth/2,nSHeight);
+
+                        table.center().top().pad(0);
+                        stage.addActor(table);
+                    }
                     //stage.addActor(scrollPane);
                 } catch (Exception e) {
                     System.out.println(e);
