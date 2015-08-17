@@ -21,7 +21,7 @@ public class main extends Game {
     GameRoom gameRoom;
     Play play;
     ScoresDisplay scoresDisplay;
-    int nScreen = 1;
+    int nScreen = 1, nOldScreen=0;
     ScreenControl screenControl;
     @Override
     public void create () {
@@ -36,7 +36,7 @@ public class main extends Game {
         gameRooms.create();
         gameRooms.setScreenControl(screenControl);
         gameRoom = new GameRoom();
-      // gameRoom.create();
+        //gameRoom.create();
         gameRoom.setScreenControl(screenControl);
         scoresDisplay = new ScoresDisplay();
         scoresDisplay.setScreenControl(screenControl);
@@ -50,11 +50,12 @@ public class main extends Game {
     public void render(){
         nScreen = screenControl.nScreen;
         if (nScreen == 1) {
+            Gdx.input.setInputProcessor(mainMenu.stage);
             mainMenu.render();
-
         } else if (nScreen == 2) {
             gameRooms.render();
         } else if (nScreen == 3){
+            Gdx.input.setInputProcessor(play.stage);
             play.render();
             if(MenuSong.isPlaying()==true){
                 MenuSong.stop();
