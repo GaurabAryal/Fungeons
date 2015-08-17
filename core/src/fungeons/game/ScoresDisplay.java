@@ -135,12 +135,12 @@ public class ScoresDisplay extends Game {
                             length = results.length();
                             scoresTable.reset();
                             scoresTable.add("Scores");
-                            for (int i = 0; i < results.length(); i++) {
+                            for (int i = results.length()-1; i >= 0; i--) {
                                 scoresTable.row();
                                 scoresTable.add(results.getString(i));
                             }
                             if (length<4){
-                                for (int i = length; i < results.length(); i++) {
+                                for (int i = length; i < 4; i++) {
                                     scoresTable.row();
                                     scoresTable.add("In progress...");
                                 }

@@ -204,7 +204,7 @@ public class GameRooms extends Game {
                 pO.put("start", false);
                 pO.saveInBackground();
                 ParseObject pO2 = new ParseObject("chat");
-                pO2.put("gameroom",1);
+                pO2.put("gameroom",0);
                 pO2.put("game",txtName.getText());
                 pO2.save(new SaveCallback() {
 
