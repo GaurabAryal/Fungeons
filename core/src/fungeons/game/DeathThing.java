@@ -14,7 +14,8 @@ import com.badlogic.gdx.utils.Array;
 public class DeathThing {
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
-    TextureRegion[][] DThingRgn;
+    TextureRegion[][] DThingRgns;
+    TextureRegion[] DThingRgn;
     Animation DThingAnim;
     Sprite DThingSprite;
     Boolean bDead=false;
@@ -22,10 +23,13 @@ public class DeathThing {
     Array<Vector2> arTraps=new Array<Vector2>();
     Vector2 CharVec = new Vector2(0,0);
     public void create(){
-        Atlas = new TextureAtlas("Fungeons_2.pack");
+        VX=2 * PPM;
+        VY=0;
+        Atlas = new TextureAtlas("Fungeons_3.pack");
         Region=Atlas.findRegion("Death thing");
-        DThingRgn=Region.split(Region.getRegionWidth()/5,Region.getRegionHeight());
-        DThingAnim=new Animation(0.1f,DThingRgn[0]);
+        DThingRgns=Region.split(Region.getRegionWidth()/5,Region.getRegionHeight());
+
+        DThingAnim=new Animation(0.1f,DThingRgns[0]);
         DThingSprite=new Sprite();
 
     }//for change direction, check the dir your going then one we hit a wall, check 90 degrees rotation, if thats a wall go the other way, if not then go that way
@@ -40,10 +44,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -4*PPM;
+                                VY = -PPM;
                                 break;
                             } else {
-                                VY = 4*PPM;
+                                VY = PPM;
                             }
                         }
                     }
@@ -58,10 +62,10 @@ public class DeathThing {
                         for(int j=0;j<=3;j++){
                             if (Col.getCell((int) ((X / PPM) / 64) , (int) ((Y / PPM) / 64)+j)//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VY = -4*PPM;
+                                VY = -PPM;
                                 break;
                             } else {
-                                VY = 4*PPM;
+                                VY = PPM;
                             }
                         }
                     }
@@ -76,10 +80,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -8 * PPM;
+                                VX = -2 * PPM;
                                 break;
                             } else {
-                                VX = 8 * PPM;
+                                VX = 2 * PPM;
                             }
                         }
                     }
@@ -94,10 +98,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -8 * PPM;
+                                VX = -4 * PPM;
                                 break;
                             } else {
-                                VX = 8 * PPM;
+                                VX = 4 * PPM;
                             }
                         }
                     }
