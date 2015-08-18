@@ -1,0 +1,278 @@
+
+Fungeons_3.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Death thing ALT
+  rotate: false
+  xy: 1, 1548
+  size: 2240, 448
+  orig: 2240, 448
+  offset: 0, 0
+  index: -1
+Death thing
+  rotate: false
+  xy: 1, 1098
+  size: 2240, 448
+  orig: 2240, 448
+  offset: 0, 0
+  index: -1
+Instructions Page
+  rotate: false
+  xy: 2243, 1276
+  size: 1280, 720
+  orig: 1280, 720
+  offset: 0, 0
+  index: -1
+FungeonsFont
+  rotate: false
+  xy: 1, 584
+  size: 610, 512
+  orig: 610, 512
+  offset: 0, 0
+  index: -1
+FungeonsFontChatW
+  rotate: false
+  xy: 1, 70
+  size: 610, 512
+  orig: 610, 512
+  offset: 0, 0
+  index: -1
+mockFont
+  rotate: false
+  xy: 613, 584
+  size: 610, 512
+  orig: 610, 512
+  offset: 0, 0
+  index: -1
+Char Death Animation ALT
+  rotate: false
+  xy: 1225, 840
+  size: 640, 256
+  orig: 640, 256
+  offset: 0, 0
+  index: -1
+Char Death Animation
+  rotate: false
+  xy: 1225, 582
+  size: 640, 256
+  orig: 640, 256
+  offset: 0, 0
+  index: -1
+BlockSpike Trap ALT
+  rotate: false
+  xy: 2243, 1146
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+Fungeon Char 64 W
+  rotate: false
+  xy: 3525, 1612
+  size: 384, 384
+  orig: 384, 384
+  offset: 0, 0
+  index: -1
+Fungeon Char 64
+  rotate: false
+  xy: 613, 198
+  size: 384, 384
+  orig: 384, 384
+  offset: 0, 0
+  index: -1
+BlockSpike Trap
+  rotate: false
+  xy: 2885, 1146
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+fire trap ALT
+  rotate: false
+  xy: 2243, 1016
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+fire trap
+  rotate: false
+  xy: 2885, 1016
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+Arrow Legs ALT
+  rotate: false
+  xy: 3525, 1354
+  size: 384, 256
+  orig: 384, 256
+  offset: 0, 0
+  index: -1
+TouchPad BackGround Alternate
+  rotate: false
+  xy: 1867, 796
+  size: 300, 300
+  orig: 300, 300
+  offset: 0, 0
+  index: -1
+Spike Trap ALT
+  rotate: false
+  xy: 2169, 886
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+Spike Trap
+  rotate: false
+  xy: 2811, 886
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+Arrow Legs
+  rotate: false
+  xy: 3527, 1096
+  size: 384, 256
+  orig: 384, 256
+  offset: 0, 0
+  index: -1
+TouchPad BackGround
+  rotate: false
+  xy: 1867, 494
+  size: 300, 300
+  orig: 300, 300
+  offset: 0, 0
+  index: -1
+Back Button
+  rotate: false
+  xy: 2169, 628
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+Button 1
+  rotate: false
+  xy: 1, 8
+  size: 384, 60
+  orig: 384, 60
+  offset: 0, 0
+  index: -1
+Button 2
+  rotate: false
+  xy: 613, 136
+  size: 384, 60
+  orig: 384, 60
+  offset: 0, 0
+  index: -1
+BuzzSaw ALT
+  rotate: false
+  xy: 2169, 498
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+BuzzSaw
+  rotate: false
+  xy: 2427, 756
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+Fungeon Char 32
+  rotate: false
+  xy: 999, 390
+  size: 160, 192
+  orig: 160, 192
+  offset: 0, 0
+  index: -1
+FONT
+  rotate: false
+  xy: 3527, 1070
+  size: 260, 24
+  orig: 260, 24
+  offset: 0, 0
+  index: -1
+Arrow arms ALT
+  rotate: false
+  xy: 3911, 1868
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Arrow arms
+  rotate: false
+  xy: 2427, 626
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+platform animation ALT
+  rotate: false
+  xy: 2685, 788
+  size: 128, 96
+  orig: 128, 96
+  offset: 0, 0
+  index: -1
+platform animation
+  rotate: false
+  xy: 999, 292
+  size: 128, 96
+  orig: 128, 96
+  offset: 0, 0
+  index: -1
+Jump Button
+  rotate: false
+  xy: 3911, 1766
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Touchpad Knob Alternate
+  rotate: false
+  xy: 2427, 524
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Touchpad Knob
+  rotate: false
+  xy: 2557, 654
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Arrow Legs Still ALT
+  rotate: false
+  xy: 2169, 1032
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Arrow Legs Still
+  rotate: false
+  xy: 3453, 950
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+BG Wall Brick
+  rotate: false
+  xy: 613, 70
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Arrow ALT
+  rotate: false
+  xy: 1, 1
+  size: 32, 5
+  orig: 32, 5
+  offset: 0, 0
+  index: -1
+Arrow
+  rotate: false
+  xy: 387, 63
+  size: 32, 5
+  orig: 32, 5
+  offset: 0, 0
+  index: -1

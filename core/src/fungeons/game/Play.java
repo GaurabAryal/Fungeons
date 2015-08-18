@@ -19,7 +19,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -65,7 +64,6 @@ public class Play extends Game {
     WeldJointDef jointDef;
     Joint joint;
 
-    Box2DDebugRenderer b2Renderer;
 
     TiledMap Map;
     TiledMapTileLayer MapCol, MapAlt;
@@ -83,7 +81,7 @@ public class Play extends Game {
     TextureRegion[][] MoveBG1, MoveKnob1, btnJump1;
 
     SpriteBatch batch;
-    Sprite sArrow, sChar, sDThing;
+    Sprite sArrow, sChar, sDThing,sChar2;
     Arrow arrow;
     Array<Arrow> arArrows;
     float ArrowX, ArrowY;
@@ -104,7 +102,7 @@ public class Play extends Game {
     Stage stage, stage2;
     Boolean bCanJump, bLight=true, bArrowShot, bZoomOut, bDead;
 
-    Sprite sSaw, sFire, sSpike, sSpikeBlock;
+    Sprite sSaw, sPlat, sFire, sSpike, sSpikeBlock;
 
     Character character;
     Platform platform;
@@ -119,6 +117,7 @@ public class Play extends Game {
 
         world=new World(gravity,false);
         PPM=(1f/16f);
+        Atlas = new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));//grabs texture pack
 
         nScreenWidth = Gdx.graphics.getWidth();
         nScreenHeight = Gdx.graphics.getHeight();
@@ -156,9 +155,10 @@ public class Play extends Game {
 
         character.create();
         death.create();
+        platform.create();
         stage = new Stage();
         stage2 = new Stage();
-        Atlas = new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));//grabs texture pack
+
         batch = new SpriteBatch();
 
         /*****Scoreeeee*******/
@@ -200,7 +200,7 @@ public class Play extends Game {
        // deathWindow.setBackground(dBGWall);
 
         deathWindow.setSize(nScreenWidth / 2f, nScreenHeight / 1.6f);
-        deathWindow.setPosition((nScreenWidth/2)-(deathWindow.getWidth()/2),(nScreenHeight/2)-(deathWindow.getHeight()/2));
+        deathWindow.setPosition((nScreenWidth / 2) - (deathWindow.getWidth() / 2), (nScreenHeight / 2) - (deathWindow.getHeight() / 2));
         deathWindow.setColor(0.2f, 0.2f, 0.2f, 0.9f);
         deathWindow.row();
         deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 12f);
@@ -274,7 +274,6 @@ public class Play extends Game {
         //the rendering scale does not change any sort of scaling for the actual map, just the rendering of it, so the tiles can render
         // to be 2 pixels wide, when they are actually 32 pixels wide, or 64 pixels wide ect.  it makes collsion detection difficult
 
-        b2Renderer = new Box2DDebugRenderer();
 
         MapDef = new BodyDef();
         MapFixDef = new FixtureDef();
@@ -300,7 +299,7 @@ public class Play extends Game {
         CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
         CharBody2 = world.createBody(character.CharDef);
-        CharBody2.createFixture(character.CharFixDef);
+        CharBody2.createFixture(character.CharFixDef2);
         CharBody.setFixedRotation(true);// makes it so the body cannot rotate
         jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
         jointDef.bodyA = CharBody;//get the first body that will be on the joint
@@ -348,10 +347,11 @@ public class Play extends Game {
 
         camera.position.set(fCharX, fCharY,0);
         camera.update();
+
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
         MapRenderer.render();
-        b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
+       // b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
         //char stuff
         arTraps=saw.getTrapArray();
@@ -360,10 +360,10 @@ public class Play extends Game {
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
         if(touchpadMove.getKnobPercentX()>=0.50){//if the movement knob is move 50% left or right the character moves 10m/s left or right
-            nCharVX= (int) (10f);
+            nCharVX= (int) (7f);
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
-            nCharVX= (int) (-10f);
+            nCharVX= (int) (-7f);
         }
         else{
             nCharVX=0;
@@ -374,7 +374,7 @@ public class Play extends Game {
 
         bCanJump=character.getJump(CharBody.getLinearVelocity().y, btnJump);
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,14);
+            CharBody.setLinearVelocity(CurMove.x,11f);
             CurMove.set(CharBody.getLinearVelocity());
             //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }
@@ -382,15 +382,21 @@ public class Play extends Game {
         nCharVY=(int)CharBody.getLinearVelocity().y;
             if (ArrowTime < 1 || bArrowShot == false) {//if either the arrow is drawn, or it has been shot, but a second hasn't passed
                 //the character is unable to move
-                nCharVX = 0;
-                CharBody.setLinearVelocity(0, CurMove.y);
+             //   nCharVX = 0;
+               // CharBody.setLinearVelocity(0, CurMove.y);
             }
 
-        if(nCharVX<0 || ArrowMove.x<0){
+        if(nCharVX<0){
             nDir=1;
         }//sets which way the character is facing, 1 is left, 2 is right
-        if(nCharVX>0 || ArrowMove.x>0){
+        if(nCharVX>0){
             nDir=2;
+        }
+        if(ArrowMove.x>0){//these have to be after because they take priority over velocity
+            nDir=2;
+        }
+        if(ArrowMove.x<0){
+            nDir=1;
         }
 
 
@@ -398,11 +404,12 @@ public class Play extends Game {
             TimeDisplay=Time;
             timeLabel.setText(twoDec.format(Time));
             timeLabel2.setText("Time:  "+twoDec.format(Time));
+            fCharX = CharBody.getPosition().x;
+            fCharY = CharBody.getPosition().y;
          //   timeLabel.setText(String.format("%.2f",Time));
           //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
-        fCharX = CharBody.getPosition().x;
-        fCharY = CharBody.getPosition().y;
+
 
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
 
@@ -421,7 +428,7 @@ public class Play extends Game {
             bArrowShot=true;
             stage.clear();
             Gdx.input.setInputProcessor(stage2);
-            if((Time-DeadTime)>4) {
+            if((Time-DeadTime)>4.5f) {
                 deathWindow.setVisible(true);
             }
             //do more death stuff.  might even just call a function that will have everything we need to do at death in it
@@ -637,7 +644,7 @@ public class Play extends Game {
         //Arrow Stuff Now--
 
         if(touchpadArrow.isTouched() && ArrowTime>1){//Arrow time prevents rapid arrow shooting
-            ArrowMove.set(-touchpadArrow.getKnobPercentX()*2,-touchpadArrow.getKnobPercentY()*2);//sets arrow velocity using touchpad
+            ArrowMove.set(-touchpadArrow.getKnobPercentX(),-touchpadArrow.getKnobPercentY());//sets arrow velocity using touchpad
             CharRotation=(float) (Math.atan(ArrowMove.y/ArrowMove.x))* MathUtils.radiansToDegrees;//rotates arrow sprite
             bArrowShot=false;//changes boolean to indicate the arrow is drawn
         }
@@ -656,14 +663,17 @@ public class Play extends Game {
 
         batch.begin();
 
-        if(ArrowTime<1|| bArrowShot==false){
-            sChar.setPosition(fCharX-2,fCharY);//if the character's sprite is the arrow shooting one, we change it's position because it is smaller than the other sprites
+        if(ArrowTime<0.8f|| bArrowShot==false){
+            if(bDead==false) {
+                sChar.setPosition(fCharX - 2, fCharY);//if the character's sprite is the arrow shooting one, we change it's position because it is smaller than the other sprites
+                sChar2 = character.getSprite2();
+                sChar2.draw(batch);
+            }
+
         }
 
-        if( nDir==2 && (bArrowShot==false||(bArrowShot==true && ArrowTime<1))){
-            sChar.flip(true,false);//flips sprite to face either way since we only have one image facing one way
-        }
         sChar.draw(batch);
+
 
 
         for(int i =0; i<arArrows.size; i++) {//loops through the array of arrows
@@ -673,7 +683,7 @@ public class Play extends Game {
             ArrowY = arrow.getArrowY();
             ArrowVX = arrow.getArrowVX();
             ArrowVY = arrow.getArrowVY();
-            ArrowVY -= 9.8 / 180f;//sets arrow gravity, we want them to fall pretty slow
+            ArrowVY -= 9.8 / 1024f;//sets arrow gravity, we want them to fall pretty slow
             ArrowX += ArrowVX;
             ArrowY += ArrowVY;
             sArrow.setRotation((float) (Math.atan(ArrowVY / ArrowVX)) * MathUtils.radiansToDegrees);//rotates arrow based on velocity
@@ -747,11 +757,15 @@ public class Play extends Game {
             sSaw.setRotation(sSaw.getRotation()-40);
             sSaw.draw(batch);
         }
-
-        batch.end();
-        for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
-            world.step(1f/60f, 8, 3);//moves the box2d world
+        for(int i=0;i<arPlats.size;i++){
+            sPlat=arPlats.get(i).getSprite(Atlas);
+            sPlat.draw(batch);
         }
+        batch.end();
+       // for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
+            world.step(1f/60f, 8, 3);//moves the box2d world
+        world.step(1f/60f, 8, 3);//moves the box2d world
+      //  }
         stage.draw();
         stage2.draw();
     }
@@ -763,7 +777,6 @@ public class Play extends Game {
         stage2.dispose();
         Map.dispose();
         MapRenderer.dispose();
-        b2Renderer.dispose();
         Atlas.dispose();
         touchpadMoveSkin.dispose();
         btnJumpSkin.dispose();

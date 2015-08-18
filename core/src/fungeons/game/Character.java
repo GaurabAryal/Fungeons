@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
@@ -19,22 +20,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
  * Created by Ben on 2015-04-28.
  */
 public class Character extends Sprite {
-    int  nDeltaY=0, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth, nUp1Dn2;
+    int  nDeltaY, nOldX=128, nOldY=128, nDir=2, Columns=6, Rows=6, nImgHeight, nImgWidth, nUp1Dn2;
     float fCharX=20, fCharY=5, ArrowTime, CharRotation,Time, GroundTime=0;
     //Dir 1 is left, Dir 2 is right
     int nCharVX, nCharVY;
-    Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, DeathR, DeathL, DeathHat, CurAnim, OldAnim;
-    Sprite sChar;
+    Animation WalkR,WalkL,StandR,StandL,JumpR,JumpL, DeathR, DeathL, DeathHat,LegsL, LegsR, LegsJL, LegsJR, CurAnim, OldAnim;
+    Sprite sChar, sLegs;
     TextureAtlas.AtlasRegion CharSheet;
     TextureAtlas Atlas;
     Boolean bCanJump=true, bArrowShot, bDead=false;
-    TextureRegion[][] ArrowArms;
+    TextureRegion[][] ArrowArms, ArrowLegs, ArrowLegsStill;
     Vector2 ArrowMove;
 
     BodyDef CharDef;
     Body CharBody, CharBody2;
-    FixtureDef CharFixDef;
-    CircleShape CharBox;
+
+    FixtureDef CharFixDef, CharFixDef2;
+    CircleShape CharCirc;
+    PolygonShape CharBox;
     WeldJointDef jointDef;
     Joint joint;
     Play play;
@@ -43,7 +46,7 @@ public class Character extends Sprite {
     public void create(){
 
         play = new Play();
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         CharSheet=Atlas.findRegion("Fungeon Char 64 W");
         nImgHeight=CharSheet.getRegionHeight()/Rows;
         nImgWidth=CharSheet.getRegionWidth()/Columns;
@@ -57,36 +60,67 @@ public class Character extends Sprite {
         JumpL=new Animation(0.075f,Character[5]);
         CurAnim=StandR;
         CharSheet=Atlas.findRegion("Arrow arms ALT");
-        ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight());
+        ArrowArms= CharSheet.split(CharSheet.getRegionWidth()/2, CharSheet.getRegionHeight()/2);
+
+        CharSheet=Atlas.findRegion("Arrow Legs Still ALT");
+        ArrowLegsStill=CharSheet.split(CharSheet.getRegionWidth(),CharSheet.getRegionHeight());
+        sLegs=new Sprite(ArrowLegsStill[0][0]);
+
+        CharSheet=Atlas.findRegion("Arrow Legs ALT");
+        ArrowLegs=CharSheet.split(CharSheet.getRegionWidth() / 6, CharSheet.getRegionHeight() / 4);
+        LegsR=new Animation(0.075f, ArrowLegs[0]);
+        LegsL=new Animation(0.075f, ArrowLegs[1]);
+        LegsJR=new Animation(0.075f, ArrowLegs[2]);
+        LegsJL=new Animation(0.075f, ArrowLegs[3]);
+
+
 
         CharSheet=Atlas.findRegion("Char Death Animation ALT");
-        TextureRegion[][] Death=CharSheet.split(CharSheet.getRegionWidth()/10,CharSheet.getRegionHeight()/3);
+        TextureRegion[][] Death=CharSheet.split(CharSheet.getRegionWidth()/10,CharSheet.getRegionHeight()/4);
+        TextureRegion[] DeathHatRgn = new TextureRegion[20];
+        int index=0;
+        for(int i=2;i<4;i++){
+            for(int j=0;j<10;j++){
+                DeathHatRgn[index++]=Death[i][j];
+            }
+        }
+
         DeathR=new Animation(0.21f, Death[0]);
         DeathL = new Animation(0.21f, Death[1]);
-        DeathHat = new Animation(0.1f, Death[2]);
+        DeathHat = new Animation(0.1f, DeathHatRgn);
         OldAnim=DeathHat;
 
         CharDef=new BodyDef();
-        CharBox= new CircleShape();
+        CharCirc= new CircleShape();
         CharFixDef=new FixtureDef();
         jointDef= new WeldJointDef();
+        CharBox = new PolygonShape();
+        CharFixDef2 = new FixtureDef();
 
-        //CharBox.setAsBox(1f,2f);
-        CharBox.setRadius(1f);
+        CharBox.setAsBox(1f,1.5f);
+        CharCirc.setRadius(1f);
 
-        CharDef.position.set(30, 4);
-        CharFixDef.shape=CharBox;
+        CharDef.position.set(50, 4);
+        CharFixDef.shape=CharCirc;
         CharDef.type= BodyDef.BodyType.DynamicBody;
+        CharFixDef2.shape=CharBox;
 
         CharBody=play.world.createBody(CharDef);
 
         CharFixDef.density=1f;
         CharFixDef.restitution=0f;
         CharFixDef.friction=0;
+        CharFixDef2.density=1f;
+        CharFixDef2.restitution=0f;
+        CharFixDef2.friction=0;
 
-        CharBody.createFixture(CharFixDef);
-        CharDef.position.set(30,6);
+
+        CharBody2=play.world.createBody(CharDef);
+        CharBody2.createFixture(CharFixDef2);
+        CharDef.position.set(50,5.65f);
+
        // CharBody2=CharBody;
+        nDeltaY=0;
 
 
 
@@ -95,7 +129,7 @@ public class Character extends Sprite {
     public void setVars(int VX, int VY, float X, float Y, int Dir, Boolean CanJump, Boolean dead){
         Time += Gdx.graphics.getDeltaTime();
 
-        nDir=Dir;
+
         bCanJump=CanJump;
         bDead=dead;
         fCharX=X;
@@ -104,11 +138,8 @@ public class Character extends Sprite {
         nCharVY=VY;
 
         // all of this determines which animation the character performs
-        if(nCharVX<0){
-            nDir=1;
-        }
-        else if(nCharVX>0){
-            nDir=2;
+        if(nDir!=0) {
+            nDir=Dir;
         }
        /* if(nCharVY!=0){
             bCanJump=false;
@@ -149,14 +180,20 @@ public class Character extends Sprite {
 
             }
         }
+
         if(CurAnim!=OldAnim){
             Time=0;
             OldAnim=CurAnim;
+
         }
-        if(CurAnim.isAnimationFinished(Time)&&bDead==true){//assess whether the char is dead and if the time exceeds the time it takes to reach the end of the animation
-            CurAnim=DeathHat;
-            nDir=0;
+        if(CurAnim==DeathR || CurAnim==DeathL) {
+            if(CurAnim.isAnimationFinished(Time)){//assess whether the char is dead and if the time exceeds the time it takes to reach the end of the animation
+                CurAnim = DeathHat;
+                Time = 0;
+                nDir = 0;
+            }
         }
+
 
 
 
@@ -174,11 +211,21 @@ public class Character extends Sprite {
                 CharRotation = (float) (Math.atan(ArrowMove.y / ArrowMove.x)) * MathUtils.radiansToDegrees;
             }
             if (bArrowShot == false) {
-                sChar = new Sprite(ArrowArms[0][0]);
+                if(nDir==1){
+                    sChar = new Sprite(ArrowArms[0][0]);
+                }
+                if(nDir==2){
+                    sChar = new Sprite(ArrowArms[1][0]);
+                }
                 sChar.setRotation(CharRotation);
-
-            } else if (bArrowShot == true && ArrowTime < 1) {
-                sChar = new Sprite(ArrowArms[0][1]);
+            }
+            else if (bArrowShot == true && ArrowTime < 0.8f) {
+                if(nDir==1) {
+                    sChar = new Sprite(ArrowArms[0][1]);
+                }
+                if(nDir==2){
+                    sChar = new Sprite(ArrowArms[1][1]);
+                }
                 sChar.setRotation(CharRotation);
             }
 
@@ -194,6 +241,9 @@ public class Character extends Sprite {
         sChar.setOriginCenter();
         sChar.setPosition(fCharX-2,fCharY-1);
     //    sChar.setColor((float)Math.sin(Time)/2+0.5f,(float)Math.cos(2*Time)/2+0.5f, (float)Math.sin(3*Time)/2+0.5f, 1f);
+        if(CurAnim.equals(DeathHat) && DeathHat.isAnimationFinished(Time)==true){
+            sChar.setColor(0,0,0,0);//makes it invisible.  as if it dissapeared
+        }
 
         return(sChar);
     }
@@ -202,7 +252,7 @@ public class Character extends Sprite {
         if(VY<0.1 && VY>-0.1){
             GroundTime+=Gdx.graphics.getDeltaTime();
         }
-        if(VY<-0.1 || VY>0.1){
+        if(VY<-0.01 || VY>0.01){
             GroundTime=0;
             nDeltaY+=VY;//figured we could use this if structure for multiple things lol
         }
@@ -224,7 +274,7 @@ public class Character extends Sprite {
         else if(nCharVY!=0 && Jump.isPressed()==false){
             bCanJump=false;
         }
-        if(nDeltaY>=60){
+        if(nDeltaY>=220f){
             bCanJump=false;
         }
 
@@ -232,6 +282,35 @@ public class Character extends Sprite {
             bCanJump=true;
         }
         return(bCanJump);
+    }
+    public Sprite getSprite2(){
+     //   if(sChar==(Sprite)ArrowArms[0][0] || sChar==(Sprite)ArrowArms[0][1]){
+            if(nCharVX>0){
+                CurAnim=LegsR;//we can do this based entirely off of horizontal velocity because we only call when the person is using the bow
+                if(bCanJump==false || nCharVY!=0){
+                    CurAnim=LegsJR;
+                }
+            }
+            if(nCharVX<0){
+                CurAnim=LegsL;
+                if(bCanJump==false || nCharVY!=0){
+                    CurAnim=LegsJL;
+                }
+            }
+            sLegs=new Sprite(CurAnim.getKeyFrame(Time,true));
+
+            if(nCharVX==0){
+                sLegs=new Sprite (ArrowLegsStill[0][0]);
+            }
+        sLegs.setSize(4,4);
+        sLegs.setOriginCenter();
+        sLegs.setPosition(fCharX-2,fCharY-1);
+            return(sLegs);
+       // }
+        //else{
+        //    return(null);
+       // }
+
     }
     public void dispose(){
         Atlas.dispose();
