@@ -132,8 +132,6 @@ public class GameRoom extends Game {
 
     @Override
     public void create() {
-
-        Gdx.app.log("err","msg");
         chatObjectId();//grab chat obj id right away
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
