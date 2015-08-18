@@ -184,9 +184,11 @@ public class Play extends Game {
         Region = Atlas.findRegion("Button 1");
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
+        Region=Atlas.findRegion("Button 2");
+        Drawable dbtnWhiteDn = new TextureRegionDrawable(Region);
         BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         ButtonFont.setScale(nScreenWidth / 712f);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite, dbtnWhite, dbtnWhite, ButtonFont);
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite, dbtnWhiteDn, dbtnWhite, ButtonFont);
         skin.add("btnWhiteStyle", btnWhiteStyle);
 
         TextButton btnRetry = new TextButton("RETRY", btnWhiteStyle);
