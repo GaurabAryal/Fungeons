@@ -255,9 +255,16 @@ Arrow Legs Still
   orig: 64, 64
   offset: 0, 0
   index: -1
-BG Wall Brick
+BG Wall Brick 2
   rotate: false
   xy: 613, 70
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+BG Wall Brick
+  rotate: false
+  xy: 2815, 820
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

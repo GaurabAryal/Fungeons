@@ -98,10 +98,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -4 * PPM;
+                                VX = -2 * PPM;
                                 break;
                             } else {
-                                VX = 4 * PPM;
+                                VX = 2 * PPM;
                             }
                         }
                     }
@@ -110,7 +110,7 @@ public class DeathThing {
 
         X+=VX;
         Y+=VY;
-        if(CharVec.dst(X,Y)>45){
+        if(CharVec.dst(X,Y)>50){
             if(VX>0){
                 X+=1;
             }
@@ -139,7 +139,7 @@ public class DeathThing {
         arTraps=arTraps_;
         CharVec.set(CharX,CharY);
         for(int i=0;i<arTraps.size;i++){
-            if(arTraps.get(i).dst(CharVec)<=8.9){
+            if(arTraps.get(i).dst(CharVec)<=8.5f){
                 bDead=true;
             }
         }

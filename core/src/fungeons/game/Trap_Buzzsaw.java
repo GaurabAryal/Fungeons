@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.Array;
  * Created by Ben on 2015-07-09.
  */
 public class Trap_Buzzsaw {
-    float SawX, SawY, PPM=1f/16f, TileWidth, TileHeight, fCharX,fCharY;//save xy of tiledmap tile, then set sawx and y to that times ppm n stuff
-    int nChance=10, nRandS, nRandUD, nCharVX;//nRandSpawn and nRandUpDown
+    float SawX, PPM=1f/16f, TileWidth, TileHeight, fCharX,fCharY;//save xy of tiledmap tile, then set sawx and y to that times ppm n stuff
+    int nChance=20, nRandS, nRandUD, nCharVX, SawY;//nRandSpawn and nRandUpDown
     Vector2 vSaw=new Vector2(0,0), vTraps=new Vector2(0,0);
     Sprite sSaw;
     Array<Vector2> arTraps=new Array<Vector2>();
@@ -24,11 +24,10 @@ public class Trap_Buzzsaw {
             nCharVX = CharVX;//only updates when char is moving thus storing it's previous velocity if the player stops
         }
         SawX = 95;
-        SawY = 2f;
+        SawY = 2;
         TileHeight = Col.getTileHeight();
         TileWidth = Col.getTileWidth();
         nRandUD = (int)MathUtils.random(1);
-        System.out.println(nRandUD);
         try {
         for (int i = 0; i <= 5; i++) {//this is unique to buzzsaw because it can go on ceilings
 
@@ -37,7 +36,8 @@ public class Trap_Buzzsaw {
                         if (Col.getCell((int) ((CharX / PPM) / TileWidth) + 8, (int) ((CharY / PPM) / TileHeight) + i)
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX + (8 * PPM * TileHeight);
-                            SawY = (int)CharY + (i * PPM * TileHeight);
+                            SawY = 2+(int)(CharY/4)*4+(4*i);
+                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -45,7 +45,8 @@ public class Trap_Buzzsaw {
                         if (Col.getCell((int) ((CharX / PPM) / TileWidth) - 8, (int) ((CharY / PPM) / TileHeight) + i)
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX - (8 * PPM * TileHeight);
-                            SawY = (int)CharY + (i * PPM * TileHeight) ;
+                            SawY = 2+(int)(CharY/4)*4+(4*i);
+                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -56,7 +57,8 @@ public class Trap_Buzzsaw {
                         if (Col.getCell((int) ((CharX / PPM) / TileWidth) + 8, (int) ((CharY / PPM) / TileHeight) - i)
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX + (8 * PPM * TileHeight);
-                            SawY = (int)CharY - (i * PPM * TileHeight);
+                            SawY = 2+(int)(CharY/4)*4-(4*i);
+                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -64,34 +66,37 @@ public class Trap_Buzzsaw {
                         if (Col.getCell((int) ((CharX / PPM) / TileWidth) - 8, (int) ((CharY / PPM) / TileHeight) - i)
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX - (8 * PPM * TileHeight);
-                            SawY = (int)CharY - (i * PPM * TileHeight);
+                            SawY = 2+(int)(CharY/4)*4-(4*i);
+                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
                 }
 
-
+            System.out.println(i+"      1    "+CharY +"       "+SawY);
             }
+/*
             SawY+=7;//FIND NEW WAY TO CENTER THE SAWS ON THE WALL BLOCKS!!!!
             while(SawY%4!=0 && Col.getCell((int) ((SawX / PPM) / TileWidth), (int) ((SawY / PPM) / TileHeight))
                     .getTile().getProperties().containsKey("Hit")==false){
                 SawY--;
             }
-            SawY-=6;
+            SawY-=6;*/
         vSaw.set(SawX, SawY);
-                for(int i=-5;i<=5;i++){
+                for(int i=-6;i<=6;i++){
                     if(Col.getCell((int) (SawX /PPM/TileWidth +i), (int) (((CharY) / PPM) / TileHeight))
                             .getTile().getProperties().containsKey("Hit")){
                         break;
                     }
 
-                    if(i==5 && Col.getCell((int) (SawX / PPM / TileWidth), (int) ((SawY / PPM) / TileHeight))
+                    if(i==6 && Col.getCell((int) (SawX / PPM / TileWidth), (int) ((SawY / PPM) / TileHeight))
                             .getTile().getProperties().containsKey("Hit")){
                         makeTrap();
                     }
                 }
+
     }
-        catch (NullPointerException e) {}
+        catch (NullPointerException e) {System.out.println("MATE?!?!?!");}
 
     }
     public void makeTrap(){
@@ -101,7 +106,7 @@ public class Trap_Buzzsaw {
             if(arTraps.size>0) {
                 for (int i = 0; i < arTraps.size; i++) {
                     vTraps.set(arTraps.get(i));
-                    if (vSaw.dst(vTraps) <= 22) {
+                    if (vSaw.dst(vTraps) <= 25) {
                         break;
                     }
                     if (i == arTraps.size - 1) {
@@ -127,7 +132,7 @@ public class Trap_Buzzsaw {
         TextureRegion[][] Saws=Region.split(Region.getRegionWidth()/2,Region.getRegionHeight());
 
         sSaw=new Sprite(Saws[0][0]);
-        sSaw.setSize(sSaw.getWidth()*PPM*1.8f,sSaw.getHeight()*PPM*1.8f);
+        sSaw.setSize(sSaw.getWidth()*PPM*1.7f,sSaw.getHeight()*PPM*1.7f);
         sSaw.setOrigin(sSaw.getWidth()/2,sSaw.getHeight()/2);
 
         return(sSaw);

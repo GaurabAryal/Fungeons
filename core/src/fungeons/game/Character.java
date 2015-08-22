@@ -97,7 +97,7 @@ public class Character extends Sprite {
         CharBox = new PolygonShape();
         CharFixDef2 = new FixtureDef();
 
-        CharBox.setAsBox(1f,1.5f);
+        CharBox.setAsBox(1f,1f);
         CharCirc.setRadius(1f);
 
         CharDef.position.set(50, 4);
@@ -117,7 +117,7 @@ public class Character extends Sprite {
 
         CharBody2=play.world.createBody(CharDef);
         CharBody2.createFixture(CharFixDef2);
-        CharDef.position.set(50,5.65f);
+        CharDef.position.set(50,5.5f);
 
        // CharBody2=CharBody;
         nDeltaY=0;
@@ -248,39 +248,47 @@ public class Character extends Sprite {
         return(sChar);
     }
     public Boolean getJump(float VY, Button Jump){
-
+//VY<0.1 && VY>-0.1
         if(VY<0.1 && VY>-0.1){
             GroundTime+=Gdx.graphics.getDeltaTime();
         }
-        if(VY<-0.01 || VY>0.01){
+        if(VY>0.1 || VY<-0.1){
             GroundTime=0;
-            nDeltaY+=VY;//figured we could use this if structure for multiple things lol
+            nDeltaY += VY;//figured we could use this if structure for multiple things lol
         }
         else{
             nDeltaY=0;
         }
 
-        if(VY>0.5){
+        if(VY>0.5 || nCharVY>0){
             nUp1Dn2=1;
         }
-        if(nCharVY<0){
+        if(VY<-0.1){
             nUp1Dn2=2;
         }
-        if(nCharVY==0){
+        if(VY<0.1 && VY>-0.1){
             if(nUp1Dn2==2) {
                 bCanJump=true;
             }
+
         }
-        else if(nCharVY!=0 && Jump.isPressed()==false){
-            bCanJump=false;
-        }
-        if(nDeltaY>=220f){
+        else if(nCharVY!=0 && Jump.isPressed()==false ){
             bCanJump=false;
         }
 
-        if(GroundTime>=0.09){
+        if(nDeltaY>=220f){
+            bCanJump=false;
+        }
+        if(GroundTime==0 && Jump.isPressed()==true){
+            if(VY<1 && VY>-1){
+                bCanJump=false;
+            }
+        }
+        if(GroundTime>=0.1){
             bCanJump=true;
         }
+
+
         return(bCanJump);
     }
     public Sprite getSprite2(){

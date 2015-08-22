@@ -51,6 +51,7 @@ public class Play extends Game {
     Vector2 gravity= new Vector2(0,-9.8f), CurMove, ArrowMove;
     World world=new World(gravity,false);
 
+
     DecimalFormat twoDec;
     Label timeLabel, timeLabel2;
     String chatId;
@@ -353,7 +354,7 @@ public class Play extends Game {
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
         MapRenderer.render();
-       // b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
+        //b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
         //char stuff
         arTraps=saw.getTrapArray();
@@ -605,10 +606,17 @@ public class Play extends Game {
                                 }
                                 if (j == arPlats.size - 1) {//if we're at the end of the loop, there must be no platform too close to make a new one
                                     platform = new Platform();// so we make a new platform
-                                    PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
-                                    PlatBody = world.createBody(platform.PlatDef);
+                                    if(CharBody.getPosition().y-ArrowY>-2 && CharBody.getPosition().y-ArrowY<=1) {
+                                        ArrowY+=CharBody.getPosition().y-ArrowY-1.5f;
+                                    }
+                                    if(CharBody.getPosition().y-ArrowY>=-3 && CharBody.getPosition().y-ArrowY<=-2) {
+                                        ArrowY-=CharBody.getPosition().y-ArrowY+1.5f;
+                                    }
+                                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                                        PlatBody = world.createBody(platform.PlatDef);
 
-                                    arPlats.add(platform);// add new platform to the array
+                                        arPlats.add(platform);// add new platform to the array
+
                                 }
                             }
                         } else {//if the platform array length is non existant we just make one becuase there is no platfomr for it to overlap with or anything like that
