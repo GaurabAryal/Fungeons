@@ -23,7 +23,7 @@ public class Trap_Buzzsaw {
         if (CharVX != 0) {
             nCharVX = CharVX;//only updates when char is moving thus storing it's previous velocity if the player stops
         }
-        SawX = 95;
+        SawX = 0;
         SawY = 2;
         TileHeight = Col.getTileHeight();
         TileWidth = Col.getTileWidth();
@@ -37,7 +37,6 @@ public class Trap_Buzzsaw {
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX + (8 * PPM * TileHeight);
                             SawY = 2+(int)(CharY/4)*4+(4*i);
-                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -46,7 +45,6 @@ public class Trap_Buzzsaw {
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX - (8 * PPM * TileHeight);
                             SawY = 2+(int)(CharY/4)*4+(4*i);
-                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -58,7 +56,6 @@ public class Trap_Buzzsaw {
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX + (8 * PPM * TileHeight);
                             SawY = 2+(int)(CharY/4)*4-(4*i);
-                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
@@ -67,13 +64,11 @@ public class Trap_Buzzsaw {
                                 .getTile().getProperties().containsKey("Hit")) {
                             SawX = CharX - (8 * PPM * TileHeight);
                             SawY = 2+(int)(CharY/4)*4-(4*i);
-                            System.out.println(i+"      2    "+CharY +"       "+SawY);
                             break;
                         }
                     }
                 }
 
-            System.out.println(i+"      1    "+CharY +"       "+SawY);
             }
 /*
             SawY+=7;//FIND NEW WAY TO CENTER THE SAWS ON THE WALL BLOCKS!!!!

@@ -220,23 +220,30 @@ platform animation
   orig: 128, 96
   offset: 0, 0
   index: -1
-Jump Button
+Jump Button 2
   rotate: false
   xy: 3911, 1766
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Touchpad Knob Alternate
+Jump Button
   rotate: false
   xy: 2427, 524
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Touchpad Knob
+Touchpad Knob Alternate
   rotate: false
   xy: 2557, 654
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Touchpad Knob
+  rotate: false
+  xy: 999, 190
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

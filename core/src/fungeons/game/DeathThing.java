@@ -34,7 +34,7 @@ public class DeathThing {
 
     }//for change direction, check the dir your going then one we hit a wall, check 90 degrees rotation, if thats a wall go the other way, if not then go that way
 
-    public void setVars(TiledMapTileLayer Col, Vector2 CharVec_){
+    public void setVars(TiledMapTileLayer Col, Vector2 CharVec_, int TelX, int TelY, int Tel2X, int Tel2Y){
         CharVec.set(CharVec_);
         if(VX>0) {
             for (int i = 0; i <= 3; i++) {
@@ -110,6 +110,12 @@ public class DeathThing {
 
         X+=VX;
         Y+=VY;
+        if((X-TelX)<1 && (X-TelX)>-1){
+            if((Y-TelY)<20 && (Y-TelY)>-2){
+                X=Tel2X-12;
+                Y=Tel2Y+11;
+            }
+        }
         if(CharVec.dst(X,Y)>50){
             if(VX>0){
                 X+=1;

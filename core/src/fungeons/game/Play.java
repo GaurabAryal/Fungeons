@@ -74,8 +74,8 @@ public class Play extends Game {
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
     float Time, DeadTime,TimeDisplay, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
-    float fCharX,fCharY;
-    int nCharVX, nCharVY;
+    float fCharX,fCharY, DeltaY;
+    int nCharVX, nCharVY, nTelX, nTelY, nTel2X, nTel2Y;
     int nDir;
 
     TextureAtlas Atlas;
@@ -136,8 +136,8 @@ public class Play extends Game {
         DeadTime=-1;
         ArrowTime=1;
         nDir=2;
-        fCharX=30;
-        fCharY=4;
+        fCharX=50;
+        fCharY=5;
         bWent=false;
         bCanJump=true;
         bArrowShot=true;
@@ -154,7 +154,7 @@ public class Play extends Game {
         arArrows = new Array<Arrow>();
 
 
-        character.create();
+        character.create(fCharX,fCharY);
         death.create();
         platform.create();
         stage = new Stage();
@@ -225,11 +225,17 @@ public class Play extends Game {
         RegionHeight = Region.getRegionHeight();
         RegionWidth = Region.getRegionWidth();
         btnJump1 = Region.split(RegionWidth, RegionHeight);
+        Region = Atlas.findRegion("Jump Button 2");
+        RegionHeight = Region.getRegionHeight();
+        RegionWidth = Region.getRegionWidth();
+        TextureRegion[][] btnJump2 = Region.split(RegionWidth, RegionHeight);
         btnJumpSkin = new Skin();
         btnJumpSkin.add("button", btnJump1[0][0]);
+        btnJumpSkin.add("buttonDown", btnJump2[0][0]);
         btnJumpImg = btnJumpSkin.getDrawable("button");
+        Drawable btnJumpImgDn = btnJumpSkin.getDrawable("buttonDown");
         btnJumpStyle = new Button.ButtonStyle();
-        btnJumpStyle.down = btnJumpImg;
+        btnJumpStyle.down = btnJumpImgDn;
         btnJumpStyle.up = btnJumpImg;
         btnJump = new Button(btnJumpStyle);
         btnJump.setSize((int) (nScreenWidth / 10.24), (int) (nScreenWidth / 10.24));
@@ -267,7 +273,7 @@ public class Play extends Game {
         stage.addActor(touchpadArrow);
 
         MapLoader = new TmxMapLoader();
-        Map = MapLoader.load("BunsTown.tmx");//name of the tmx map file
+        Map = MapLoader.load("FunCity.tmx");//name of the tmx map file
         MapCol = (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
         MapAlt = (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
         MapAlt.setVisible(false);
@@ -293,22 +299,22 @@ public class Play extends Game {
                     // we made the boxes slightly wider to compensate for so the character doesn't overlap with them at all
                     MapBody.createFixture(MapBox, 1f);
                 }
+                if(MapCol.getCell(i, j).getTile().getProperties().containsKey("Loop2")){
+                    nTel2X=(int)(i*nTileWidth*PPM);
+                    nTel2Y= (int) ((j*nTileHeight*PPM)+(5));
+                }
+                if(MapCol.getCell(i, j).getTile().getProperties().containsKey("Loop")){
+                    nTelX=(int)(i*nTileWidth*PPM);
+                    nTelY= (int) ((j*nTileHeight*PPM)+(5));
+                }
             }
         }
+
         sSaw = saw.getSprite(Atlas);
 
         // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
         // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
-        CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
-        CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
-        CharBody2 = world.createBody(character.CharDef);
-        CharBody2.createFixture(character.CharFixDef2);
-        CharBody.setFixedRotation(true);// makes it so the body cannot rotate
-        jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
-        jointDef.bodyA = CharBody;//get the first body that will be on the joint
-        jointDef.bodyB = CharBody2;//2nd body on the joint
-        jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
-        joint = world.createJoint(jointDef);
+        makeBoxes();
 
 
 
@@ -354,30 +360,31 @@ public class Play extends Game {
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
         MapRenderer.render();
-        //b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
+        //b2Ren.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
         //char stuff
+
+        DeltaY=fCharY-nTel2Y;
         arTraps=saw.getTrapArray();
         bDead=death.getDead(arTraps,fCharX,fCharY+1);
 
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
         if(touchpadMove.getKnobPercentX()>=0.50){//if the movement knob is move 50% left or right the character moves 10m/s left or right
-            nCharVX= (int) (7f);
+            nCharVX= (int) (8f);
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
-            nCharVX= (int) (-7f);
+            nCharVX= (int) (-8f);//CHANGE TO 7 and -7
         }
         else{
             nCharVX=0;
         }
 
-
         CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
         bCanJump=character.getJump(CharBody.getLinearVelocity().y, btnJump);
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,11f);
+            CharBody.setLinearVelocity(CurMove.x,10f);
             CurMove.set(CharBody.getLinearVelocity());
             //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }
@@ -415,10 +422,13 @@ public class Play extends Game {
 
 
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
-
+   /*     if((fCharX-nTelX)<1 && (fCharX-nTelX)>-1){
+            if((fCharY-nTelY)<20 && (fCharY-nTelY)>-2){
+                Loop();
+            }
+        }*/
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
         //Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
-
         if(bDead==true){
             if(DeadTime==-1){
                 DeadTime=Time;
@@ -517,12 +527,12 @@ public class Play extends Game {
                     }
             }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
-            camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/3;
-            camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/3;
+            camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/7;
+            camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/8;
         }
         if(bZoomOut==false){//changes zoom in such a way that it will zoom back in quickly then slowly until it stops
-            camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
-            camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
+            camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/7;
+            camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/8;
         }
 
         //Arrow Stuff Now--
@@ -614,16 +624,20 @@ public class Play extends Game {
                                     }
                                         PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
                                         PlatBody = world.createBody(platform.PlatDef);
-
                                         arPlats.add(platform);// add new platform to the array
 
                                 }
                             }
                         } else {//if the platform array length is non existant we just make one becuase there is no platfomr for it to overlap with or anything like that
                             platform = new Platform();
+                            if(CharBody.getPosition().y-ArrowY>-2 && CharBody.getPosition().y-ArrowY<=1) {
+                                ArrowY+=CharBody.getPosition().y-ArrowY-1.5f;
+                            }
+                            if(CharBody.getPosition().y-ArrowY>=-3 && CharBody.getPosition().y-ArrowY<=-2) {
+                                ArrowY-=CharBody.getPosition().y-ArrowY+1.5f;
+                            }
                             PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
                             PlatBody = world.createBody(platform.PlatDef);
-
                             arPlats.add(platform);
                         }
                     }
@@ -636,12 +650,14 @@ public class Play extends Game {
             catch(NullPointerException e){}
 
         }
-        death.setVars(MapCol, CharBody.getPosition());
+        death.setVars(MapCol, CharBody.getPosition(), nTelX, nTelY, nTel2X, nTel2Y);
         sDThing=death.getSprite(Time);
         sDThing.draw(batch);
 
         if(bZoomOut==false) {
-            saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>35) {
+                saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+            }
         }
         for(int i=0;i<arTraps.size;i++){
             sSaw.setPosition(arTraps.get(i).x-sSaw.getWidth()/2,arTraps.get(i).y-sSaw.getHeight()/2);
@@ -653,9 +669,12 @@ public class Play extends Game {
             sPlat.draw(batch);
         }
         batch.end();
+        CharBody2.setLinearVelocity(CharBody.getLinearVelocity());
        // for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
-            world.step(1f/60f, 8, 3);//moves the box2d world
         world.step(1f/60f, 8, 3);//moves the box2d world
+        world.step(1f/60f, 8, 3);
+
+        character.LoopCheck(nTelX, nTelY, CharBody.getPosition().x, CharBody.getPosition().y, this);
       //  }
         stage.draw();
         stage2.draw();
@@ -682,6 +701,40 @@ public class Play extends Game {
     }
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
+    }
+    public void Loop(){
+
+        for(int i=0;i<arPlats.size;i++){
+            platform=arPlats.get(i);
+            world.destroyBody(platform.PlatBody);
+        }
+        arPlats.clear();
+        arTraps.clear();
+        fCharX=nTel2X;
+        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
+
+        fCharY=nTel2Y+DeltaY;
+        float VY = CharBody.getLinearVelocity().y;
+        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
+        makeBoxes();
+        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
+        CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,VY);
+        CharBody2.setLinearVelocity(CharBody2.getLinearVelocity().x,VY);
+    }
+    public void makeBoxes(){
+     //   character.create(CharBody.getPosition().x,CharBody.getPosition().y);
+        character.CharDef.position.set(nTel2X,fCharY);
+        CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
+        CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
+        character.CharDef.position.set(nTel2X,fCharY+0.5f);
+        CharBody2 = world.createBody(character.CharDef);
+        CharBody2.createFixture(character.CharFixDef2);
+        CharBody.setFixedRotation(true);// makes it so the body cannot rotate
+        jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
+        jointDef.bodyA = CharBody;//get the first body that will be on the joint
+        jointDef.bodyB = CharBody2;//2nd body on the joint
+        jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
+        joint = world.createJoint(jointDef);
     }
 }
 
