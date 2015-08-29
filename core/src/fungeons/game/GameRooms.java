@@ -29,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseException;
@@ -116,10 +115,13 @@ public class GameRooms extends Game {
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
         final Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
         dBGWall= new TextureRegionDrawable(BGWall);
+        Region=Atlas.findRegion("WindowBG Square");
+        BGWall= Region;
+        Drawable dWinBG= new TextureRegionDrawable(BGWall);
 
         int i = 11;
         String s = "1GTPRERceY";
@@ -158,6 +160,7 @@ public class GameRooms extends Game {
         gameroomTable.setBackground(dBGWall);
 
         window = new Window("test", skin);
+        window.setBackground(dWinBG);
         skin.getFont("default-font").scale(nSHeight / 480);
         window.setMovable(true);
         window.padTop(nSHeight / 16);

@@ -70,8 +70,8 @@ public class MainMenu extends Game {
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
-        Region=Atlas.findRegion("BG Wall Brick");
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
+        Region=Atlas.findRegion("WindowBG");
         BGWall= Region;
 
       /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
@@ -85,10 +85,14 @@ public class MainMenu extends Game {
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
         skin.add("btnWhite",dbtnWhite);
+        Region=Atlas.findRegion("Button 2");
+        TextureRegion btnWhiteDn = Region;
+        Drawable dbtnWhiteDn = new TextureRegionDrawable(btnWhiteDn);
+        skin.add("btnWhiteDn",dbtnWhiteDn);
 
         BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         ButtonFont.setScale(nScreenWidth/512);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,ButtonFont);
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,ButtonFont);
 
         skin.add("btnWhiteStyle",btnWhiteStyle);
         skin.getFont("default-font").setScale(nScreenWidth/674f);//for text buttons :D

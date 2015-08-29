@@ -27,6 +27,7 @@ public class main extends Game {
     public void create () {
         MenuSong= Gdx.audio.newMusic(Gdx.files.internal("Menu Music.mp2"));
         GameSong=Gdx.audio.newMusic(Gdx.files.internal("In Game Music.mp2"));
+        MenuSong.setLooping(true);
         MenuSong.play();
         screenControl = new ScreenControl();
         mainMenu = new MainMenu();

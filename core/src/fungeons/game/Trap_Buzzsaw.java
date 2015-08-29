@@ -91,7 +91,7 @@ public class Trap_Buzzsaw {
                 }
 
     }
-        catch (NullPointerException e) {System.out.println("MATE?!?!?!");}
+        catch (NullPointerException e) {}
 
     }
     public void makeTrap(){

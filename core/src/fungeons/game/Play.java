@@ -170,7 +170,7 @@ public class Play extends Game {
         timeLabel.setPosition(5, nScreenHeight - timeLabel.getHeight());
         stage.addActor(timeLabel);
 
-        deathWindow = new Window("Too Bad", skin);
+        deathWindow = new Window("", skin);
 
 
         TextureAtlas.AtlasRegion Region;
@@ -197,25 +197,26 @@ public class Play extends Game {
         TextButton btnMain = new TextButton("MAIN MENU", btnWhiteStyle);
 
         Drawable dBGWall;
-        Region=Atlas.findRegion("BG Wall Brick");
+        Region=Atlas.findRegion("WindowBG Square");
         TextureRegion BGWall = Region;
         dBGWall = new TextureRegionDrawable(BGWall);
        // deathWindow.setBackground(dBGWall);
-
-        deathWindow.setSize(nScreenWidth / 2f, nScreenHeight / 1.6f);
+        Label deathMessage = new Label("Too Bad",skin);//may make an array of messages and randomly select a string from array
+        deathWindow.setSize(nScreenWidth / 1.8f, nScreenHeight / 1.6f);
         deathWindow.setPosition((nScreenWidth / 2) - (deathWindow.getWidth() / 2), (nScreenHeight / 2) - (deathWindow.getHeight() / 2));
-        deathWindow.setColor(0.2f, 0.2f, 0.2f, 0.9f);
         deathWindow.row();
-        deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 12f);
+        deathWindow.add(deathMessage).center().padTop(deathWindow.getHeight() / 10f);
+        deathWindow.row();
+        deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 20f);
         deathWindow.row();
         btnRetry.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 8).padTop(deathWindow.getHeight() / 8);
+        deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 12).padTop(deathWindow.getHeight() / 18);
         deathWindow.row();
         btnMaps.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 12);
         deathWindow.row();
         btnMain.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 12);
         deathWindow.setVisible(false);
         deathWindow.setBackground(dBGWall);
 
@@ -273,7 +274,7 @@ public class Play extends Game {
         stage.addActor(touchpadArrow);
 
         MapLoader = new TmxMapLoader();
-        Map = MapLoader.load("FunCity.tmx");//name of the tmx map file
+        Map = MapLoader.load("BunsTown.tmx");//name of the tmx map file
         MapCol = (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
         MapAlt = (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
         MapAlt.setVisible(false);
@@ -364,7 +365,7 @@ public class Play extends Game {
 
         //char stuff
 
-        DeltaY=fCharY-nTel2Y;
+        DeltaY=fCharY-nTelY;
         arTraps=saw.getTrapArray();
         bDead=death.getDead(arTraps,fCharX,fCharY+1);
 
@@ -519,12 +520,15 @@ public class Play extends Game {
 
 
         bZoomOut=false;
-            for(int i=-5;i<=5;i++) { //loop left and right 5 tiles each way on the map
-                    if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
-                            .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
-                        bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
-                        break; //leaves loop incase next tile does not have hit property
-                    }
+            for (int i = -5; i <= 5; i++) { //loop left and right 5 tiles each way on the map
+                while((((fCharX / PPM) / nTileWidth) + i)<0){
+                    i++;
+                }
+                if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
+                        .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
+                    bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
+                    break; //leaves loop incase next tile does not have hit property
+                }
             }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
             camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/7;
@@ -597,11 +601,15 @@ public class Play extends Game {
                                 .getTile().getProperties().containsKey("Hit")) {
                     //if there is a tile with the hit key to the left or right of the current arrow
 
-                    if (MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
+                    if ((int) ((ArrowX / PPM) / nTileWidth) - 1<=0 ||(int) ((ArrowX / PPM) / nTileWidth) + 1>=MapCol.getWidth()-1 ||
+                            MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
                             .getTile().getProperties().containsKey("Hit") == false ||
                             MapCol.getCell((int) ((sArrow.getWidth() + ArrowX) / PPM / nTileWidth) + 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Right
                                     .getTile().getProperties().containsKey("Hit") == false) {
                         //if there is a tile to the left of the arrow or to the right of the arrow
+                        //first line of that if statement (I hate how many there are btw) determines if the tile is on the edge
+                        //of the map because that will not allow the check to go through and even though the tile is legit
+                        //those come first because the try statement will throw it all away if it finds out those tiles are null
 
 
                         if (arPlats.size > 0) {//now we loop through all of the platforms created
@@ -655,7 +663,7 @@ public class Play extends Game {
         sDThing.draw(batch);
 
         if(bZoomOut==false) {
-            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>35) {
+            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>36) {
                 saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
             }
         }
@@ -710,9 +718,9 @@ public class Play extends Game {
         }
         arPlats.clear();
         arTraps.clear();
+        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
         fCharX=nTel2X;
         System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
-
         fCharY=nTel2Y+DeltaY;
         float VY = CharBody.getLinearVelocity().y;
         System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
@@ -722,7 +730,8 @@ public class Play extends Game {
         CharBody2.setLinearVelocity(CharBody2.getLinearVelocity().x,VY);
     }
     public void makeBoxes(){
-     //   character.create(CharBody.getPosition().x,CharBody.getPosition().y);
+       // character.dispose();
+        //character.create(nTel2X,nTel2Y);
         character.CharDef.position.set(nTel2X,fCharY);
         CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
         CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file

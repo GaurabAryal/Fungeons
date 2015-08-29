@@ -268,7 +268,9 @@ public class Character extends Sprite {
             if(nUp1Dn2==2) {
                 bCanJump=true;
             }
-
+            if(bCanJump==true){
+                nOldY=(int)fCharY;
+            }
         }
         else if(nCharVY!=0 && Jump.isPressed()==false ){
             bCanJump=false;
@@ -284,7 +286,7 @@ public class Character extends Sprite {
         }
         if(GroundTime>=0.1){
             bCanJump=true;
-            nOldY=(int)fCharY;
+
         }
 
 

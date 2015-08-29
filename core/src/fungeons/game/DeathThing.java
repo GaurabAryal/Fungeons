@@ -19,11 +19,11 @@ public class DeathThing {
     Animation DThingAnim;
     Sprite DThingSprite;
     Boolean bDead=false;
-    float Time, VX=9f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
+    float Time, VX=1f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
     Array<Vector2> arTraps=new Array<Vector2>();
     Vector2 CharVec = new Vector2(0,0);
     public void create(){
-        VX=2 * PPM;
+        VX=1.5f*PPM;
         VY=0;
         Atlas = new TextureAtlas("Fungeons_3.pack");
         Region=Atlas.findRegion("Death thing");
@@ -80,10 +80,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -2 * PPM;
+                                VX = -1.5f*PPM;
                                 break;
                             } else {
-                                VX = 2 * PPM;
+                                VX =1.5f*PPM;
                             }
                         }
                     }
@@ -98,10 +98,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -2 * PPM;
+                                VX = -1.5f*PPM;
                                 break;
                             } else {
-                                VX = 2 * PPM;
+                                VX = 1.5f*PPM;
                             }
                         }
                     }
@@ -116,7 +116,7 @@ public class DeathThing {
                 Y=Tel2Y+11;
             }
         }
-        if(CharVec.dst(X,Y)>50){
+        if(CharVec.dst(X,Y)>60){
             if(VX>0){
                 X+=1;
             }
@@ -151,7 +151,6 @@ public class DeathThing {
         }
         if(CharVec.dst(X,Y)<=14.5){
             bDead=true;
-
         }
         return(bDead);
     }
