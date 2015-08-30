@@ -417,6 +417,7 @@ public class Play extends Game {
             timeLabel2.setText("Time:  "+twoDec.format(Time));
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
+            saw.PlaySound(fCharX,fCharY,arTraps);
          //   timeLabel.setText(String.format("%.2f",Time));
           //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
@@ -662,6 +663,7 @@ public class Play extends Game {
         sDThing=death.getSprite(Time);
         sDThing.draw(batch);
 
+
         if(bZoomOut==false) {
             if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>36) {
                 saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
@@ -701,6 +703,7 @@ public class Play extends Game {
         touchpadMoveSkin.dispose();
         death.dispose();
         character.dispose();
+        saw.dispose();
 
 
 //        batch.dispose();
@@ -718,14 +721,10 @@ public class Play extends Game {
         }
         arPlats.clear();
         arTraps.clear();
-        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
         fCharX=nTel2X;
-        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
         fCharY=nTel2Y+DeltaY;
         float VY = CharBody.getLinearVelocity().y;
-        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
         makeBoxes();
-        System.out.println(fCharY+"   "+nTel2Y+"    "+DeltaY);
         CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,VY);
         CharBody2.setLinearVelocity(CharBody2.getLinearVelocity().x,VY);
     }

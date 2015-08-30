@@ -275,7 +275,6 @@ public class Character extends Sprite {
         else if(nCharVY!=0 && Jump.isPressed()==false ){
             bCanJump=false;
         }
-        System.out.println(nDeltaY+"   "+nOldY+"    "+fCharY);
         if(nDeltaY>=8){
             bCanJump=false;
         }

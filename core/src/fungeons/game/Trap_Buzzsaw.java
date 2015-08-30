@@ -1,5 +1,7 @@
 package fungeons.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,15 +16,18 @@ import com.badlogic.gdx.utils.Array;
 public class Trap_Buzzsaw {
     float SawX, PPM=1f/16f, TileWidth, TileHeight, fCharX,fCharY;//save xy of tiledmap tile, then set sawx and y to that times ppm n stuff
     int nChance=20, nRandS, nRandUD, nCharVX, SawY;//nRandSpawn and nRandUpDown
-    Vector2 vSaw=new Vector2(0,0), vTraps=new Vector2(0,0);
+    Vector2 vSaw=new Vector2(0,0), vTraps=new Vector2(0,0), vChar;
     Sprite sSaw;
     Array<Vector2> arTraps=new Array<Vector2>();
+    Music BuzzSawSound= Gdx.audio.newMusic(Gdx.files.internal("BuzzSaw Sound.mp2"));;
 
     public void setVars(int CharVX, float CharX, float CharY, TiledMapTileLayer Col, Array<Vector2> Traps) {
         arTraps = Traps;
         if (CharVX != 0) {
             nCharVX = CharVX;//only updates when char is moving thus storing it's previous velocity if the player stops
         }
+
+
         SawX = 0;
         SawY = 2;
         TileHeight = Col.getTileHeight();
@@ -135,5 +140,29 @@ public class Trap_Buzzsaw {
     public Array getTrapArray(){
         return(arTraps);
     }
+    public void PlaySound(float CharX, float CharY, Array<Vector2> Traps){
+        vChar = new Vector2(CharX,CharY);
+        float closest=40;
 
+        for(int i=0;i<Traps.size;i++){
+            if(vChar.dst(Traps.get(i))<closest){
+                 closest= vChar.dst(Traps.get(i));
+            }
+            if(i==Traps.size-1){
+                BuzzSawSound.setVolume(5 / closest);
+                if(BuzzSawSound.isPlaying()==false && closest<40) {
+                    System.out.println("C'MON");
+                    BuzzSawSound.setLooping(true);
+                    BuzzSawSound.play();
+                }
+                if(closest==40) {//if closest hasn't changed (no saws are close enough for sound)
+                    BuzzSawSound.pause();
+                }
+            }
+        }
+    }
+    public void dispose(){
+        BuzzSawSound.pause();
+        BuzzSawSound.dispose();
+    }
 }

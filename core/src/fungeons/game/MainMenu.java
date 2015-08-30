@@ -71,7 +71,7 @@ public class MainMenu extends Game {
 
         Drawable dBGWall;
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
-        Region=Atlas.findRegion("WindowBG");
+        Region=Atlas.findRegion("BG Wall Brick Wide");
         BGWall= Region;
 
       /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){

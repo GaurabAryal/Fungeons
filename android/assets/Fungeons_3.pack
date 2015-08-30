@@ -171,9 +171,16 @@ Arrow arms
   orig: 128, 128
   offset: 0, 0
   index: -1
-WindowBG
+BG Wall Brick Wide
   rotate: false
   xy: 643, 483
+  size: 160, 90
+  orig: 160, 90
+  offset: 0, 0
+  index: -1
+WindowBG
+  rotate: false
+  xy: 1031, 613
   size: 160, 90
   orig: 160, 90
   offset: 0, 0
@@ -187,42 +194,42 @@ platform animation ALT
   index: -1
 platform animation
   rotate: false
-  xy: 1031, 607
+  xy: 3911, 1669
   size: 128, 96
   orig: 128, 96
   offset: 0, 0
   index: -1
 Jump Button 2
   rotate: false
-  xy: 3911, 1665
+  xy: 3911, 1567
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Jump Button
   rotate: false
-  xy: 3911, 1563
+  xy: 3911, 1465
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Touchpad Knob Alternate
   rotate: false
-  xy: 3911, 1461
+  xy: 3911, 1363
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Touchpad Knob
   rotate: false
-  xy: 3911, 1359
+  xy: 805, 473
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 WindowBG Square
   rotate: false
-  xy: 805, 483
+  xy: 1193, 613
   size: 90, 90
   orig: 90, 90
   offset: 0, 0
@@ -236,14 +243,14 @@ Arrow Legs Still ALT
   index: -1
 Arrow Legs Still
   rotate: false
-  xy: 1929, 727
+  xy: 1285, 641
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 BG Wall Brick
   rotate: false
-  xy: 2885, 1145
+  xy: 1929, 727
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -257,7 +264,7 @@ Arrow ALT
   index: -1
 Arrow
   rotate: false
-  xy: 3271, 1266
+  xy: 2885, 1204
   size: 32, 5
   orig: 32, 5
   offset: 0, 0
