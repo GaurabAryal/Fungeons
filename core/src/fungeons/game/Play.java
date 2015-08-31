@@ -665,7 +665,7 @@ public class Play extends Game {
 
 
         if(bZoomOut==false) {
-            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>36) {
+            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>44) {
                 saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
             }
         }

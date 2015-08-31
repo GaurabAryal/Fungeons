@@ -106,6 +106,7 @@ public class MainMenu extends Game {
       //  final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
+        final TextButton btnH2p = new TextButton("HOW TO PLAY", skin, "btnWhiteStyle");
 
         final TextButton btnOffline = new TextButton("OFFLINE", skin, "btnWhiteStyle");
         final TextButton btnRegister = new TextButton("REGISTER", skin, "btnWhiteStyle");
@@ -144,7 +145,8 @@ public class MainMenu extends Game {
         table.add(btnRegister).width((int) (nScreenWidth / 1.8)).height(nScreenHeight / 7).padBottom(nScreenHeight / 12).center().colspan(4);
         table.row();
 
-        table.add(btnOffline).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().right().colspan(4);
+        table.add(btnH2p).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().left().colspan(2);
+        table.add(btnOffline).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().right().colspan(2);
         table.center().top().pad(nScreenHeight/16,nScreenWidth/16,nScreenHeight/16, nScreenWidth/16);
 
         table.setFillParent(true);
@@ -224,6 +226,14 @@ public class MainMenu extends Game {
             public void changed(ChangeEvent event, Actor actor) {
              //   stage.dispose();
                 screenControl.setnScreen(3);
+            }
+        });
+        btnH2p.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //   stage.dispose();
+
+                screenControl.setnScreen(6);
             }
         });
 

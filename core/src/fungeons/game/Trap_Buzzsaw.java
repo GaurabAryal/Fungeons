@@ -1,7 +1,7 @@
 package fungeons.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,14 +19,19 @@ public class Trap_Buzzsaw {
     Vector2 vSaw=new Vector2(0,0), vTraps=new Vector2(0,0), vChar;
     Sprite sSaw;
     Array<Vector2> arTraps=new Array<Vector2>();
-    Music BuzzSawSound= Gdx.audio.newMusic(Gdx.files.internal("BuzzSaw Sound.mp2"));;
+    Sound BuzzSawSound= Gdx.audio.newSound(Gdx.files.internal("BuzzSaw Sound.mp2"));
+    Boolean isPlaying=false;
 
     public void setVars(int CharVX, float CharX, float CharY, TiledMapTileLayer Col, Array<Vector2> Traps) {
         arTraps = Traps;
         if (CharVX != 0) {
             nCharVX = CharVX;//only updates when char is moving thus storing it's previous velocity if the player stops
         }
-
+        for(int i=0;i<arTraps.size;i++){
+            if(arTraps.get(i).dst(CharX,CharY)>=200){
+                arTraps.removeIndex(i);
+            }
+        }
 
         SawX = 0;
         SawY = 2;
@@ -142,24 +147,26 @@ public class Trap_Buzzsaw {
     }
     public void PlaySound(float CharX, float CharY, Array<Vector2> Traps){
         vChar = new Vector2(CharX,CharY);
-        float closest=40;
+        float closest=120;
+
 
         for(int i=0;i<Traps.size;i++){
             if(vChar.dst(Traps.get(i))<closest){
                  closest= vChar.dst(Traps.get(i));
             }
             if(i==Traps.size-1){
-                BuzzSawSound.setVolume(5 / closest);
-                if(BuzzSawSound.isPlaying()==false && closest<40) {
-                    System.out.println("C'MON");
-                    BuzzSawSound.setLooping(true);
-                    BuzzSawSound.play();
+
+                BuzzSawSound.setVolume(1,5f/(float)Math.pow(closest,1.2));
+
+                if(isPlaying==false) {
+
+                    BuzzSawSound.loop();
+                    isPlaying=true;
                 }
-                if(closest==40) {//if closest hasn't changed (no saws are close enough for sound)
-                    BuzzSawSound.pause();
-                }
+
             }
         }
+
     }
     public void dispose(){
         BuzzSawSound.pause();

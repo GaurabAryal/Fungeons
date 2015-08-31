@@ -112,7 +112,7 @@ public class DeathThing {
         Y+=VY;
         if((X-TelX)<1 && (X-TelX)>-1){
             if((Y-TelY)<20 && (Y-TelY)>-2){
-                X=Tel2X-12;
+                X=Tel2X-20;
                 Y=Tel2Y+11;
             }
         }
