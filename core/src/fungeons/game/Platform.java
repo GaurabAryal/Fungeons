@@ -87,4 +87,7 @@ public class Platform {
         sPlat.setPosition(PlatBody.getPosition().x-sPlat.getWidth()/2,PlatBody.getPosition().y-sPlat.getHeight()/2);
         return(sPlat);
     }
+    public void dispose(){
+        world.dispose();
+    }
 }

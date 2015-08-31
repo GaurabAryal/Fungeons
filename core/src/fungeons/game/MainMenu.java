@@ -70,8 +70,8 @@ public class MainMenu extends Game {
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
-        Region=Atlas.findRegion("BG Wall Brick");
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
+        Region=Atlas.findRegion("BG Wall Brick Wide");
         BGWall= Region;
 
       /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
@@ -85,10 +85,14 @@ public class MainMenu extends Game {
         TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(btnWhite);
         skin.add("btnWhite",dbtnWhite);
+        Region=Atlas.findRegion("Button 2");
+        TextureRegion btnWhiteDn = Region;
+        Drawable dbtnWhiteDn = new TextureRegionDrawable(btnWhiteDn);
+        skin.add("btnWhiteDn",dbtnWhiteDn);
 
         BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         ButtonFont.setScale(nScreenWidth/512);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhite,dbtnWhite,ButtonFont);
+        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,ButtonFont);
 
         skin.add("btnWhiteStyle",btnWhiteStyle);
         skin.getFont("default-font").setScale(nScreenWidth/674f);//for text buttons :D
@@ -102,6 +106,7 @@ public class MainMenu extends Game {
       //  final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
+        final TextButton btnH2p = new TextButton("HOW TO PLAY", skin, "btnWhiteStyle");
 
         final TextButton btnOffline = new TextButton("OFFLINE", skin, "btnWhiteStyle");
         final TextButton btnRegister = new TextButton("REGISTER", skin, "btnWhiteStyle");
@@ -140,7 +145,8 @@ public class MainMenu extends Game {
         table.add(btnRegister).width((int) (nScreenWidth / 1.8)).height(nScreenHeight / 7).padBottom(nScreenHeight / 12).center().colspan(4);
         table.row();
 
-        table.add(btnOffline).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().right().colspan(4);
+        table.add(btnH2p).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().left().colspan(2);
+        table.add(btnOffline).width(nScreenWidth / 3).height(nScreenHeight / 8).expand().bottom().right().colspan(2);
         table.center().top().pad(nScreenHeight/16,nScreenWidth/16,nScreenHeight/16, nScreenWidth/16);
 
         table.setFillParent(true);
@@ -220,6 +226,14 @@ public class MainMenu extends Game {
             public void changed(ChangeEvent event, Actor actor) {
              //   stage.dispose();
                 screenControl.setnScreen(3);
+            }
+        });
+        btnH2p.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //   stage.dispose();
+
+                screenControl.setnScreen(6);
             }
         });
 

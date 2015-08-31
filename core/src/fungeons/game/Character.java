@@ -43,7 +43,7 @@ public class Character extends Sprite {
     Play play;
 
 
-    public void create(){
+    public void create(float CharX, float CharY){
 
         play = new Play();
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
@@ -100,7 +100,7 @@ public class Character extends Sprite {
         CharBox.setAsBox(1f,1.5f);
         CharCirc.setRadius(1f);
 
-        CharDef.position.set(50, 4);
+        CharDef.position.set(CharX, CharY-1);
         CharFixDef.shape=CharCirc;
         CharDef.type= BodyDef.BodyType.DynamicBody;
         CharFixDef2.shape=CharBox;
@@ -117,7 +117,7 @@ public class Character extends Sprite {
 
         CharBody2=play.world.createBody(CharDef);
         CharBody2.createFixture(CharFixDef2);
-        CharDef.position.set(50,5.65f);
+        CharDef.position.set(CharX,CharY);
 
        // CharBody2=CharBody;
         nDeltaY=0;
@@ -249,42 +249,51 @@ public class Character extends Sprite {
     }
     public Boolean getJump(float VY, Button Jump){
 
+        nDeltaY=(int)fCharY-nOldY;
+//VY<0.1 && VY>-0.1
         if(VY<0.1 && VY>-0.1){
             GroundTime+=Gdx.graphics.getDeltaTime();
         }
-        if(VY<-0.01 || VY>0.01){
+        if(VY>0.1 || VY<-0.1){
             GroundTime=0;
-            nDeltaY+=VY;//figured we could use this if structure for multiple things lol
-        }
-        else{
-            nDeltaY=0;
         }
 
-        if(VY>0.5){
+        if(VY>0.5 || nCharVY>0){
             nUp1Dn2=1;
         }
-        if(nCharVY<0){
+        if(VY<-0.1){
             nUp1Dn2=2;
         }
-        if(nCharVY==0){
+        if(VY<0.1 && VY>-0.1){
             if(nUp1Dn2==2) {
                 bCanJump=true;
             }
+            if(bCanJump==true){
+                nOldY=(int)fCharY;
+            }
         }
-        else if(nCharVY!=0 && Jump.isPressed()==false){
+        else if(nCharVY!=0 && Jump.isPressed()==false ){
             bCanJump=false;
         }
-        if(nDeltaY>=220f){
+        if(nDeltaY>=8){
             bCanJump=false;
+        }
+        if(GroundTime==0 && Jump.isPressed()==true){
+            if(VY<1 && VY>-1){
+                bCanJump=false;
+            }
+        }
+        if(GroundTime>=0.1){
+            bCanJump=true;
+
         }
 
-        if(GroundTime>=0.09){
-            bCanJump=true;
-        }
+
         return(bCanJump);
     }
     public Sprite getSprite2(){
      //   if(sChar==(Sprite)ArrowArms[0][0] || sChar==(Sprite)ArrowArms[0][1]){
+
             if(nCharVX>0){
                 CurAnim=LegsR;//we can do this based entirely off of horizontal velocity because we only call when the person is using the bow
                 if(bCanJump==false || nCharVY!=0){
@@ -297,11 +306,20 @@ public class Character extends Sprite {
                     CurAnim=LegsJL;
                 }
             }
-            sLegs=new Sprite(CurAnim.getKeyFrame(Time,true));
-
-            if(nCharVX==0){
-                sLegs=new Sprite (ArrowLegsStill[0][0]);
+        if(GroundTime==0 || nDeltaY!=0) {
+            if (nDir == 1) {
+                CurAnim=LegsJL;
             }
+            if(nDir==2){
+                CurAnim=LegsJR;
+            }
+        }
+            sLegs=new Sprite(CurAnim.getKeyFrame(Time,true));
+        if(nCharVX==0 && nDeltaY==0){
+            sLegs=new Sprite (ArrowLegsStill[0][0]);
+        }
+
+
         sLegs.setSize(4,4);
         sLegs.setOriginCenter();
         sLegs.setPosition(fCharX-2,fCharY-1);
@@ -314,5 +332,12 @@ public class Character extends Sprite {
     }
     public void dispose(){
         Atlas.dispose();
+    }
+    public void LoopCheck(int TelX, int TelY, float CharX, float CharY, Play play){
+        if((CharX-TelX)<0.15 && (CharX-TelX)>-0.15){
+            if((CharY-TelY)<22 && (CharY-TelY)>-4){
+                play.Loop();
+            }
+        }
     }
 }

@@ -51,6 +51,7 @@ public class Play extends Game {
     Vector2 gravity= new Vector2(0,-9.8f), CurMove, ArrowMove;
     World world=new World(gravity,false);
 
+
     DecimalFormat twoDec;
     Label timeLabel, timeLabel2;
     String chatId;
@@ -73,8 +74,8 @@ public class Play extends Game {
     int nScreenHeight, nScreenWidth, nTileHeight, nTileWidth, nZoomHeight, nZoomWidth;
     float Time, DeadTime,TimeDisplay, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
-    float fCharX,fCharY;
-    int nCharVX, nCharVY;
+    float fCharX,fCharY, DeltaY;
+    int nCharVX, nCharVY, nTelX, nTelY, nTel2X, nTel2Y;
     int nDir;
 
     TextureAtlas Atlas;
@@ -135,8 +136,8 @@ public class Play extends Game {
         DeadTime=-1;
         ArrowTime=1;
         nDir=2;
-        fCharX=30;
-        fCharY=4;
+        fCharX=50;
+        fCharY=5;
         bWent=false;
         bCanJump=true;
         bArrowShot=true;
@@ -153,7 +154,7 @@ public class Play extends Game {
         arArrows = new Array<Arrow>();
 
 
-        character.create();
+        character.create(fCharX,fCharY);
         death.create();
         platform.create();
         stage = new Stage();
@@ -169,7 +170,7 @@ public class Play extends Game {
         timeLabel.setPosition(5, nScreenHeight - timeLabel.getHeight());
         stage.addActor(timeLabel);
 
-        deathWindow = new Window("Too Bad", skin);
+        deathWindow = new Window("", skin);
 
 
         TextureAtlas.AtlasRegion Region;
@@ -196,25 +197,26 @@ public class Play extends Game {
         TextButton btnMain = new TextButton("MAIN MENU", btnWhiteStyle);
 
         Drawable dBGWall;
-        Region=Atlas.findRegion("BG Wall Brick");
+        Region=Atlas.findRegion("WindowBG Square");
         TextureRegion BGWall = Region;
         dBGWall = new TextureRegionDrawable(BGWall);
        // deathWindow.setBackground(dBGWall);
-
-        deathWindow.setSize(nScreenWidth / 2f, nScreenHeight / 1.6f);
+        Label deathMessage = new Label("Too Bad",skin);//may make an array of messages and randomly select a string from array
+        deathWindow.setSize(nScreenWidth / 1.8f, nScreenHeight / 1.6f);
         deathWindow.setPosition((nScreenWidth / 2) - (deathWindow.getWidth() / 2), (nScreenHeight / 2) - (deathWindow.getHeight() / 2));
-        deathWindow.setColor(0.2f, 0.2f, 0.2f, 0.9f);
         deathWindow.row();
-        deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 12f);
+        deathWindow.add(deathMessage).center().padTop(deathWindow.getHeight() / 10f);
+        deathWindow.row();
+        deathWindow.add(timeLabel2).center().padTop(deathWindow.getHeight() / 20f);
         deathWindow.row();
         btnRetry.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 8).padTop(deathWindow.getHeight() / 8);
+        deathWindow.add(btnRetry).center().padBottom(deathWindow.getHeight() / 12).padTop(deathWindow.getHeight() / 18);
         deathWindow.row();
         btnMaps.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.add(btnMaps).center().padBottom(deathWindow.getHeight() / 12);
         deathWindow.row();
         btnMain.setSize(deathWindow.getWidth() / 1.3f, deathWindow.getHeight() / 5f);
-        deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 8);
+        deathWindow.add(btnMain).center().padBottom(deathWindow.getHeight() / 12);
         deathWindow.setVisible(false);
         deathWindow.setBackground(dBGWall);
 
@@ -224,11 +226,17 @@ public class Play extends Game {
         RegionHeight = Region.getRegionHeight();
         RegionWidth = Region.getRegionWidth();
         btnJump1 = Region.split(RegionWidth, RegionHeight);
+        Region = Atlas.findRegion("Jump Button 2");
+        RegionHeight = Region.getRegionHeight();
+        RegionWidth = Region.getRegionWidth();
+        TextureRegion[][] btnJump2 = Region.split(RegionWidth, RegionHeight);
         btnJumpSkin = new Skin();
         btnJumpSkin.add("button", btnJump1[0][0]);
+        btnJumpSkin.add("buttonDown", btnJump2[0][0]);
         btnJumpImg = btnJumpSkin.getDrawable("button");
+        Drawable btnJumpImgDn = btnJumpSkin.getDrawable("buttonDown");
         btnJumpStyle = new Button.ButtonStyle();
-        btnJumpStyle.down = btnJumpImg;
+        btnJumpStyle.down = btnJumpImgDn;
         btnJumpStyle.up = btnJumpImg;
         btnJump = new Button(btnJumpStyle);
         btnJump.setSize((int) (nScreenWidth / 10.24), (int) (nScreenWidth / 10.24));
@@ -292,22 +300,22 @@ public class Play extends Game {
                     // we made the boxes slightly wider to compensate for so the character doesn't overlap with them at all
                     MapBody.createFixture(MapBox, 1f);
                 }
+                if(MapCol.getCell(i, j).getTile().getProperties().containsKey("Loop2")){
+                    nTel2X=(int)(i*nTileWidth*PPM);
+                    nTel2Y= (int) ((j*nTileHeight*PPM)+(5));
+                }
+                if(MapCol.getCell(i, j).getTile().getProperties().containsKey("Loop")){
+                    nTelX=(int)(i*nTileWidth*PPM);
+                    nTelY= (int) ((j*nTileHeight*PPM)+(5));
+                }
             }
         }
+
         sSaw = saw.getSprite(Atlas);
 
         // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
         // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
-        CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
-        CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
-        CharBody2 = world.createBody(character.CharDef);
-        CharBody2.createFixture(character.CharFixDef2);
-        CharBody.setFixedRotation(true);// makes it so the body cannot rotate
-        jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
-        jointDef.bodyA = CharBody;//get the first body that will be on the joint
-        jointDef.bodyB = CharBody2;//2nd body on the joint
-        jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
-        joint = world.createJoint(jointDef);
+        makeBoxes();
 
 
 
@@ -353,30 +361,31 @@ public class Play extends Game {
         batch.setProjectionMatrix(camera.combined);
         MapRenderer.setView(camera);
         MapRenderer.render();
-       // b2Renderer.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
+        //b2Ren.render(world, camera.combined);//we need this visible for some stuff, mainly because the platforms don't have textures yet
 
         //char stuff
+
+        DeltaY=fCharY-nTelY;
         arTraps=saw.getTrapArray();
         bDead=death.getDead(arTraps,fCharX,fCharY+1);
 
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
         if(touchpadMove.getKnobPercentX()>=0.50){//if the movement knob is move 50% left or right the character moves 10m/s left or right
-            nCharVX= (int) (7f);
+            nCharVX= (int) (8f);
         }
         else if(touchpadMove.getKnobPercentX()<=-0.50){
-            nCharVX= (int) (-7f);
+            nCharVX= (int) (-8f);//CHANGE TO 7 and -7
         }
         else{
             nCharVX=0;
         }
 
-
         CharBody.setLinearVelocity(nCharVX,CurMove.y);
 
         bCanJump=character.getJump(CharBody.getLinearVelocity().y, btnJump);
         if(btnJump.isPressed() && bCanJump==true){
-            CharBody.setLinearVelocity(CurMove.x,11f);
+            CharBody.setLinearVelocity(CurMove.x,10f);
             CurMove.set(CharBody.getLinearVelocity());
             //if the char can jump, and the button is pressed, the x velocity stays the same, but Y velocity changes to 35m/s upwards
         }
@@ -408,16 +417,20 @@ public class Play extends Game {
             timeLabel2.setText("Time:  "+twoDec.format(Time));
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
+            saw.PlaySound(fCharX,fCharY,arTraps, bDead);
          //   timeLabel.setText(String.format("%.2f",Time));
           //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
 
 
         character.setVars(nCharVX, nCharVY, fCharX, fCharY, nDir, bCanJump, bDead);
-
+   /*     if((fCharX-nTelX)<1 && (fCharX-nTelX)>-1){
+            if((fCharY-nTelY)<20 && (fCharY-nTelY)>-2){
+                Loop();
+            }
+        }*/
         sChar=character.getCharSprite(Time, ArrowTime, ArrowMove, bArrowShot);//weird flipping issue, this has to be here
         //Gdx.app.log("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
-
         if(bDead==true){
             if(DeadTime==-1){
                 DeadTime=Time;
@@ -508,20 +521,23 @@ public class Play extends Game {
 
 
         bZoomOut=false;
-            for(int i=-5;i<=5;i++) { //loop left and right 5 tiles each way on the map
-                    if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
-                            .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
-                        bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
-                        break; //leaves loop incase next tile does not have hit property
-                    }
+            for (int i = -5; i <= 5; i++) { //loop left and right 5 tiles each way on the map
+                while((((fCharX / PPM) / nTileWidth) + i)<0){
+                    i++;
+                }
+                if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
+                        .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
+                    bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
+                    break; //leaves loop incase next tile does not have hit property
+                }
             }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
-            camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/3;
-            camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/3;
+            camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/7;
+            camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/8;
         }
         if(bZoomOut==false){//changes zoom in such a way that it will zoom back in quickly then slowly until it stops
-            camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/3;
-            camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/3;
+            camera.viewportWidth+=((nScreenWidth*PPM/2)-camera.viewportWidth)/7;
+            camera.viewportHeight+=((nScreenHeight*PPM/2)-camera.viewportHeight)/8;
         }
 
         //Arrow Stuff Now--
@@ -586,11 +602,15 @@ public class Play extends Game {
                                 .getTile().getProperties().containsKey("Hit")) {
                     //if there is a tile with the hit key to the left or right of the current arrow
 
-                    if (MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
+                    if ((int) ((ArrowX / PPM) / nTileWidth) - 1<=0 ||(int) ((ArrowX / PPM) / nTileWidth) + 1>=MapCol.getWidth()-1 ||
+                            MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
                             .getTile().getProperties().containsKey("Hit") == false ||
                             MapCol.getCell((int) ((sArrow.getWidth() + ArrowX) / PPM / nTileWidth) + 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Right
                                     .getTile().getProperties().containsKey("Hit") == false) {
                         //if there is a tile to the left of the arrow or to the right of the arrow
+                        //first line of that if statement (I hate how many there are btw) determines if the tile is on the edge
+                        //of the map because that will not allow the check to go through and even though the tile is legit
+                        //those come first because the try statement will throw it all away if it finds out those tiles are null
 
 
                         if (arPlats.size > 0) {//now we loop through all of the platforms created
@@ -605,17 +625,28 @@ public class Play extends Game {
                                 }
                                 if (j == arPlats.size - 1) {//if we're at the end of the loop, there must be no platform too close to make a new one
                                     platform = new Platform();// so we make a new platform
-                                    PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
-                                    PlatBody = world.createBody(platform.PlatDef);
+                                    if(CharBody.getPosition().y-ArrowY>-2 && CharBody.getPosition().y-ArrowY<=1) {
+                                        ArrowY+=CharBody.getPosition().y-ArrowY-1.5f;
+                                    }
+                                    if(CharBody.getPosition().y-ArrowY>=-3 && CharBody.getPosition().y-ArrowY<=-2) {
+                                        ArrowY-=CharBody.getPosition().y-ArrowY+1.5f;
+                                    }
+                                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                                        PlatBody = world.createBody(platform.PlatDef);
+                                        arPlats.add(platform);// add new platform to the array
 
-                                    arPlats.add(platform);// add new platform to the array
                                 }
                             }
                         } else {//if the platform array length is non existant we just make one becuase there is no platfomr for it to overlap with or anything like that
                             platform = new Platform();
+                            if(CharBody.getPosition().y-ArrowY>-2 && CharBody.getPosition().y-ArrowY<=1) {
+                                ArrowY+=CharBody.getPosition().y-ArrowY-1.5f;
+                            }
+                            if(CharBody.getPosition().y-ArrowY>=-3 && CharBody.getPosition().y-ArrowY<=-2) {
+                                ArrowY-=CharBody.getPosition().y-ArrowY+1.5f;
+                            }
                             PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
                             PlatBody = world.createBody(platform.PlatDef);
-
                             arPlats.add(platform);
                         }
                     }
@@ -628,12 +659,17 @@ public class Play extends Game {
             catch(NullPointerException e){}
 
         }
-        death.setVars(MapCol, CharBody.getPosition());
+        death.setVars(MapCol, CharBody.getPosition(), nTelX, nTelY, nTel2X, nTel2Y);
         sDThing=death.getSprite(Time);
         sDThing.draw(batch);
 
+
         if(bZoomOut==false) {
-            saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+            if(fCharX-nTelX<=80 && fCharX-nTelX>=-80 &&fCharY-nTelY<24 && fCharY-nTelY>-24) {}
+
+            else{
+                saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+            }
         }
         for(int i=0;i<arTraps.size;i++){
             sSaw.setPosition(arTraps.get(i).x-sSaw.getWidth()/2,arTraps.get(i).y-sSaw.getHeight()/2);
@@ -645,9 +681,12 @@ public class Play extends Game {
             sPlat.draw(batch);
         }
         batch.end();
+        CharBody2.setLinearVelocity(CharBody.getLinearVelocity());
        // for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
-            world.step(1f/60f, 8, 3);//moves the box2d world
         world.step(1f/60f, 8, 3);//moves the box2d world
+        world.step(1f/60f, 8, 3);
+
+        character.LoopCheck(nTelX, nTelY, CharBody.getPosition().x, CharBody.getPosition().y, this);
       //  }
         stage.draw();
         stage2.draw();
@@ -666,6 +705,7 @@ public class Play extends Game {
         touchpadMoveSkin.dispose();
         death.dispose();
         character.dispose();
+        saw.dispose();
 
 
 //        batch.dispose();
@@ -674,6 +714,37 @@ public class Play extends Game {
     }
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
+    }
+    public void Loop(){
+
+        for(int i=0;i<arPlats.size;i++){
+            platform=arPlats.get(i);
+            world.destroyBody(platform.PlatBody);
+        }
+        arPlats.clear();
+        arTraps.clear();
+        fCharX=nTel2X;
+        fCharY=nTel2Y+DeltaY;
+        float VY = CharBody.getLinearVelocity().y;
+        makeBoxes();
+        CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,VY);
+        CharBody2.setLinearVelocity(CharBody2.getLinearVelocity().x,VY);
+    }
+    public void makeBoxes(){
+       // character.dispose();
+        //character.create(nTel2X,nTel2Y);
+        character.CharDef.position.set(nTel2X,fCharY);
+        CharBody = world.createBody(character.CharDef);//grabs the character definition from character file
+        CharBody.createFixture(character.CharFixDef);//grabs the character's fixture definition from character file
+        character.CharDef.position.set(nTel2X,fCharY+0.5f);
+        CharBody2 = world.createBody(character.CharDef);
+        CharBody2.createFixture(character.CharFixDef2);
+        CharBody.setFixedRotation(true);// makes it so the body cannot rotate
+        jointDef = character.jointDef;// with the joint, this too had to be made in the same file as the box2d world
+        jointDef.bodyA = CharBody;//get the first body that will be on the joint
+        jointDef.bodyB = CharBody2;//2nd body on the joint
+        jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
+        joint = world.createJoint(jointDef);
     }
 }
 

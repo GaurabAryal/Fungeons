@@ -21,6 +21,7 @@ public class main extends Game {
     GameRoom gameRoom;
     Play play;
     ScoresDisplay scoresDisplay;
+    Instructions instructions;
     int nScreen = 1, nOldScreen=0;
     ScreenControl screenControl;
     @Override
@@ -28,6 +29,7 @@ public class main extends Game {
         MenuSong= Gdx.audio.newMusic(Gdx.files.internal("Menu Music.mp2"));
         GameSong=Gdx.audio.newMusic(Gdx.files.internal("In Game Music.mp2"));
         MenuSong.play();
+        MenuSong.setLooping(true);
         screenControl = new ScreenControl();
         mainMenu = new MainMenu();
         mainMenu.create();
@@ -44,7 +46,9 @@ public class main extends Game {
         play.create();
         play.setScreenControl(screenControl);
         screenControl.create();
-
+        instructions= new Instructions();
+        instructions.create();
+        instructions.setScreenControl(screenControl);
     }
 
     public void render(){
@@ -69,6 +73,10 @@ public class main extends Game {
         }
         if (nScreen == 5){
             scoresDisplay.render();
+        }
+        if(nScreen==6){
+            Gdx.input.setInputProcessor(instructions.stage);
+            instructions.render();
         }
         if(nScreen!=5 && nScreen!=3 && GameSong.isPlaying()==true){
             GameSong.stop();

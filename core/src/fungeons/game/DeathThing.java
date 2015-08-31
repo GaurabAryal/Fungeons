@@ -19,11 +19,11 @@ public class DeathThing {
     Animation DThingAnim;
     Sprite DThingSprite;
     Boolean bDead=false;
-    float Time, VX=9f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
+    float Time, VX=1f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
     Array<Vector2> arTraps=new Array<Vector2>();
     Vector2 CharVec = new Vector2(0,0);
     public void create(){
-        VX=2 * PPM;
+        VX=1.5f*PPM;
         VY=0;
         Atlas = new TextureAtlas("Fungeons_3.pack");
         Region=Atlas.findRegion("Death thing");
@@ -34,7 +34,7 @@ public class DeathThing {
 
     }//for change direction, check the dir your going then one we hit a wall, check 90 degrees rotation, if thats a wall go the other way, if not then go that way
 
-    public void setVars(TiledMapTileLayer Col, Vector2 CharVec_){
+    public void setVars(TiledMapTileLayer Col, Vector2 CharVec_, int TelX, int TelY, int Tel2X, int Tel2Y){
         CharVec.set(CharVec_);
         if(VX>0) {
             for (int i = 0; i <= 3; i++) {
@@ -80,10 +80,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -2 * PPM;
+                                VX = -1.5f*PPM;
                                 break;
                             } else {
-                                VX = 2 * PPM;
+                                VX =1.5f*PPM;
                             }
                         }
                     }
@@ -98,10 +98,10 @@ public class DeathThing {
                         for (int j = 0; j <= 3; j++) {
                             if (Col.getCell((int) ((X / PPM) / 64)+j, (int) ((Y / PPM) / 64))//Collide on Left
                                     .getTile().getProperties().containsKey("Hit")) {
-                                VX = -4 * PPM;
+                                VX = -1.5f*PPM;
                                 break;
                             } else {
-                                VX = 4 * PPM;
+                                VX = 1.5f*PPM;
                             }
                         }
                     }
@@ -110,7 +110,13 @@ public class DeathThing {
 
         X+=VX;
         Y+=VY;
-        if(CharVec.dst(X,Y)>45){
+        if((X-TelX)<1 && (X-TelX)>-1){
+            if((Y-TelY)<20 && (Y-TelY)>-2){
+                X=Tel2X-20;
+                Y=Tel2Y+11;
+            }
+        }
+        if(CharVec.dst(X,Y)>60){
             if(VX>0){
                 X+=1;
             }
@@ -139,13 +145,12 @@ public class DeathThing {
         arTraps=arTraps_;
         CharVec.set(CharX,CharY);
         for(int i=0;i<arTraps.size;i++){
-            if(arTraps.get(i).dst(CharVec)<=8.9){
+            if(arTraps.get(i).dst(CharVec)<=8.5f){
                 bDead=true;
             }
         }
         if(CharVec.dst(X,Y)<=14.5){
             bDead=true;
-
         }
         return(bDead);
     }

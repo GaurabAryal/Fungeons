@@ -144,7 +144,7 @@ public class GameRoom extends Game {
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
         Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_2.pack"));
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
         dBGWall=new TextureRegionDrawable(BGWall);
