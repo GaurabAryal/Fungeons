@@ -306,7 +306,7 @@ public class Character extends Sprite {
                     CurAnim=LegsJL;
                 }
             }
-        if(bCanJump==false) {
+        if(GroundTime==0 || nDeltaY!=0) {
             if (nDir == 1) {
                 CurAnim=LegsJL;
             }
@@ -315,7 +315,7 @@ public class Character extends Sprite {
             }
         }
             sLegs=new Sprite(CurAnim.getKeyFrame(Time,true));
-        if(nCharVX==0 && bCanJump==true){
+        if(nCharVX==0 && nDeltaY==0){
             sLegs=new Sprite (ArrowLegsStill[0][0]);
         }
 

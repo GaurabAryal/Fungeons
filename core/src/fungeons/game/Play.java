@@ -417,7 +417,7 @@ public class Play extends Game {
             timeLabel2.setText("Time:  "+twoDec.format(Time));
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
-            saw.PlaySound(fCharX,fCharY,arTraps);
+            saw.PlaySound(fCharX,fCharY,arTraps, bDead);
          //   timeLabel.setText(String.format("%.2f",Time));
           //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
@@ -665,7 +665,9 @@ public class Play extends Game {
 
 
         if(bZoomOut==false) {
-            if(new Vector2(fCharX,fCharY).dst(nTelX,nTelY)>44) {
+            if(fCharX-nTelX<=80 && fCharX-nTelX>=-80 &&fCharY-nTelY<24 && fCharY-nTelY>-24) {}
+
+            else{
                 saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
             }
         }
