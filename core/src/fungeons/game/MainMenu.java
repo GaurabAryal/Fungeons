@@ -2,6 +2,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -31,8 +32,7 @@ import pablo127.almonds.SignUpCallback;
 /**
  * Created by Gaurab on 2015-04-13.
  */
-public class MainMenu extends Game {
-    Skin skin;
+public class MainMenu implements Screen {
     Stage stage;
     SpriteBatch batch;
     TextureAtlas Atlas;
@@ -45,28 +45,17 @@ public class MainMenu extends Game {
 
     ScreenControl screenControl;
     Game game;
-    @Override
+
     public void render(){
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        batch.begin();
-       // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        stage.draw();
-
-        batch.end();
 
     }
+
     @Override
-    public void resize(int width, int height){
-    }
-    @Override
-    public void create(){
+    public void show() {
         int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");//initialize parse with our keys
         batch = new SpriteBatch();
-
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Drawable dBGWall;
@@ -103,7 +92,7 @@ public class MainMenu extends Game {
 
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
-      //  final Label someSpace = new Label("         ", skin);
+        //  final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
         final TextButton btnH2p = new TextButton("HOW TO PLAY", skin, "btnWhiteStyle");
@@ -121,13 +110,13 @@ public class MainMenu extends Game {
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
 
         skin.add("default", textButtonStyle);
-    //    skin.getFont("default-font").setScale(2);
-   //     userLabel.setFontScale(1.9f);
+        //    skin.getFont("default-font").setScale(2);
+        //     userLabel.setFontScale(1.9f);
 //        userLabel.setFontScaleY(1f);
-   //     passwordLabel.setFontScale(1.9f);
-   //     passwordLabel.setFontScaleY(1f);
-   //     someSpace.setFontScale(2f);
-      //  someSpace.setFontScaleY(2f);
+        //     passwordLabel.setFontScale(1.9f);
+        //     passwordLabel.setFontScaleY(1f);
+        //     someSpace.setFontScale(2f);
+        //  someSpace.setFontScaleY(2f);
         txtPassword.setMessageText("*****");
         txtPassword.setPasswordCharacter('*');
         txtPassword.setPasswordMode(true);
@@ -150,7 +139,7 @@ public class MainMenu extends Game {
         table.center().top().pad(nScreenHeight/16,nScreenWidth/16,nScreenHeight/16, nScreenWidth/16);
 
         table.setFillParent(true);
-       // skin.getFont("default-font").setScale(1.9f/1f);
+        // skin.getFont("default-font").setScale(1.9f/1f);
         /*
         table.add(userLabel).padBottom(10).padRight(25);
         table.add(txtUsername).width(300).height(50).padBottom(10);
@@ -179,13 +168,13 @@ public class MainMenu extends Game {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
-               // screenControl.setnScreen(2);
+                // screenControl.setnScreen(2);
                 try {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
                                 ParseUser u = ParseUser.getCurrentUser();
-                                if (u.getUsername()!=null) {
+                                if (u.getUsername() != null) {
                                     exitDialog.text(" Welcome, " + u.getUsername() + "! ");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }
@@ -224,8 +213,8 @@ public class MainMenu extends Game {
         btnOffline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-             //   stage.dispose();
-                screenControl.setnScreen(3);
+                //   stage.dispose();
+                screenControl.setnScreen(7,3);
             }
         });
         btnH2p.addListener(new ChangeListener() {
@@ -233,9 +222,29 @@ public class MainMenu extends Game {
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
 
-                screenControl.setnScreen(6);
+                screenControl.setnScreen(7,6);
             }
         });
+
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        batch.begin();
+        // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage.draw();
+
+        batch.end();
+    }
+
+    @Override
+    public void resize(int width, int height){
+    }
+    public void create(){
 
     }
     public void setScreenControl(ScreenControl screenControl_){
@@ -249,10 +258,17 @@ public class MainMenu extends Game {
     public void resume(){
 
     }
+
+    @Override
+    public void hide() {
+        dispose();
+    }
+
     @Override
     public  void dispose(){
         stage.dispose();
         batch.dispose();
+        Atlas.dispose();
     }
     public  class ExitDialog extends Dialog {
         public ExitDialog(String title, Skin skin,String windowStyle){
@@ -277,7 +293,7 @@ public class MainMenu extends Game {
             protected void result(Object object){
 
             System.out.println(object);
-            screenControl.setnScreen(2);
+            screenControl.setnScreen(7,2);//was 2,1
             }
     }
 

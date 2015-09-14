@@ -1,9 +1,9 @@
 package fungeons.game;
 
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -36,6 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ import java.util.Arrays;
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseUser;
 
-public class Play extends Game {
+public class Play implements Screen {
     OrthographicCamera camera;
     Vector2 gravity= new Vector2(0,-9.8f), CurMove, ArrowMove;
     World world=new World(gravity,false);
@@ -77,6 +78,7 @@ public class Play extends Game {
     float fCharX,fCharY, DeltaY;
     int nCharVX, nCharVY, nTelX, nTelY, nTel2X, nTel2Y;
     int nDir;
+    Timer timer;
 
     TextureAtlas Atlas;
     TextureRegion[][] MoveBG1, MoveKnob1, btnJump1;
@@ -113,9 +115,16 @@ public class Play extends Game {
     ScreenControl screenControl;
 
 
-    @Override
     public void create() {
 
+    }
+
+    public void render(){
+
+    }
+
+    @Override
+    public void show() {
         world=new World(gravity,false);
         PPM=(1f/16f);
         Atlas = new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));//grabs texture pack
@@ -127,12 +136,13 @@ public class Play extends Game {
         camera.viewportWidth = nScreenWidth * PPM / 2;
         nZoomHeight = (int) (nScreenHeight * PPM);//set the zoom of the camera when it pans out for shooting arrows
         nZoomWidth = (int) (nScreenWidth * PPM);
+        timer = new Timer();
 
         CurMove=new Vector2();
         ArrowMove=new Vector2();
         jointDef = new WeldJointDef();
 
-        Time=1;
+        //time is initialized at the end of the create() method
         DeadTime=-1;
         ArrowTime=1;
         nDir=2;
@@ -200,7 +210,7 @@ public class Play extends Game {
         Region=Atlas.findRegion("WindowBG Square");
         TextureRegion BGWall = Region;
         dBGWall = new TextureRegionDrawable(BGWall);
-       // deathWindow.setBackground(dBGWall);
+        // deathWindow.setBackground(dBGWall);
         Label deathMessage = new Label("Too Bad",skin);//may make an array of messages and randomly select a string from array
         deathWindow.setSize(nScreenWidth / 1.8f, nScreenHeight / 1.6f);
         deathWindow.setPosition((nScreenWidth / 2) - (deathWindow.getWidth() / 2), (nScreenHeight / 2) - (deathWindow.getHeight() / 2));
@@ -322,17 +332,17 @@ public class Play extends Game {
         btnMain.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                dispose();
-                create();
+               // dispose();
 
-                screenControl.setnScreen(1);
+                screenControl.setnScreen(7,1);
             }
         });
         btnRetry.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                dispose();
-                create();
+                screenControl.setnScreen(7,3);
+
+
             }
         });
         btnMaps.addListener(new ChangeListener() {
@@ -342,18 +352,21 @@ public class Play extends Game {
             }
         });
 
+        Time=0;
+        Gdx.input.setInputProcessor(stage);
 
     }
 
     @Override
-    public void render(){
+    public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if(Gdx.graphics.getDeltaTime()<=0.5) {//anything below 0.9 will work, otherwise deltatime will set itself as 1 and increase by ints
+            Time += Gdx.graphics.getDeltaTime();
+        }
 
-        Time += Gdx.graphics.getDeltaTime();           // #15
 
-
-      //  timeLabel.setText(String.valueOf(TimeDisplay));
+        //  timeLabel.setText(String.valueOf(TimeDisplay));
 
         camera.position.set(fCharX, fCharY,0);
         camera.update();
@@ -391,11 +404,11 @@ public class Play extends Game {
         }
 
         nCharVY=(int)CharBody.getLinearVelocity().y;
-            if (ArrowTime < 1 || bArrowShot == false) {//if either the arrow is drawn, or it has been shot, but a second hasn't passed
-                //the character is unable to move
-             //   nCharVX = 0;
-               // CharBody.setLinearVelocity(0, CurMove.y);
-            }
+        if (ArrowTime < 1 || bArrowShot == false) {//if either the arrow is drawn, or it has been shot, but a second hasn't passed
+            //the character is unable to move
+            //   nCharVX = 0;
+            // CharBody.setLinearVelocity(0, CurMove.y);
+        }
 
         if(nCharVX<0){
             nDir=1;
@@ -410,7 +423,6 @@ public class Play extends Game {
             nDir=1;
         }
 
-
         if(bDead==false) {
             TimeDisplay=Time;
             timeLabel.setText(twoDec.format(Time));
@@ -418,8 +430,8 @@ public class Play extends Game {
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
             saw.PlaySound(fCharX,fCharY,arTraps, bDead);
-         //   timeLabel.setText(String.format("%.2f",Time));
-          //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
+            //   timeLabel.setText(String.format("%.2f",Time));
+            //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
 
 
@@ -435,8 +447,8 @@ public class Play extends Game {
             if(DeadTime==-1){
                 DeadTime=Time;
             }
-         //   world.destroyBody(CharBody);
-           // world.destroyBody(CharBody2);
+            //   world.destroyBody(CharBody);
+            // world.destroyBody(CharBody2);
             //can't delete bodies otherwise it freezes if an arrow lands against a wall (tries to form a platform) after death
 
             CharBody.setLinearVelocity(0, 0);
@@ -473,8 +485,8 @@ public class Play extends Game {
                     @Override
                     public void handleHttpResponse(Net.HttpResponse httpResponse) {
                         //what we will do is open up a new screen and display scores. This game keeps rendering still... window wont take priority
-                      // dispose();
-                       screenControl.setnScreen(5);
+                        // dispose();
+                        screenControl.setnScreen(7,5);//was 5,3
                         /**this bit of code is to upload to profile but dont worry about this for now**/
                                        /* final Net.HttpRequest httpRequest;
                                         httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
@@ -521,16 +533,16 @@ public class Play extends Game {
 
 
         bZoomOut=false;
-            for (int i = -5; i <= 5; i++) { //loop left and right 5 tiles each way on the map
-                while((((fCharX / PPM) / nTileWidth) + i)<0){
-                    i++;
-                }
-                if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
-                        .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
-                    bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
-                    break; //leaves loop incase next tile does not have hit property
-                }
+        for (int i = -5; i <= 5; i++) { //loop left and right 5 tiles each way on the map
+            while((((fCharX / PPM) / nTileWidth) + i)<0){
+                i++;
             }
+            if (MapCol.getCell((int) ((fCharX / PPM) / nTileWidth) + i, (int) ((fCharY / PPM) / nTileHeight))//Collide on Left
+                    .getTile().getProperties().containsKey("Hit")) { //grabs tiles that have hit key beside char for zooming out
+                bZoomOut = true;//if any tile has the hit key within 5 tiles left and right, the camera will zoom out
+                break; //leaves loop incase next tile does not have hit property
+            }
+        }
         if(bZoomOut==true){//changes zoom in such a way that it will zoom out quickly then slowly until it stops
             camera.viewportWidth+=(nZoomWidth*1.1-camera.viewportWidth)/7;
             camera.viewportHeight+=(nZoomHeight*1.1-camera.viewportHeight)/8;
@@ -604,7 +616,7 @@ public class Play extends Game {
 
                     if ((int) ((ArrowX / PPM) / nTileWidth) - 1<=0 ||(int) ((ArrowX / PPM) / nTileWidth) + 1>=MapCol.getWidth()-1 ||
                             MapCol.getCell((int) ((ArrowX / PPM) / nTileWidth) - 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Left
-                            .getTile().getProperties().containsKey("Hit") == false ||
+                                    .getTile().getProperties().containsKey("Hit") == false ||
                             MapCol.getCell((int) ((sArrow.getWidth() + ArrowX) / PPM / nTileWidth) + 1, (int) ((ArrowY / PPM) / nTileHeight))//Collide on Right
                                     .getTile().getProperties().containsKey("Hit") == false) {
                         //if there is a tile to the left of the arrow or to the right of the arrow
@@ -631,9 +643,9 @@ public class Play extends Game {
                                     if(CharBody.getPosition().y-ArrowY>=-3 && CharBody.getPosition().y-ArrowY<=-2) {
                                         ArrowY-=CharBody.getPosition().y-ArrowY+1.5f;
                                     }
-                                        PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
-                                        PlatBody = world.createBody(platform.PlatDef);
-                                        arPlats.add(platform);// add new platform to the array
+                                    PlatBody = platform.makePlat(ArrowVX, ArrowX, ArrowY, world);
+                                    PlatBody = world.createBody(platform.PlatDef);
+                                    arPlats.add(platform);// add new platform to the array
 
                                 }
                             }
@@ -682,15 +694,36 @@ public class Play extends Game {
         }
         batch.end();
         CharBody2.setLinearVelocity(CharBody.getLinearVelocity());
-       // for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
+        // for(int i=0;i<5;i++){//we step the world 5 times to speed it up so it doesn't look like it's going in slo mo
         world.step(1f/60f, 8, 3);//moves the box2d world
         world.step(1f/60f, 8, 3);
 
         character.LoopCheck(nTelX, nTelY, CharBody.getPosition().x, CharBody.getPosition().y, this);
-      //  }
+        //  }
         stage.draw();
         stage2.draw();
     }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+        dispose();
+    }
+
     @Override
     public void dispose(){//disposes stuff
         batch.dispose();
@@ -706,6 +739,9 @@ public class Play extends Game {
         death.dispose();
         character.dispose();
         saw.dispose();
+        timer.clear();
+
+       // show();// makes it so that this file is ready to go once everything is cleared out
 
 
 //        batch.dispose();
