@@ -1,23 +1,22 @@
 package fungeons.game;
 
-import com.badlogic.gdx.Game;
-
 /**
  * Created by Gaurab on 2015-04-14.
  */
 
-public class ScreenControl extends Game {// basically holds an int
-    int nScreen;
+public class ScreenControl {// basically holds an int
+    int nScreen=0, nOldScreen=0;
     boolean Owner;
     String userId = "";
     String chatId ="";
     String Name = "";
-    @Override
+//    @Override
     public void create() {
-        nScreen = 1;
+       // nScreen = 0;
     }
-    public void setnScreen(int nScreen_){
+    public void setnScreen(int nScreen_, int nOldScreen_){
         nScreen = nScreen_;
+        nOldScreen=nOldScreen_;
         System.out.println("welp");
     }
 
@@ -42,5 +41,8 @@ public class ScreenControl extends Game {// basically holds an int
     }
     public String getUserId(){
         return userId;
+    }
+    public int getnScreen(){
+        return(nScreen);
     }
 }

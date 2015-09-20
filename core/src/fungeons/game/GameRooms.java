@@ -3,6 +3,7 @@ package fungeons.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -36,7 +37,7 @@ import pablo127.almonds.ParseObject;
 import pablo127.almonds.SaveCallback;
 
 
-public class GameRooms extends Game {
+public class GameRooms implements Screen {
     Game game;
     SpriteBatch sbBatch;
 
@@ -72,36 +73,11 @@ public class GameRooms extends Game {
     ScreenControl screenControl;
 
     public void render() {
-        Gdx.input.setInputProcessor(stage);
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        sbBatch.begin();
-        stage.draw();
-        sbBatch.end();
-    }
-
-    @Override
-    public void resize(int width, int height) {
 
     }
 
     @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public void create() {
+    public void show() {
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();
@@ -168,7 +144,7 @@ public class GameRooms extends Game {
         selectBox.setHeight(50f);
         selectBox.setWidth(100f);
         selectBox.setSelected("Fun City");
-       // list.setVisible(false);
+        // list.setVisible(false);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
@@ -215,7 +191,7 @@ public class GameRooms extends Game {
                     public void done(ParseException e) {
                         window.remove();
                         screenControl.setName(txtName.getText(),true);
-                        screenControl.setnScreen(4);
+                        screenControl.setnScreen(7,4);//was 4,2
                     }
                 });
 
@@ -225,9 +201,9 @@ public class GameRooms extends Game {
         btnExitAdd.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
-               window.clearChildren();
-               window.setVisible(false);
-               window.remove();
+                window.clearChildren();
+                window.setVisible(false);
+                window.remove();
             }
         });
 
@@ -244,7 +220,7 @@ public class GameRooms extends Game {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
                 screenControl.setName(list.getSelected().toString(),false);
-                screenControl.setnScreen(4);
+                screenControl.setnScreen(7,4);//was 4,2
             }
         });
         window.setModal(true);
@@ -253,6 +229,48 @@ public class GameRooms extends Game {
         window.setSize(500, 300);
 
         stage.addActor(window);
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.input.setInputProcessor(stage);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        sbBatch.begin();
+        stage.draw();
+        sbBatch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+        dispose();
+    }
+
+    @Override
+    public void dispose() {
+        skin.dispose();
+        sbBatch.dispose();
+        stage.dispose();
+        Atlas.dispose();
+    }
+
+    public void create() {
+
     }
 
     public void setScreenControl(ScreenControl screenControl_) {

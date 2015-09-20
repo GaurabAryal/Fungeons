@@ -3,6 +3,7 @@ package fungeons.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -33,7 +34,7 @@ import pablo127.almonds.Parse;
 import pablo127.almonds.ParseUser;
 
 
-public class GameRoom extends Game {
+public class GameRoom implements Screen {
     Game game;
     SpriteBatch sbBatch;
 
@@ -73,65 +74,11 @@ public class GameRoom extends Game {
     ScreenControl screenControl;
 
     public void render() {
-        if (!bCanCreate) {
-            create();
-        }
-        Gdx.input.setInputProcessor(stage);
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        sbBatch.begin();
-        stage.draw();
-        sbBatch.end();
-    }
-
-    @Override
-    public void resize(int width, int height) {
 
     }
 
     @Override
-    public void pause() {
-        final Net.HttpRequest httpRequest;
-        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-        httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
-        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-        JSONObject json = new JSONObject();
-        JSONObject skills = new JSONObject();
-        skills.put("__op", "Remove");
-        skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() )));
-        json.put("players", skills);
-        httpRequest.setContent(json.toString());
-        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-            @Override
-            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                screenControl.setnScreen(1);
-            }
-
-            @Override
-            public void failed(Throwable t) {
-                System.out.println(t.toString());
-            }
-
-            @Override
-            public void cancelled() {
-
-            }
-        });
-    }
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public void create() {
+    public void show() {
         chatObjectId();//grab chat obj id right away
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
@@ -291,7 +238,7 @@ public class GameRoom extends Game {
 
                             if (jsonObject.get("start").toString().equals("true")){
                                 screenControl.setChatId(chatObjId);
-                                screenControl.setnScreen(3);
+                                screenControl.setnScreen(7,3);//was 3,4
 
                                 timer.stop();
                             }
@@ -355,35 +302,106 @@ public class GameRoom extends Game {
         btnStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
-            if (screenControl.Owner){
-                final Net.HttpRequest httpRequest;
-                httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
-                httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-                httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-                JSONObject json = new JSONObject();
-                json.put("start", true);
-                httpRequest.setContent(json.toString());
-                Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-                    @Override
-                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                        System.out.println(httpResponse.toString());
-                    }
+                if (screenControl.Owner){
+                    final Net.HttpRequest httpRequest;
+                    httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+                    httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
+                    httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                    httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                    JSONObject json = new JSONObject();
+                    json.put("start", true);
+                    httpRequest.setContent(json.toString());
+                    Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                        @Override
+                        public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                            System.out.println(httpResponse.toString());
+                        }
 
-                    @Override
-                    public void failed(Throwable t) {
-                        System.out.println(t.toString());
-                    }
+                        @Override
+                        public void failed(Throwable t) {
+                            System.out.println(t.toString());
+                        }
 
-                    @Override
-                    public void cancelled() {
+                        @Override
+                        public void cancelled() {
 
-                    }
-                });
+                        }
+                    });
 
-            }
+                }
             }
         });
+    }
+
+    @Override
+    public void render(float delta) {
+        if (!bCanCreate) {
+            create();
+        }
+        Gdx.input.setInputProcessor(stage);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        sbBatch.begin();
+        stage.draw();
+        sbBatch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+        final Net.HttpRequest httpRequest;
+        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
+        httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
+        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+        JSONObject json = new JSONObject();
+        JSONObject skills = new JSONObject();
+        skills.put("__op", "Remove");
+        skills.put("objects", new JSONArray(Arrays.asList(ParseUser.getCurrentUser().getUsername().toString() )));
+        json.put("players", skills);
+        httpRequest.setContent(json.toString());
+        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                screenControl.setnScreen(7,1);//was 1,4
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                System.out.println(t.toString());
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
+    }
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+        dispose();
+    }
+
+    @Override
+    public void dispose() {
+        sbBatch.dispose();
+        stage.dispose();
+        skin.dispose();
+        Atlas.dispose();
+    }
+
+    public void create() {
+
     }
     public void addPlayer(){//Honestly needs a lot of clean up LOL. Dont need to add/remove players if the size is the same lmao.
 

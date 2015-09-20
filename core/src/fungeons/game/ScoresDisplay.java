@@ -3,22 +3,17 @@ package fungeons.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
@@ -28,16 +23,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import pablo127.almonds.Parse;
-import pablo127.almonds.ParseException;
-import pablo127.almonds.ParseObject;
-import pablo127.almonds.ParseUser;
-import pablo127.almonds.SaveCallback;
 
 
-public class ScoresDisplay extends Game {
+public class ScoresDisplay implements Screen {
     Game game;
     SpriteBatch sbBatch;
     boolean bCanCreate = false;
@@ -70,37 +60,11 @@ public class ScoresDisplay extends Game {
 
     public void render() {
 
-        if (!bCanCreate)create();
-        Gdx.input.setInputProcessor(stage);
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        sbBatch.begin();
-        stage.draw();
-        sbBatch.end();
-    }
-
-    @Override
-    public void resize(int width, int height) {
 
     }
 
     @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public void create() {
+    public void show() {
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
@@ -115,56 +79,56 @@ public class ScoresDisplay extends Game {
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-            /***Load up the scores to display***/
-            final String requestContent = null;
-            final Net.HttpRequest httpRequest2;
-            httpRequest2 = new Net.HttpRequest(Net.HttpMethods.GET);
-            httpRequest2.setUrl("https://api.parse.com/1/classes/chat/"+screenControl.getChatId());
-            httpRequest2.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-            httpRequest2.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+                /***Load up the scores to display***/
+                final String requestContent = null;
+                final Net.HttpRequest httpRequest2;
+                httpRequest2 = new Net.HttpRequest(Net.HttpMethods.GET);
+                httpRequest2.setUrl("https://api.parse.com/1/classes/chat/"+screenControl.getChatId());
+                httpRequest2.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
+                httpRequest2.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
 
-            httpRequest2.setContent(requestContent);
-            Gdx.net.sendHttpRequest(httpRequest2, new Net.HttpResponseListener() {
-                @Override
-                public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                    try {
+                httpRequest2.setContent(requestContent);
+                Gdx.net.sendHttpRequest(httpRequest2, new Net.HttpResponseListener() {
+                    @Override
+                    public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                        try {
 
-                        jsonObject = new JSONObject(httpResponse.getResultAsString());
-                        JSONArray results = (JSONArray) jsonObject.get("scores");
-                        if (results.length()>length){
-                            length = results.length();
-                            scoresTable.reset();
-                            scoresTable.add("Scores");
-                            for (int i = results.length()-1; i >= 0; i--) {
-                                scoresTable.row();
-                                scoresTable.add(results.getString(i));
-                            }
-                            if (length<4){
-                                for (int i = length; i < 4; i++) {
+                            jsonObject = new JSONObject(httpResponse.getResultAsString());
+                            JSONArray results = (JSONArray) jsonObject.get("scores");
+                            if (results.length()>length){
+                                length = results.length();
+                                scoresTable.reset();
+                                scoresTable.add("Scores");
+                                for (int i = results.length()-1; i >= 0; i--) {
                                     scoresTable.row();
-                                    scoresTable.add("In progress...");
+                                    scoresTable.add(results.getString(i));
                                 }
-                            }else{
-                                scoresTable.row();
-                                scoresTable.add(btnRestart).width(nSWidth);
-                                scoresTable.row();
-                                scoresTable.add(btnLobby).width(nSWidth);
+                                if (length<4){
+                                    for (int i = length; i < 4; i++) {
+                                        scoresTable.row();
+                                        scoresTable.add("In progress...");
+                                    }
+                                }else{
+                                    scoresTable.row();
+                                    scoresTable.add(btnRestart).width(nSWidth);
+                                    scoresTable.row();
+                                    scoresTable.add(btnLobby).width(nSWidth);
+                                }
                             }
+                        } catch (Exception e) {
                         }
-                    } catch (Exception e) {
                     }
-                }
 
-                @Override
-                public void failed(Throwable t) {
-                    System.out.println(t.toString());
-                }
+                    @Override
+                    public void failed(Throwable t) {
+                        System.out.println(t.toString());
+                    }
 
-                @Override
-                public void cancelled() {
+                    @Override
+                    public void cancelled() {
 
-                }
-            });
+                    }
+                });
             }
         }, 1, 5);
 
@@ -188,7 +152,7 @@ public class ScoresDisplay extends Game {
                             jsonObject = new JSONObject(httpResponse.getResultAsString());
 
                             if (jsonObject.get("gameroom").toString().equals("1")){
-                                screenControl.setnScreen(4);
+                                screenControl.setnScreen(7,4);//was 4,5
 
                                 timer.stop();
                             }
@@ -238,7 +202,7 @@ public class ScoresDisplay extends Game {
                             Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                                 @Override
                                 public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                                    screenControl.setnScreen(4);
+                                    screenControl.setnScreen(7,4);//was 4,5
                                 }
 
                                 @Override
@@ -282,7 +246,7 @@ public class ScoresDisplay extends Game {
                     Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                         @Override
                         public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                            screenControl.setnScreen(2);
+                            screenControl.setnScreen(7,2);//was 2,5
                         }
 
                         @Override
@@ -300,6 +264,49 @@ public class ScoresDisplay extends Game {
             }
         });
         stage.addActor(scoresTable);
+
+    }
+
+    @Override
+    public void render(float delta) {
+        if (!bCanCreate)create();
+        Gdx.input.setInputProcessor(stage);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        sbBatch.begin();
+        stage.draw();
+        sbBatch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+        dispose();
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+        skin.dispose();
+        sbBatch.dispose();
+
+    }
+
+    public void create() {
 
     }
 
