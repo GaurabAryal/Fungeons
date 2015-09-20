@@ -39,7 +39,7 @@ public class SplashScreen implements Screen{
     public void show() {
         Time=0;
         mainMenu = new MainMenu();
-        splashImg=new Texture(Gdx.files.internal("SplashScreen 12.png"));
+        splashImg=new Texture(Gdx.files.internal("SplashScreen 37.png"));
         sSplash=new Sprite(splashImg);
         batch= new SpriteBatch();
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
