@@ -60,6 +60,7 @@ public class GameRooms implements Screen {
     TextButton btnAddGameroom;
     TextButton btnExit;
     TextButton btnJoin;
+    TextButton btnMaps;
     ArrayList<String> gamerooms = new ArrayList<String>();
     TextButton btnRefresh;
 
@@ -87,9 +88,25 @@ public class GameRooms implements Screen {
         final Label nameLabel = new Label("Name: ", skin);
         final Label mapLabel = new Label("Map: ", skin);
         final TextField txtName = new TextField("", skin);
+        // RaresSourceCode Change Selectbox into Button that changes screen
+        //
+
+        //final TextButton btnMaps = new TextButton("Select Your Map", skin);
+        btnMaps = new TextButton("Select Your Map", skin);
+
+
+        /*btnMaps.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
+                System.out.println("Found it");
+                screenControl.setnScreen(8,2);
+
+            }
+        });*/
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
-
+        // Maps
+        //
         final Drawable dBGWall;
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
@@ -116,6 +133,7 @@ public class GameRooms implements Screen {
 ////            pO2.saveInBackground();
 //        }
         btnAddGameroom = new TextButton("+", skin);
+
         btnRefresh = new TextButton("Refresh", skin);
         btnExit = new TextButton("Exit",skin);
         btnJoin = new TextButton ("Join",skin);
@@ -140,10 +158,13 @@ public class GameRooms implements Screen {
         skin.getFont("default-font").scale(nSHeight / 480);
         window.setMovable(true);
         window.padTop(nSHeight / 16);
+        //
         selectBox.setPosition(100, 100);
         selectBox.setHeight(50f);
         selectBox.setWidth(100f);
         selectBox.setSelected("Fun City");
+
+
         // list.setVisible(false);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
@@ -151,12 +172,14 @@ public class GameRooms implements Screen {
                 System.out.println("Added");
                 window.setModal(true);
                 window.setVisible(true);
-                gameroomTable.setPosition(0,0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
+                gameroomTable.setPosition(0, 0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
                 gameroomTable.add(nameLabel);
                 gameroomTable.add(txtName).width(100);
                 gameroomTable.row();
                 gameroomTable.add(mapLabel);
-                gameroomTable.add(selectBox);
+                gameroomTable.add(selectBox);//
+                gameroomTable.row();
+                gameroomTable.add(btnMaps);
                 gameroomTable.row();
                 gameroomTable.add(btnAdd).height(100).width(100);
                 gameroomTable.add(btnExitAdd).height(100).width(100);
@@ -190,14 +213,21 @@ public class GameRooms implements Screen {
                     @Override
                     public void done(ParseException e) {
                         window.remove();
-                        screenControl.setName(txtName.getText(),true);
-                        screenControl.setnScreen(7,4);//was 4,2
+                        screenControl.setName(txtName.getText(), true);
+                        screenControl.setnScreen(7, 4);//was 4,2
                     }
                 });
 
             }
         });
+        btnMaps.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
+                System.out.println("Found it");
+                screenControl.setnScreen(8, 2);
 
+            }
+        });
         btnExitAdd.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
