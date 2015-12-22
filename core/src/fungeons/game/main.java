@@ -74,7 +74,7 @@ public  class main extends Game {
             Gdx.input.setInputProcessor(play.stage);
             this.setScreen(play);
 
-            if(MenuSong.isPlaying()){
+            if(MenuSong.isPlaying()==true){
                 MenuSong.stop();
                 GameSong.play();
                 GameSong.setLooping(true);
