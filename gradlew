@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+#ChangeCommit
 ##############################################################################
 ##
 ##  Gradle start up script for UN*X
