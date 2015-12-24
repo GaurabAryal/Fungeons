@@ -17,6 +17,7 @@ public  class main extends Game {
     int nScreen, nOldScreen=0;
     ScreenControl screenControl;
     LoadingScreen loadingScreen;
+    MapSelection mapSelection;
     float Time;
     @Override
     public void create() {
@@ -49,6 +50,9 @@ public  class main extends Game {
         splashScreen.setScreenControl(screenControl);
         loadingScreen = new LoadingScreen();
         loadingScreen.setScreenControl(screenControl);
+        mapSelection = new MapSelection();
+        mapSelection.setScreenControl(screenControl);
+
         Time=0;
     }
     @Override
@@ -90,6 +94,9 @@ public  class main extends Game {
         if(nScreen==7 && getScreen()!=loadingScreen){
             loadingScreen.setNewScreen(screenControl.nOldScreen);
             this.setScreen(loadingScreen);
+        }
+        if(nScreen==8 && getScreen()!= mapSelection){
+            this.setScreen(mapSelection);
         }
         if(nScreen!=5){
             GameSong.stop();

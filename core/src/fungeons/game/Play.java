@@ -349,6 +349,7 @@ public class Play implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //add once map screen is in place
+
             }
         });
 

@@ -54,7 +54,7 @@ public class MainMenu implements Screen {
     @Override
     public void show() {
         int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
-        Parse.initialize("hNMiiD81kjVZGl9Jns0KcsMN4BhkcHh0QX1PlqTp", "FUOZOmhj3BT8dhScg6nNG9zxMt9CYN8hC7HysRNM");//initialize parse with our keys
+        Parse.initialize("ayDwhTuCZaESDYV4OvdRIWHjX2DW2DuUWwGB6BTk", "s2NFEowokTeIhqxB1eYFTBNNY1hE6dVPoSDVDCaB");//initialize parse with our keys
         batch = new SpriteBatch();
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
