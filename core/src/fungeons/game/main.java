@@ -95,7 +95,7 @@ public  class main extends Game {
             loadingScreen.setNewScreen(screenControl.nOldScreen);
             this.setScreen(loadingScreen);
         }
-        if(nScreen==8 && getScreen()!=mapSelection){
+        if(nScreen==8 && getScreen()!= mapSelection){
             this.setScreen(mapSelection);
         }
         if(nScreen!=5){
