@@ -196,25 +196,27 @@ public class MainMenu implements Screen {
         btnRegister.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Register bt
-                ParseUser user = new ParseUser();
-                user.setUsername(txtUsername.getText());
-                user.setPassword(txtPassword.getText());
-                user.setEmail(txtUsername.getText()+"@example.com");
-                user.signUpInBackground(new SignUpCallback() {
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            // Hooray! Let them use the app now.
-                            exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!");
-                            exitDialog.show(stage);
-                        } else {
-                            System.out.println(e.getMessage());
-                            exitDialog.text(e.getMessage()+ ". Please choose another Username");
-                            exitDialog.show(stage);
-                            // Sign up didn't succeed. Look at the ParseException
-                            // to figure out what went wrong
+                if (txtUsername.getText() != "" && txtPassword.getText() !="") {
+                    ParseUser user = new ParseUser();
+                    user.setUsername(txtUsername.getText());
+                    user.setPassword(txtPassword.getText());
+                    user.setEmail(txtUsername.getText() + "@example.com");
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                // Hooray! Let them use the app now.
+                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!");
+                                exitDialog.show(stage);
+                            } else {
+                                System.out.println(e.getMessage());
+                                exitDialog.text(e.getMessage() + ". Please choose another Username");
+                                exitDialog.show(stage);
+                                // Sign up didn't succeed. Look at the ParseException
+                                // to figure out what went wrong
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         btnOffline.addListener(new ChangeListener() {
