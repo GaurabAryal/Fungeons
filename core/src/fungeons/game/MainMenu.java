@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -88,7 +89,13 @@ public class MainMenu implements Screen {
         stage = new Stage(new ScreenViewport());
         Table table = new Table();
         Gdx.input.setInputProcessor(stage);
-        final ExitDialog exitDialog = new ExitDialog(" Success ", skin);
+
+        Drawable dBGWinWall;
+        Region=Atlas.findRegion("WindowBG Square");
+        dBGWinWall=new TextureRegionDrawable(Region);
+        final Window.WindowStyle windowStyle = new Window.WindowStyle(ButtonFont,Color.WHITE,dBGWinWall);
+        skin.add("windowStyle",windowStyle);
+        final ExitDialog exitDialog = new ExitDialog("", skin, "windowStyle");
 
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
@@ -276,7 +283,7 @@ public class MainMenu implements Screen {
 
         }
         public ExitDialog(String title, Skin skin){
-            super(title, skin);
+            super(title, skin, "windowStyle");
 
         }
 
