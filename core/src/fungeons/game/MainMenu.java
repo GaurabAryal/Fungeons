@@ -40,6 +40,10 @@ public class MainMenu implements Screen {
     TextureAtlas.AtlasRegion Region;
     TextureRegion BGWall;
     Drawable dbtnWhite;
+    TextButton.TextButtonStyle btnWhiteStyle;
+    Window.WindowStyle windowStyle;
+    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+    Label.LabelStyle dialogStyle;
 
    // BitmapFont mockFont= new BitmapFont(Gdx.files.internal("mockFont.fnt"));
     //Texture img =  new Texture("bgimg2.jpeg");
@@ -57,7 +61,7 @@ public class MainMenu implements Screen {
         int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("ayDwhTuCZaESDYV4OvdRIWHjX2DW2DuUWwGB6BTk", "s2NFEowokTeIhqxB1eYFTBNNY1hE6dVPoSDVDCaB");//initialize parse with our keys
         batch = new SpriteBatch();
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
 
         Drawable dBGWall;
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
@@ -80,9 +84,11 @@ public class MainMenu implements Screen {
         Drawable dbtnWhiteDn = new TextureRegionDrawable(btnWhiteDn);
         skin.add("btnWhiteDn",dbtnWhiteDn);
 
-        BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        final BitmapFont ButtonFontAlt = new BitmapFont(Gdx.files.internal("FungeonsFontAlt.fnt"));
         ButtonFont.setScale(nScreenWidth/512);//will implement when Texture pack is fixed
-        TextButton.TextButtonStyle btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,ButtonFont);
+        ButtonFontAlt.setScale(nScreenWidth/512);
+        btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,ButtonFont);
 
         skin.add("btnWhiteStyle",btnWhiteStyle);
         skin.getFont("default-font").setScale(nScreenWidth/674f);//for text buttons :D
@@ -93,9 +99,10 @@ public class MainMenu implements Screen {
         Drawable dBGWinWall;
         Region=Atlas.findRegion("WindowBG Square");
         dBGWinWall=new TextureRegionDrawable(Region);
-        final Window.WindowStyle windowStyle = new Window.WindowStyle(ButtonFont,Color.WHITE,dBGWinWall);
+        windowStyle = new Window.WindowStyle(ButtonFont,Color.WHITE,dBGWinWall);
         skin.add("windowStyle",windowStyle);
         final ExitDialog exitDialog = new ExitDialog("", skin, "windowStyle");
+        dialogStyle = new Label.LabelStyle(ButtonFontAlt, Color.WHITE);
 
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
@@ -182,7 +189,8 @@ public class MainMenu implements Screen {
                             if (user != null) {
                                 ParseUser u = ParseUser.getCurrentUser();
                                 if (u.getUsername() != null) {
-                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ");//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+
+                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }
                             }
@@ -205,11 +213,11 @@ public class MainMenu implements Screen {
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Hooray! Let them use the app now.
-                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!");
+                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle);
                                 exitDialog.show(stage);
                             } else {
                                 System.out.println(e.getMessage());
-                                exitDialog.text(e.getMessage() + ". Please choose another Username");
+                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle);
                                 exitDialog.show(stage);
                                 // Sign up didn't succeed. Look at the ParseException
                                 // to figure out what went wrong
@@ -280,22 +288,22 @@ public class MainMenu implements Screen {
         Atlas.dispose();
     }
     public  class ExitDialog extends Dialog {
-        public ExitDialog(String title, Skin skin,String windowStyle){
-            super(title, skin, windowStyle);
-
-        }
-        public ExitDialog(String title, Skin skin){
+        public ExitDialog(String title, Skin skin_,String windowStyle_){
             super(title, skin, "windowStyle");
 
         }
+        public ExitDialog(String title, Skin skin_){
+            super(title, skin);
 
-        public ExitDialog(String title,WindowStyle windowStyle){
+        }
+
+        public ExitDialog(String title,WindowStyle windowStyle_){
             super(title, windowStyle);
         }
         {
-
             setScale(2.5f, 2.5f);
-            button("OK",this.getTitle());
+            //button("OK", btnWhiteStyle).setStyle(windowStyle);
+            TextButton button = new TextButton("OK", skin, "btnWhiteStyle");
 
         }
         @Override
