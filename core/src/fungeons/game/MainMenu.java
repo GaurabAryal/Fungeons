@@ -58,7 +58,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void show() {
-        int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
+        final int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("ayDwhTuCZaESDYV4OvdRIWHjX2DW2DuUWwGB6BTk", "s2NFEowokTeIhqxB1eYFTBNNY1hE6dVPoSDVDCaB");//initialize parse with our keys
         batch = new SpriteBatch();
 
@@ -102,6 +102,7 @@ public class MainMenu implements Screen {
         windowStyle = new Window.WindowStyle(ButtonFont,Color.WHITE,dBGWinWall);
         skin.add("windowStyle",windowStyle);
         final ExitDialog exitDialog = new ExitDialog("", skin, "windowStyle");
+        exitDialog.setPosition(nScreenWidth/8f,nScreenHeight/4f);
         dialogStyle = new Label.LabelStyle(ButtonFontAlt, Color.WHITE);
 
         final Label passwordLabel = new Label("Password: ", skin);
@@ -190,7 +191,7 @@ public class MainMenu implements Screen {
                                 ParseUser u = ParseUser.getCurrentUser();
                                 if (u.getUsername() != null) {
 
-                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(20);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }
                             }
@@ -213,11 +214,11 @@ public class MainMenu implements Screen {
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Hooray! Let them use the app now.
-                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle).padTop(20);
+                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle).padTop(nScreenHeight/40f);
                                 exitDialog.show(stage);
                             } else {
                                 System.out.println(e.getMessage());
-                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle).padTop(20);
+                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle).padTop(nScreenHeight/40f);
                                 exitDialog.show(stage);
                                 // Sign up didn't succeed. Look at the ParseException
                                 // to figure out what went wrong
@@ -301,10 +302,14 @@ public class MainMenu implements Screen {
             super(title, windowStyle);
         }
         {
+
             int nScreenWidth=Gdx.graphics.getWidth(), nScreenHeight=Gdx.graphics.getHeight();
-            setSize(nScreenWidth/3f, nScreenHeight/2f);
-            setScale(1f,1.5f);
-            button("OK", this,btnWhiteStyle).pad(nScreenHeight/30f,nScreenWidth/10f,nScreenHeight/20f,nScreenWidth/8f);
+
+            setSize(nScreenWidth, nScreenHeight);
+            setScale(1.5f,2f);
+            button("OK", this,btnWhiteStyle).pad(nScreenHeight / 20f, nScreenWidth / 20f, nScreenHeight / 40f, nScreenWidth / 20f);
+
+
          //   button
           //  TextButton button = new TextButton("OK", skin, "btnWhiteStyle");
 
