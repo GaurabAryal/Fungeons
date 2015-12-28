@@ -127,7 +127,6 @@ public class GameRoom implements Screen {
         gameroomTable.row();
         gameroomTable.add(selectBox).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 7) / nSHeight);
         gameroomTable.row();
-        gameroomTable.add();
         gameroomTable.add(scrollPane2).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (11*nSHeight / 21) / nSHeight);
         table.debugCell();
         scrollPane.setColor(0.2f,0.2f,0.2f,0.65f);

@@ -2,6 +2,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,9 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * Created by Ben on 2015-08-30.
+ * Created by raresradut1 on 2015-11-23.
  */
-public class MapSelection implements Screen {
+public class MapSelection implements Screen { //currently is placeholder has same image as instructions
+    OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+    ScreenControl screenControl;
     TextureAtlas Atlas;
     Table table;
     TextButton.TextButtonStyle btnWhiteStyle;
@@ -26,8 +29,6 @@ public class MapSelection implements Screen {
     int nScreenWidth, nScreenHeight;
     Stage stage;
 
-    ScreenControl screenControl;
-
     SpriteBatch batch;
 
     public void create(){
@@ -35,11 +36,10 @@ public class MapSelection implements Screen {
     }
 
     public void render(){
+        //
 
     }
 
-
-    @Override
     public void show() {
         nScreenWidth=Gdx.graphics.getWidth();
         nScreenHeight=Gdx.graphics.getHeight();
@@ -63,7 +63,7 @@ public class MapSelection implements Screen {
         table=new Table(skin);
         table.setSize(nScreenWidth,nScreenHeight);
         table.setBackground(dInstructions);
-        table.pad(nScreenHeight/16);
+        table.pad(nScreenHeight / 16);
 
 
 
@@ -71,7 +71,7 @@ public class MapSelection implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
-                screenControl.setnScreen(7,1);//was 1,6
+                screenControl.setnScreen(2,8);// This is screen 8
             }
         });
         table.add(btnBack).right().top().expand();
@@ -81,7 +81,7 @@ public class MapSelection implements Screen {
 
     @Override
     public void render(float delta) {
-        stage.draw();
+
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MapSelection implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override
@@ -111,7 +111,9 @@ public class MapSelection implements Screen {
         ButtonFont.dispose();
         Atlas.dispose();
     }
+
     public void setScreenControl(ScreenControl screenControl_){
         screenControl = screenControl_;
     }
+
 }
