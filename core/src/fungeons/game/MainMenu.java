@@ -284,6 +284,7 @@ public class MainMenu implements Screen {
         {
 
             setScale(2.5f, 2.5f);
+
             button("OK",this.getTitle());
 
         }

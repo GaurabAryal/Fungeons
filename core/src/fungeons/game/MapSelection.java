@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -24,7 +25,9 @@ public class MapSelection implements Screen { //currently is placeholder has sam
     Table table;
     TextButton.TextButtonStyle btnWhiteStyle;
     TextButton btnBack, btnGame;
-
+    ImageButton btnBunsTown, btnDawgg,
+            btnFrogosaurus, btnFunCity,
+            btnFunLeafClover, btnFunMountain;
 
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
@@ -63,7 +66,7 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         Region=Atlas.findRegion("BG Wall Brick Wide");
         BGWall= Region;
         dBGWall= new TextureRegionDrawable(BGWall);
-
+        // Button Stuff
         Region=Atlas.findRegion("Button 1");
         Drawable dbtnWhiteUp = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("Button 2");
@@ -72,13 +75,26 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         ButtonFont.setScale(nScreenWidth/512);
         btnWhiteStyle= new TextButton.TextButtonStyle(dbtnWhiteUp,dbtnWhiteDn,dbtnWhiteUp, ButtonFont);
+
         btnBack=new TextButton("BACK",btnWhiteStyle);
         btnGame=new TextButton("PLAY",btnWhiteStyle);
 
+        // All currently placeholder
+        // Insert new ImageButton(imageup, imagedown)
+
+        btnBunsTown = new ImageButton(dBGWall);
+        // btnBunsTown.setScale(1.5f,1.5f);
+
+        btnDawgg = new ImageButton(dBGWall);
+        btnFrogosaurus = new ImageButton(dBGWall);
+        btnFunCity = new ImageButton(dBGWall);
+        btnFunLeafClover = new ImageButton(dBGWall);
+        btnFunMountain = new ImageButton(dBGWall);
+
         table=new Table(skin);
-        table.setSize(nScreenWidth,nScreenHeight);
+        table.setSize(nScreenWidth, nScreenHeight);
         table.setBackground(dBGWall);
-        table.pad(nScreenHeight / 16);
+        //table.pad(nScreenHeight / 16);
 
 
         btnBack.addListener(new ChangeListener() {
@@ -87,16 +103,37 @@ public class MapSelection implements Screen { //currently is placeholder has sam
                 //   stage.dispose();
                 screenControl.setnScreen(7, 1);
             }
-        });
-        btnGame.addListener(new ChangeListener() {
+        }); btnGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //   stage.dispose();
+                screenControl.setnScreen(7, 3);
+            }
+        }); btnBunsTown.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
                 screenControl.setnScreen(7, 3);
             }
         });
-        table.add(btnBack).right().top().expand();
-        //table.add(btnGame).right()
+
+        float nbtnW = 3.8f;
+        float nbtnH = 7.2f;
+        // table.(nScreenWidth/2);
+        table.add(btnBack).padLeft(nScreenWidth / 2).padBottom(nScreenHeight / 4);
+        //Map2
+
+        table.row();
+        //table.add(btnBunsTown).pad(nScreenWidth / 90);
+        table.add(btnBunsTown).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.add(btnDawgg).width((int) (nScreenWidth/nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.add(btnFrogosaurus).width((int) (nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
+        table.row();
+        table.add(btnFunCity).width((int)(nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
+        table.add(btnFunLeafClover).width((int)(nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
+        table.add(btnFunMountain).width((int)(nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
+        table.row();
+        table.add(btnGame).padLeft(nScreenWidth/2).padTop(nScreenHeight/4);
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
     }
