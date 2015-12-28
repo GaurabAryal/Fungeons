@@ -63,12 +63,7 @@ public class MainMenu implements Screen {
         Region=Atlas.findRegion("BG Wall Brick Wide");
         BGWall= Region;
 
-      /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
-            for(int j=0;j<(Gdx.graphics.getHeight()+100)/Region.getRegionHeight();j++){
-                BGWall[i][j].setRegion(Region);
 
-            }
-        }*/
         dBGWall= new TextureRegionDrawable(BGWall);
         Region=Atlas.findRegion("Button 1");
         TextureRegion btnWhite = Region;
@@ -214,7 +209,8 @@ public class MainMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
-                screenControl.setnScreen(7,3);
+                //screenControl.setnScreen(7,3);
+                screenControl.setnScreen(7,8);
             }
         });
         btnH2p.addListener(new ChangeListener() {

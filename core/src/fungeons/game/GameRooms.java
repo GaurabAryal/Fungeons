@@ -95,14 +95,14 @@ public class GameRooms implements Screen {
         btnMaps = new TextButton("Select Your Map", skin);
 
 
-        /*btnMaps.addListener(new ChangeListener() {
+        btnMaps.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
                 System.out.println("Found it");
-                screenControl.setnScreen(8,2);
+                screenControl.setnScreen(7,8);
 
             }
-        });*/
+        });
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
         // Maps
@@ -220,14 +220,7 @@ public class GameRooms implements Screen {
 
             }
         });
-        btnMaps.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
-                System.out.println("Found it");
-                screenControl.setnScreen(8, 2);
 
-            }
-        });
         btnExitAdd.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {// this will refresh the gamerooms so pull up new gamerooms if they are created
