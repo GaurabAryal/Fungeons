@@ -56,6 +56,7 @@ public class GameRoom implements Screen {
     Table table;
     JSONObject jsonObject;
     TextButton btnStart;
+    TextButton btnBack;
     TextButton btnExit;
     TextButton btnJoin;
     ArrayList<String> gamerooms = new ArrayList<String>();
@@ -87,6 +88,7 @@ public class GameRoom implements Screen {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
         btnStart = new TextButton("START", skin);
+        btnBack = new TextButton("BACK", skin);
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
@@ -95,7 +97,6 @@ public class GameRoom implements Screen {
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
         dBGWall=new TextureRegionDrawable(BGWall);
-
         window = new Window(screenControl.getName() + " Chat", skin);
         final TextField txtName = new TextField("", skin);
         txtName.setMessageText("Write a message...");
@@ -108,7 +109,7 @@ public class GameRoom implements Screen {
         scrollPane = new ScrollPane(list, skin);
         list2.setItems(players.toArray());
         scrollPane2 = new ScrollPane(list2, skin);
-        list.setColor(0.2f,0.2f,0.2f,0.65f);
+        list.setColor(0.2f, 0.2f, 0.2f, 0.65f);
 
         table = new Table(skin);
         gameroomTable = new Table(skin);
@@ -118,16 +119,19 @@ public class GameRoom implements Screen {
         table.add(gameroomTable).top();
         table.setBackground(dBGWall);
         window.setBackground(dBGWall);
+
         //scrollPane.setFillParent(true);
         window.setMovable(false);
         window.add(scrollPane).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(((nSHeight * (int) (nSHeight / 1)) / nSHeight) - 200);
         window.row();
         window.add(txtName).width((nSWidth * (int) (nSWidth / 1.25)) / nSWidth).height(nSHeight * 70 / nSHeight);
+        gameroomTable.add(btnBack).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 10) / nSHeight);//The fractions add to one
+        gameroomTable.row();
         gameroomTable.add(btnStart).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 3) / nSHeight);
         gameroomTable.row();
         gameroomTable.add(selectBox).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (nSHeight / 7) / nSHeight);
         gameroomTable.row();
-        gameroomTable.add(scrollPane2).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (11*nSHeight / 21) / nSHeight);
+        gameroomTable.add(scrollPane2).width((nSWidth * (nSWidth - (int) (nSWidth / 1.25))) / nSWidth).height(nSHeight * (89*nSHeight / 210) / nSHeight);
         table.debugCell();
         scrollPane.setColor(0.2f,0.2f,0.2f,0.65f);
         scrollPane2.setColor(0.2f,0.2f,0.2f,0.65f);
@@ -196,6 +200,9 @@ public class GameRoom implements Screen {
                             JSONArray results = (JSONArray) jsonObject.get("players");
                             players.clear();
                             for (int n = 0; n < results.length(); n++) {
+                                if(n == 0){
+                                    players.add("Players");
+                                }
                                 players.add(results.getString(n));
                             }
                             list2.clear();
@@ -302,10 +309,10 @@ public class GameRoom implements Screen {
         btnStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
-                if (screenControl.Owner){
+                if (screenControl.Owner) {
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                    httpRequest.setUrl("https://api.parse.com/1/classes/chat/"+chatObjId);
+                    httpRequest.setUrl("https://api.parse.com/1/classes/chat/" + chatObjId);
                     httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
                     httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
                     JSONObject json = new JSONObject();
@@ -329,6 +336,12 @@ public class GameRoom implements Screen {
                     });
 
                 }
+            }
+        });
+        btnBack.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {//This will take you back to gamerooms
+                screenControl.setnScreen(7,2);
             }
         });
     }

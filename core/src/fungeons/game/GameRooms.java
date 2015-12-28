@@ -73,9 +73,6 @@ public class GameRooms implements Screen {
 
     ScreenControl screenControl;
 
-    public void render() {
-
-    }
 
     @Override
     public void show() {
@@ -288,15 +285,11 @@ public class GameRooms implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override
     public void dispose() {
-        skin.dispose();
-        sbBatch.dispose();
-        stage.dispose();
-        Atlas.dispose();
     }
 
     public void create() {
