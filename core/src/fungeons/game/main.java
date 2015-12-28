@@ -68,7 +68,9 @@ public  class main extends Game {
             this.setScreen(mainMenu);
         }
         else if (nScreen == 2  && getScreen()!=gameRooms) {
+
             this.setScreen(gameRooms);
+
         }
         else if (nScreen == 3 && getScreen()!=play){
             Gdx.input.setInputProcessor(play.stage);
