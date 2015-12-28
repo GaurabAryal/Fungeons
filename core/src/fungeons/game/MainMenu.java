@@ -190,7 +190,7 @@ public class MainMenu implements Screen {
                                 ParseUser u = ParseUser.getCurrentUser();
                                 if (u.getUsername() != null) {
 
-                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(20);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }
                             }
@@ -213,11 +213,11 @@ public class MainMenu implements Screen {
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Hooray! Let them use the app now.
-                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle);
+                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle).padTop(20);
                                 exitDialog.show(stage);
                             } else {
                                 System.out.println(e.getMessage());
-                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle);
+                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle).padTop(20);
                                 exitDialog.show(stage);
                                 // Sign up didn't succeed. Look at the ParseException
                                 // to figure out what went wrong
@@ -301,9 +301,12 @@ public class MainMenu implements Screen {
             super(title, windowStyle);
         }
         {
-            setScale(2.5f, 2.5f);
-            //button("OK", btnWhiteStyle).setStyle(windowStyle);
-            TextButton button = new TextButton("OK", skin, "btnWhiteStyle");
+            int nScreenWidth=Gdx.graphics.getWidth(), nScreenHeight=Gdx.graphics.getHeight();
+            setSize(nScreenWidth/3f, nScreenHeight/2f);
+            setScale(1f,1.5f);
+            button("OK", this,btnWhiteStyle).pad(nScreenHeight/30f,nScreenWidth/10f,nScreenHeight/20f,nScreenWidth/8f);
+         //   button
+          //  TextButton button = new TextButton("OK", skin, "btnWhiteStyle");
 
         }
         @Override
