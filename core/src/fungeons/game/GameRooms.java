@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -63,6 +64,8 @@ public class GameRooms implements Screen {
     TextButton btnMaps;
     ArrayList<String> gamerooms = new ArrayList<String>();
     TextButton btnRefresh;
+    TextButton.TextButtonStyle btnWhiteStyle;
+
 
     TextureAtlas Atlas;
     TextureAtlas.AtlasRegion Region;
@@ -76,11 +79,30 @@ public class GameRooms implements Screen {
 
     @Override
     public void show() {
+
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
+
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
+        Region=Atlas.findRegion("Button 1");
+       // TextureRegion btnWhite = Region;
+        dbtnWhite = new TextureRegionDrawable(Region);
+       // skin.add("btnWhite",dbtnWhite);
+        Region=Atlas.findRegion("Button 2");
+      //  TextureRegion btnWhiteDn = Region;
+        Drawable dbtnWhiteDn = new TextureRegionDrawable(Region);
+        //skin.add("btnWhiteDn",dbtnWhiteDn);
+        final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        final BitmapFont ButtonFontAlt = new BitmapFont(Gdx.files.internal("FungeonsFontAlt.fnt"));
+        ButtonFont.setScale(nSWidth/512);//will implement when Texture pack is fixed
+        ButtonFontAlt.setScale(nSWidth/512);
+        btnWhiteStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,ButtonFont);
+        skin.add("btnWhiteStyle",btnWhiteStyle);
+
+
         final int nSelectbox = 0;
         final Label nameLabel = new Label("Name: ", skin);
         final Label mapLabel = new Label("Map: ", skin);
@@ -89,7 +111,7 @@ public class GameRooms implements Screen {
         //
 
         //final TextButton btnMaps = new TextButton("Select Your Map", skin);
-        btnMaps = new TextButton("Select Your Map", skin);
+        btnMaps = new TextButton("Select Your Map", skin, "btnWhiteStyle");
 
 
         /*btnMaps.addListener(new ChangeListener() {
@@ -105,7 +127,6 @@ public class GameRooms implements Screen {
         // Maps
         //
         final Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
         dBGWall= new TextureRegionDrawable(BGWall);
@@ -129,13 +150,13 @@ public class GameRooms implements Screen {
 ////            pO.saveInBackground();
 ////            pO2.saveInBackground();
 //        }
-        btnAddGameroom = new TextButton("+", skin);
+        btnAddGameroom = new TextButton("Add Game", skin, "btnWhiteStyle");
 
-        btnRefresh = new TextButton("Refresh", skin);
-        btnExit = new TextButton("Exit",skin);
-        btnJoin = new TextButton ("Join",skin);
-        final TextButton btnAdd = new TextButton("Add", skin);
-        final TextButton btnExitAdd = new TextButton("Exit", skin);
+        btnRefresh = new TextButton("Refresh", skin, "btnWhiteStyle");
+        btnExit = new TextButton("Exit",skin, "btnWhiteStyle");
+        btnJoin = new TextButton ("Join",skin, "btnWhiteStyle");
+        final TextButton btnAdd = new TextButton("Add", skin, "btnWhiteStyle");
+        final TextButton btnExitAdd = new TextButton("Exit", skin, "btnWhiteStyle");
 
         populateGmRms();
         sbBatch = new SpriteBatch();
@@ -148,17 +169,18 @@ public class GameRooms implements Screen {
         gameroomTable = new Table(skin);
 
         gameTable = new Table(skin);
-        gameroomTable.setBackground(dBGWall);
+        gameroomTable.setBackground(dWinBG);
 
-        window = new Window("test", skin);
+        window = new Window("", skin);
         window.setBackground(dWinBG);
         skin.getFont("default-font").scale(nSHeight / 480);
         window.setMovable(true);
         window.padTop(nSHeight / 16);
+        window.setWidth(nSWidth/2f);
+        window.setHeight(nSHeight/2f);
         //
-        selectBox.setPosition(100, 100);
-        selectBox.setHeight(50f);
-        selectBox.setWidth(100f);
+        selectBox.setPosition(nSWidth / 10f, nSHeight / 7f);
+        selectBox.setSize(nSWidth / 6f, nSHeight / 8f);
         selectBox.setSelected("Fun City");
 
 
@@ -167,21 +189,29 @@ public class GameRooms implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
                 System.out.println("Added");
-                window.setModal(true);
+              //  window.setModal(true);
+                float winW=window.getWidth(), winH=window.getHeight();
                 window.setVisible(true);
                 gameroomTable.setPosition(0, 0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
-                gameroomTable.add(nameLabel);
-                gameroomTable.add(txtName).width(100);
+                nameLabel.setFontScale(2f);
+                gameroomTable.add(nameLabel).size(winH/6f).padTop(winH / 16f);
+                txtName.getStyle().font.setScale(2f);
+                gameroomTable.add(txtName).left().size(winW/2f, winH/6f)
+                        .padTop(winH/16f);
                 gameroomTable.row();
-                gameroomTable.add(mapLabel);
-                gameroomTable.add(selectBox);//
+                mapLabel.setFontScale(2f);
+                gameroomTable.add(mapLabel).size(winH / 6f).padTop(winH / 16f);
+                gameroomTable.add(selectBox).size(winW / 4f, winH / 6f)
+                        .padTop(winH / 16f);//
                 gameroomTable.row();
-                gameroomTable.add(btnMaps);
+                gameroomTable.add(btnMaps).colspan(2).center().padTop(winH / 32f);
                 gameroomTable.row();
-                gameroomTable.add(btnAdd).height(100).width(100);
-                gameroomTable.add(btnExitAdd).height(100).width(100);
-                gameroomTable.setHeight(window.getHeight());
-                gameroomTable.setWidth(window.getWidth());
+                gameroomTable.add(btnAdd).height(winH/6f).width(winW/3f)
+                        .padTop(winH / 16f).padBottom(winH / 16f);
+                gameroomTable.add(btnExitAdd).height(winH/6f).width(winW/3f)
+                        .padTop(winH/16f).padBottom(winH/16f);
+                gameroomTable.setHeight(winH);
+                gameroomTable.setWidth(winW);
                 gameroomTable.setFillParent(true);
                 window.addActor(gameroomTable);
                 stage.addActor(window);
@@ -246,14 +276,13 @@ public class GameRooms implements Screen {
         btnJoin.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
-                screenControl.setName(list.getSelected().toString(),false);
-                screenControl.setnScreen(7,4);//was 4,2
+                screenControl.setName(list.getSelected().toString(), false);
+                screenControl.setnScreen(7, 4);//was 4,2
             }
         });
         window.setModal(true);
         window.setVisible(false);
-        window.setPosition(nSWidth / 2, nSHeight / 2);
-        window.setSize(500, 300);
+        window.setPosition(nSWidth / 3, nSHeight / 3);
 
         stage.addActor(window);
     }
@@ -325,7 +354,7 @@ public class GameRooms implements Screen {
                         }
                         list.clearItems();
                         list.setItems(gamerooms.toArray());
-                        table.add(btnRefresh).height(100).width(100);
+                        table.add(btnRefresh).height(nSHeight/7f).width(nSWidth/4f);
                         //table.row();
                         scrollPane = new ScrollPane(list, skin);
                         scrollPane.setColor(0.2f, 0.2f, 0.2f, 0.7f);//makes it translucent asaposed to opaque or transparent
@@ -338,23 +367,29 @@ public class GameRooms implements Screen {
                                     ctpos = 0;
                                 } else if (ctpos > 3) {
                                     JSONArray results = (JSONArray) jsonObject.get("results");
+                                    float winW=window.getWidth(),winH=window.getHeight();
                                     for (int n = 0; n < results.length(); n++) {
                                         resultObject = (JSONObject) results.get(n);
                                         //System.out.println(list.getSelected().toString() + resultObject.get("Name").toString());
                                         if (resultObject.get("Name").toString().equals(list.getSelected().toString()) && gameTable.getRows() < 3) {
                                             resultObject = (JSONObject) results.get(n);
-                                            gameTable.add(resultObject.get("Name").toString());
+                                            gameTable.add(resultObject.get("Name").toString())
+                                                    .colspan(2).center().pad(winH/16f);
+
                                             gameTable.row();
-                                            gameTable.add(arsMaps[Integer.parseInt(resultObject.get("map").toString())]);
+                                            gameTable.add(arsMaps[Integer.parseInt(resultObject.get("map").toString())])
+                                                    .colspan(2).center().pad(winH/16f);
+
                                             gameTable.row();
                                             if (resultObject.get("isJoinable").toString().equals("true")) {
-                                                gameTable.add("Open");
+                                                gameTable.add("Open").colspan(2).center().pad(winH/16f);
                                             } else {
-                                                gameTable.add("Closed");
+                                                gameTable.add("Closed").colspan(2).center().pad(winH/16f);
                                             }
                                             gameTable.row();
-                                            gameTable.add(btnExit).width(100).height(50);
-                                            gameTable.add(btnJoin).width(100).height(50);
+                                            gameTable.add(btnExit).width(winW/3f).height(winH/6f).padLeft(winW/16f).padBottom(winH/8f);
+                                            gameTable.add(btnJoin).width(winW/3f).height(winH/6f).padRight(winW/16f)
+                                                    .padLeft(winW/16f).padBottom(winH/8f);
                                             break;
                                         }
                                     }
@@ -368,7 +403,7 @@ public class GameRooms implements Screen {
                                 return false;
                             }
                         });
-                        table.add(btnAddGameroom).height(100).width(100);
+                        table.add(btnAddGameroom).height(nSHeight/7f).width(nSWidth/4f);
                         table.row().height(nSHeight);
                         //scrollPane.setFillParent(true);
 
