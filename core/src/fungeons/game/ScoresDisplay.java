@@ -5,7 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -16,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -56,6 +61,9 @@ public class ScoresDisplay implements Screen {
 
     JSONObject resultObject;
 
+    TextureAtlas Atlas;
+    TextureRegion Region;
+
     ScreenControl screenControl;
 
     public void render() {
@@ -69,12 +77,30 @@ public class ScoresDisplay implements Screen {
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
         sbBatch = new SpriteBatch();
+
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
+
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
         skin.getFont("default-font").scale(2.0f);
         final Table scoresTable = new Table(skin);
-        final Button btnRestart = new TextButton("Go back to the Gameroom", skin);
-        final Button btnLobby = new TextButton("Go to the Lobby", skin);
+        Region=Atlas.findRegion("BG Wall Brick Wide");
+        Drawable dBGWall = new TextureRegionDrawable(Region);
+        scoresTable.setBackground(dBGWall);
+
+        Region=Atlas.findRegion("Button 1");
+        Drawable dbtnUp = new TextureRegionDrawable(Region);
+        skin.add("btnUp",dbtnUp);
+        Region=Atlas.findRegion("Button 2");
+        Drawable dbtnDn = new TextureRegionDrawable(Region);
+        skin.add("btnDn",dbtnDn);
+        final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        ButtonFont.setScale(nSWidth/512);//will implement when Texture pack is fixed
+        TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(dbtnUp,dbtnDn,dbtnUp,ButtonFont);
+        skin.add("btnStyle",btnStyle);
+
+        final Button btnRestart = new TextButton("Go back to the Gameroom", skin, "btnStyle");
+        final Button btnLobby = new TextButton("Go to the Lobby", skin, "btnStyle");
         final Timer timer = new Timer();
         Timer.Task task = timer.scheduleTask(new Timer.Task() {
             @Override
@@ -110,9 +136,11 @@ public class ScoresDisplay implements Screen {
                                     }
                                 }else{
                                     scoresTable.row();
-                                    scoresTable.add(btnRestart).width(nSWidth);
+                                    scoresTable.add(btnRestart).height(nSHeight/8f).width(nSWidth/2f)
+                                            .padTop(nSHeight/16f); 
                                     scoresTable.row();
-                                    scoresTable.add(btnLobby).width(nSWidth);
+                                    scoresTable.add(btnLobby).height(nSHeight/8f).width(nSWidth/2f)
+                                            .padTop(nSHeight/16f).padBottom(nSHeight/8f);
                                 }
                             }
                         } catch (Exception e) {
