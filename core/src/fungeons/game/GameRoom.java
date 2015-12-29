@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -87,13 +88,27 @@ public class GameRoom implements Screen {
         sbBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         stage = new Stage(new ScreenViewport());
-        btnStart = new TextButton("START", skin);
-        btnBack = new TextButton("BACK", skin);
+
+        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
+        Region=Atlas.findRegion("Button 1");
+        dbtnWhite = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("Button 2");
+        Drawable dbtnWhiteDn = new TextureRegionDrawable(Region);
+        BitmapFont StartFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        BitmapFont BackFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
+        StartFont.setScale(nSWidth/320);//will implement when Texture pack is fixed
+        BackFont.setScale(nSWidth/512);
+        TextButton.TextButtonStyle btnStartStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,StartFont);
+        TextButton.TextButtonStyle btnBackStyle = new TextButton.TextButtonStyle(dbtnWhite,dbtnWhiteDn,dbtnWhite,BackFont);
+        skin.add("StartStyle",btnStartStyle);
+        skin.add("BackStyle",btnBackStyle);
+
+        btnStart = new TextButton("START", skin, "StartStyle");
+        btnBack = new TextButton("BACK", skin, "BackStyle");
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
 
         Drawable dBGWall;
-        Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick");
         BGWall= Region;
         dBGWall=new TextureRegionDrawable(BGWall);
