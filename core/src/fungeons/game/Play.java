@@ -348,16 +348,15 @@ public class Play extends MapSelection implements Screen {
         btnRetry.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                screenControl.setnScreen(7,3);
+                screenControl.setnScreen(7, 3);
 
 
             }
         });
         btnMaps.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //add once map screen is in place
-
+            public void changed(ChangeEvent event, Actor actor){
+                screenControl.setnScreen(7,8);
             }
         });
 
