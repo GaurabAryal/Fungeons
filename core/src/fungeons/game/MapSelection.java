@@ -82,19 +82,17 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         // All currently placeholder
         // Insert new ImageButton(imageup, imagedown)
 
-        btnBunsTown = new ImageButton(dBGWall);
-        // btnBunsTown.setScale(1.5f,1.5f);
-
-        btnDawgg = new ImageButton(dBGWall);
-        btnFrogosaurus = new ImageButton(dBGWall);
-        btnFunCity = new ImageButton(dBGWall);
-        btnFunLeafClover = new ImageButton(dBGWall);
-        btnFunMountain = new ImageButton(dBGWall);
+        btnBunsTown = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
+        btnDawgg = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
+        btnFrogosaurus = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
+        btnFunCity = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
+        btnFunLeafClover = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
+        btnFunMountain = new ImageButton(dbtnWhiteUp,dbtnWhiteDn);
 
         table=new Table(skin);
         table.setSize(nScreenWidth, nScreenHeight);
         table.setBackground(dBGWall);
-        //table.pad(nScreenHeight / 16);
+        table.pad(nScreenHeight / 16);
 
 
         btnBack.addListener(new ChangeListener() {
@@ -105,22 +103,17 @@ public class MapSelection implements Screen { //currently is placeholder has sam
             }
         }); btnGame.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //   stage.dispose();
-                screenControl.setnScreen(7, 3);
-            }
+            public void changed(ChangeEvent event, Actor actor) {screenControl.setnScreen(7, 3);}
         }); btnBunsTown.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //   stage.dispose();
-                screenControl.setnScreen(7, 3);
-            }
+            public void changed(ChangeEvent event, Actor actor) {screenControl.setnScreen(7, 3);}
         });
 
-        float nbtnW = 3.8f;
-        float nbtnH = 7.2f;
+        double nbtnW = 3.6;
+        double nbtnH = 3.6;
         // table.(nScreenWidth/2);
-        table.add(btnBack).padLeft(nScreenWidth / 2).padBottom(nScreenHeight / 4);
+        /*
+        table.add(btnBack).padLeft(3*nScreenWidth/4).padBottom(nScreenHeight / 4);
         //Map2
 
         table.row();
@@ -133,8 +126,26 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         table.add(btnFunLeafClover).width((int)(nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
         table.add(btnFunMountain).width((int)(nScreenWidth/nbtnW)).height((int)(nScreenHeight/nbtnH));
         table.row();
-        table.add(btnGame).padLeft(nScreenWidth/2).padTop(nScreenHeight/4);
+        table.add(btnGame).padLeft(3*nScreenWidth/4).padTop(nScreenHeight/4);
+        */
+        //table.add(btnBack).padLeft(3*nScreenWidth/4).padBottom(nScreenHeight / 4);
+        //Map2
+        table.add(btnGame).padRight(nScreenWidth/6).padBottom(nScreenHeight/5);
+        table.row();
+        table.add(btnBunsTown).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.add(btnDawgg).width((int) (nScreenWidth/nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.add(btnFrogosaurus).width((int) (nScreenWidth/nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.row().padBottom(nScreenHeight / 10);
+        table.add(btnFunCity).width((int)(nScreenWidth/nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.add(btnFunLeafClover).width((int)(nScreenWidth/nbtnW)).height((int) (nScreenHeight /nbtnH));
+        table.add(btnFunMountain).width((int)(nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH));
+        table.row().padBottom(nScreenHeight/5);
+
+
+        //stage.addActor(btnGame);
         stage.addActor(table);
+        stage.addActor(btnBack);
+
         Gdx.input.setInputProcessor(stage);
     }
 

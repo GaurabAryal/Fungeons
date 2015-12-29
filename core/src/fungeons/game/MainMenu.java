@@ -216,7 +216,7 @@ public class MainMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
-                screenControl.setnScreen(7,3);
+                screenControl.setnScreen(7,8);
             }
         });
         btnH2p.addListener(new ChangeListener() {
