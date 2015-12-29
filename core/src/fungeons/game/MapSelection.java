@@ -36,7 +36,7 @@ public class MapSelection implements Screen { //currently is placeholder has sam
     TextureAtlas.AtlasRegion Region;
     TextureRegion BGWall;
     Drawable dbtnWhite;
-
+    String sMap = "FunMountain.tmx";
 
     BitmapFont ButtonFont, ButtonFontAlt;
     int nScreenWidth, nScreenHeight;
@@ -82,7 +82,7 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         Region=Atlas.findRegion("Dawgg");
         Drawable Dawgg = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("Frogosaurus");
-        Drawable Frogosaurus = new TextureRegionDrawable(Region);
+        final Drawable Frogosaurus = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("FunCity");
         Drawable FunCity = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("FunLeafClover");
@@ -124,7 +124,28 @@ public class MapSelection implements Screen { //currently is placeholder has sam
             public void changed(ChangeEvent event, Actor actor) {screenControl.setnScreen(7, 3);}
         }); btnBunsTown.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {screenControl.setnScreen(7, 3);}
+            public void changed(ChangeEvent event, Actor actor) {sMap = "BunsTown.tmx";
+                screenControl.setMap(sMap);}
+        }); btnDawgg.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {sMap = "Dawgg.tmx";
+                screenControl.setMap(sMap);}
+        }); btnFrogosaurus.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {sMap ="Frogosaurus.tmx";
+                screenControl.setMap(sMap);}
+        }); btnFunCity.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {sMap ="FunCity.tmx";
+                screenControl.setMap(sMap);}
+        }); btnFunLeafClover.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {sMap ="FunLeafClover.tmx";
+                screenControl.setMap(sMap);}
+        }); btnFunMountain.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {sMap ="FunMountain.tmx";
+                screenControl.setMap(sMap);}
         });
 
         double nbtnW = 3.6;
@@ -170,6 +191,9 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         //stage.addActor(btnBack);
 
         Gdx.input.setInputProcessor(stage);
+    }
+    public String GetMap(){
+        return sMap;
     }
 
     @Override

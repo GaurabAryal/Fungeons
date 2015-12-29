@@ -10,6 +10,7 @@ public class ScreenControl {// basically holds an int
     String userId = "";
     String chatId ="";
     String Name = "";
+    String sMap = "BunsTown.tmx";
 //    @Override
     public void create() {
        // nScreen = 0;
@@ -30,6 +31,9 @@ public class ScreenControl {// basically holds an int
     public void setUserId(String _userId){
         userId = _userId;
     }
+    public void setMap(String _sMap){
+        sMap = _sMap;
+    }
     public String getName(){
         return Name;
     }
@@ -38,6 +42,9 @@ public class ScreenControl {// basically holds an int
     }
     public String getChatId(){
         return chatId;
+    }
+    public String getMap(){
+        return sMap;
     }
     public String getUserId(){
         return userId;
