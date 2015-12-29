@@ -47,11 +47,11 @@ import java.util.Arrays;
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseUser;
 
-public class Play implements Screen {
+public class Play extends MapSelection implements Screen {
     OrthographicCamera camera;
     Vector2 gravity= new Vector2(0,-9.8f), CurMove, ArrowMove;
     World world=new World(gravity,false);
-
+    String sMap;
 
     DecimalFormat twoDec;
     Label timeLabel, timeLabel2;
@@ -284,7 +284,15 @@ public class Play implements Screen {
         stage.addActor(touchpadArrow);
 
         MapLoader = new TmxMapLoader();
-        Map = MapLoader.load("BunsTown.tmx");//name of the tmx map file
+
+        //
+        //GetMap();
+        System.out.println(GetMap());
+        //
+        sMap = GetMap();
+
+        Map = MapLoader.load(screenControl.getMap());//name of the tmx map file
+
         MapCol = (TiledMapTileLayer) Map.getLayers().get(0);//sets a layer of the tiled map that is used for collision
         MapAlt = (TiledMapTileLayer) Map.getLayers().get(1);//sets a layer of the map with inverted colours, not yet used
         MapAlt.setVisible(false);
