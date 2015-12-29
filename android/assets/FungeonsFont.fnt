@@ -89,11 +89,11 @@ char id=111   x=210     y=12     width=9     height=12     xoffset=0     yoffset
 char id=99   x=220     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 c
 char id=61   x=230     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0
 char id=94   x=240     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0
-char id=44   x=250     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 ,
+char id=44   x=250     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=5     page=0  chnl=0 ,
 char id=42   x=260     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 *
 char id=126   x=270     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0
-char id=46   x=280     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 .
-char id=39   x=290     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 '
+char id=46   x=280     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=4     page=0  chnl=0 .
+char id=39   x=290     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=5     page=0  chnl=0 '
 char id=34   x=300     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0 "
 char id=45   x=310     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0
 char id=96   x=320     y=12     width=9     height=12     xoffset=0     yoffset=0    xadvance=10     page=0  chnl=0

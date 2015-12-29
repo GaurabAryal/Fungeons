@@ -83,7 +83,6 @@ public class MainMenu implements Screen {
         TextureRegion btnWhiteDn = Region;
         Drawable dbtnWhiteDn = new TextureRegionDrawable(btnWhiteDn);
         skin.add("btnWhiteDn",dbtnWhiteDn);
-
         final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         final BitmapFont ButtonFontAlt = new BitmapFont(Gdx.files.internal("FungeonsFontAlt.fnt"));
         ButtonFont.setScale(nScreenWidth/512);//will implement when Texture pack is fixed
