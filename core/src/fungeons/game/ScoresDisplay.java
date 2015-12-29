@@ -231,6 +231,7 @@ public class ScoresDisplay implements Screen {
                             Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                                 @Override
                                 public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                                    scoresTable.reset();
                                     screenControl.setnScreen(7,4);//was 4,5
                                 }
 
