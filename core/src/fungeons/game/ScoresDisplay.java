@@ -65,6 +65,7 @@ public class ScoresDisplay implements Screen {
 
     @Override
     public void show() {
+        System.out.println("fuck");
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
@@ -186,8 +187,9 @@ public class ScoresDisplay implements Screen {
                     JSONObject json = new JSONObject();
                     JSONObject skills = new JSONObject();
                     skills.put("__op", "Remove");
-                    skills.put("objects", results);
+                    skills.put("objects", jsonObject.get("scores"));
                     json.put("scores", skills);
+                    System.out.println(json.toString());
                     httpRequest.setContent(json.toString());
                     Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                         @Override
@@ -203,7 +205,7 @@ public class ScoresDisplay implements Screen {
                             Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                                 @Override
                                 public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                                    scoresTable.reset();
+
                                     screenControl.setnScreen(7,4);//was 4,5
                                 }
 
@@ -236,6 +238,7 @@ public class ScoresDisplay implements Screen {
         btnLobby.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game ~~
+                bCanCreate = false;
                 if (screenControl.Owner) {
                     final String requestContent = null;
                     final Net.HttpRequest httpRequest;
@@ -297,14 +300,11 @@ public class ScoresDisplay implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override
     public void dispose() {
-        stage.dispose();
-        skin.dispose();
-        sbBatch.dispose();
 
     }
 
