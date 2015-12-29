@@ -204,7 +204,7 @@ public class ScoresDisplay implements Screen {
 
         btnRestart.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
+            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game~~
                 bCanCreate = false;
                 if (screenControl.Owner) {
                     final Net.HttpRequest httpRequest;
