@@ -176,6 +176,7 @@ public class ScoresDisplay implements Screen {
         btnRestart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
+                bCanCreate = false;
                 if (screenControl.Owner) {
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
@@ -197,7 +198,7 @@ public class ScoresDisplay implements Screen {
                             httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
                             httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
                             JSONObject json = new JSONObject();
-                            json.put("gameroom", 1);
+                            json.put("start", false);
                             httpRequest.setContent(json.toString());
                             Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                                 @Override

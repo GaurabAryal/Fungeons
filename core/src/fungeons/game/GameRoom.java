@@ -341,7 +341,7 @@ public class GameRoom implements Screen {
         btnBack.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you back to gamerooms
-                screenControl.setnScreen(7,2);
+                screenControl.setnScreen(7,5);
             }
         });
     }
