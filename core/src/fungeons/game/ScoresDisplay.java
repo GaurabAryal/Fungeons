@@ -73,7 +73,6 @@ public class ScoresDisplay implements Screen {
 
     @Override
     public void show() {
-        System.out.println("fuck");
         bCanCreate = true;
         nSHeight = Gdx.graphics.getHeight();
         nSWidth = Gdx.graphics.getWidth();
