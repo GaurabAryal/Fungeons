@@ -136,9 +136,11 @@ public class ScoresDisplay implements Screen {
                                     }
                                 }else{
                                     scoresTable.row();
-                                    scoresTable.add(btnRestart).width(nSWidth/3f).pad(nSHeight/16f);
+                                    scoresTable.add(btnRestart).height(nSHeight/8f).width(nSWidth/2f)
+                                            .padTop(nSHeight/16f);
                                     scoresTable.row();
-                                    scoresTable.add(btnLobby).width(nSWidth/3f).pad(nSHeight/16f);
+                                    scoresTable.add(btnLobby).height(nSHeight/8f).width(nSWidth/2f)
+                                            .padTop(nSHeight/16f).padBottom(nSHeight/8f);
                                 }
                             }
                         } catch (Exception e) {
