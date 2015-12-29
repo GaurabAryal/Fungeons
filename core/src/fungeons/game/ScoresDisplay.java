@@ -234,7 +234,7 @@ public class ScoresDisplay implements Screen {
         });
         btnLobby.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game
+            public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game ~~
                 if (screenControl.Owner) {
                     final String requestContent = null;
                     final Net.HttpRequest httpRequest;
