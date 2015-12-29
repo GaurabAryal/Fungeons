@@ -137,7 +137,7 @@ public class ScoresDisplay implements Screen {
                                 }else{
                                     scoresTable.row();
                                     scoresTable.add(btnRestart).height(nSHeight/8f).width(nSWidth/2f)
-                                            .padTop(nSHeight/16f);
+                                            .padTop(nSHeight/16f); 
                                     scoresTable.row();
                                     scoresTable.add(btnLobby).height(nSHeight/8f).width(nSWidth/2f)
                                             .padTop(nSHeight/16f).padBottom(nSHeight/8f);
