@@ -239,7 +239,7 @@ public class MainMenu implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
 
-                screenControl.setnScreen(7,6);
+                screenControl.setnScreen(7,6);//CHANGE BACK TO (7, 6)
             }
         });
 
