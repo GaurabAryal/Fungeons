@@ -51,7 +51,8 @@ public class GameRooms implements Screen {
     Table gameTable;
     Window.WindowStyle windowStyle;
     Window window;
-    String []arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
+    String []arsMaps = {"Fun City", "Buns Town", "Frogosaurus",
+            "Fun City", "Fun Leaf Clover", "Fun Mountain"};
 
     boolean check = true;
     int ctpos = 0;

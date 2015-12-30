@@ -124,13 +124,7 @@ public class MainMenu implements Screen {
         textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
 
         skin.add("default", textButtonStyle);
-        //    skin.getFont("default-font").setScale(2);
-        //     userLabel.setFontScale(1.9f);
-//        userLabel.setFontScaleY(1f);
-        //     passwordLabel.setFontScale(1.9f);
-        //     passwordLabel.setFontScaleY(1f);
-        //     someSpace.setFontScale(2f);
-        //  someSpace.setFontScaleY(2f);
+
         txtPassword.setMessageText("*****");
         txtPassword.setPasswordCharacter('*');
         txtPassword.setPasswordMode(true);
@@ -153,22 +147,6 @@ public class MainMenu implements Screen {
         table.center().top().pad(nScreenHeight/16,nScreenWidth/16,nScreenHeight/16, nScreenWidth/16);
 
         table.setFillParent(true);
-        // skin.getFont("default-font").setScale(1.9f/1f);
-        /*
-        table.add(userLabel).padBottom(10).padRight(25);
-        table.add(txtUsername).width(300).height(50).padBottom(10);
-        table.row();
-        table.add(passwordLabel).padBottom(10).padRight(25);
-        table.add(txtPassword).width(300).height(50).padBottom(10);
-        table.row();
-        table.add(button).width(200).height(50).padBottom(10).padRight(25);
-        table.add(btnRegister).width(200).height(50).padBottom(10).padRight(25);
-        table.row();
-        table.add(btnOffline).width(200).height(50);
-        table.center().top().pad(300);
-        table.setFillParent(true);
-        txtUsername.setHeight(500);
-        */
 
         stage.addActor(table);
         table.setBackground(dBGWall);
@@ -230,15 +208,12 @@ public class MainMenu implements Screen {
         btnOffline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //   stage.dispose();
-                screenControl.setnScreen(7,3);
+                screenControl.setnScreen(7,8);
             }
         });
         btnH2p.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //   stage.dispose();
-
                 screenControl.setnScreen(7,6);//CHANGE BACK TO (7, 6)
             }
         });
@@ -307,10 +282,6 @@ public class MainMenu implements Screen {
             setSize(nScreenWidth, nScreenHeight);
             setScale(1.5f,2f);
             button("OK", this,btnWhiteStyle).pad(nScreenHeight / 20f, nScreenWidth / 20f, nScreenHeight / 40f, nScreenWidth / 20f);
-
-
-         //   button
-          //  TextButton button = new TextButton("OK", skin, "btnWhiteStyle");
 
         }
         @Override
