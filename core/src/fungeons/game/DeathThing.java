@@ -20,8 +20,10 @@ public class DeathThing {
     Sprite DThingSprite;
     Boolean bDead=false;
     float Time, VX=1f/16f,VY=0,X=4,Y=14, PPM=1f/16f;
-    Array<Vector2> arTraps=new Array<Vector2>();
+    Array<Vector2> arTrapVec=new Array<Vector2>();
+    Array<String> arTrapStr=new Array<String>();
     Vector2 CharVec = new Vector2(0,0);
+    Boolean bLethal;
     public void create(){
         VX=1.5f*PPM;
         VY=0;
@@ -141,12 +143,24 @@ public class DeathThing {
         DThingSprite.setPosition(X-DThingSprite.getWidth()/2,Y-DThingSprite.getHeight()/2);
         return(DThingSprite);
     }
-    public Boolean getDead(Array<Vector2> arTraps_, float CharX, float CharY){
-        arTraps=arTraps_;
+
+    public Boolean getDead(float CharX, float CharY, Array<Vector2> arTrapV, Array<String> arTrapS, Trap_Flame flame){
         CharVec.set(CharX,CharY);
-        for(int i=0;i<arTraps.size;i++){
-            if(arTraps.get(i).dst(CharVec)<=8.5f){
-                bDead=true;
+        arTrapVec=arTrapV;
+        arTrapStr=arTrapS;
+        bLethal = flame.getbLethal();
+        for(int i=0;i<arTrapVec.size;i++){
+            Vector2 trap = new Vector2(arTrapVec.get(i));
+            if(arTrapStr.get(i).equals("saw")) {
+                if (trap.dst(CharVec) <= 8.5f) {
+                    bDead = true;
+                }
+            }
+            if(arTrapStr.get(i).equals("flame")) {
+                if (bLethal == true && CharX < (trap.x + flame.sFlame.getWidth()) && CharX > trap.x
+                        && CharY > trap.y && CharY < (trap.y + flame.sFlame.getHeight())) {
+                    bDead=true;
+                }
             }
         }
         if(CharVec.dst(X,Y)<=14.5){
@@ -156,7 +170,9 @@ public class DeathThing {
     }
     public void dispose(){
         Atlas.dispose();
-        arTraps.clear();
+        arTrapVec.clear();
     }
+    public void setbDead(Boolean dead){ bDead=dead; }
 }
+
 
