@@ -98,7 +98,11 @@ public class MapSelection implements Screen { //currently is placeholder has sam
 
 
         btnBack=new TextButton("BACK",btnWhiteStyle);
-        btnGame=new TextButton("PLAY",btnWhiteStyle);
+        if (screenControl.isOnline()){
+            btnGame=new TextButton("OK",btnWhiteStyle);
+        }else{
+            btnGame=new TextButton("PLAY",btnWhiteStyle);
+        }
 
         btnBunsTown = new ImageButton(BunsTown,dbtnWhiteDn);
         btnDawgg = new ImageButton(Dawgg,dbtnWhiteDn);
@@ -117,7 +121,11 @@ public class MapSelection implements Screen { //currently is placeholder has sam
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //   stage.dispose();
-                screenControl.setnScreen(7, 1);
+                if (screenControl.isOnline()){
+                    screenControl.setnScreen(7, 2);
+                }else {
+                    screenControl.setnScreen(7, 1);
+                }
             }
         }); btnGame.addListener(new ChangeListener() {
             @Override
@@ -125,27 +133,28 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         }); btnBunsTown.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap = "BunsTown.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap);
+                }
         }); btnDawgg.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap = "Dawgg.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap); if (screenControl.isOnline()){screenControl.setnMap(1);}}
         }); btnFrogosaurus.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap ="Frogosaurus.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap); if (screenControl.isOnline()){screenControl.setnMap(2);}}
         }); btnFunCity.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap ="FunCity.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap); if (screenControl.isOnline()){screenControl.setnMap(3);}}
         }); btnFunLeafClover.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap ="FunLeafClover.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap); if (screenControl.isOnline()){screenControl.setnMap(4);}}
         }); btnFunMountain.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {sMap ="FunMountain.tmx";
-                screenControl.setMap(sMap);}
+                screenControl.setMap(sMap); if (screenControl.isOnline()){screenControl.setnMap(5);}}
         });
 
         double nbtnW = 3.6;

@@ -11,6 +11,8 @@ public class ScreenControl {// basically holds an int
     String chatId ="";
     String Name = "";
     String sMap = "BunsTown.tmx";
+    int nMap = 0;
+    boolean online = false;
 //    @Override
     public void create() {
        // nScreen = 0;
@@ -28,8 +30,14 @@ public class ScreenControl {// basically holds an int
     public void setChatId(String _chatId){
         chatId = _chatId;
     }
+    public void setOnline(boolean _online){
+        online = _online;
+    }
     public void setUserId(String _userId){
         userId = _userId;
+    }
+    public void setnMap(int _nMap){
+        nMap = _nMap;
     }
     public void setMap(String _sMap){
         sMap = _sMap;
@@ -52,4 +60,6 @@ public class ScreenControl {// basically holds an int
     public int getnScreen(){
         return(nScreen);
     }
+    public int getnMap(){return nMap;}
+    public boolean isOnline (){return online;}
 }

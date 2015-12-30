@@ -34,7 +34,7 @@ import java.util.Arrays;
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseUser;
 
-
+//Add the maps screen here
 public class GameRoom implements Screen {
     Game game;
     SpriteBatch sbBatch;
@@ -50,7 +50,6 @@ public class GameRoom implements Screen {
     Table gameTable;
     Window.WindowStyle windowStyle;
     Window window;
-    String[] arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
     boolean check = true;
     int ctpos = 0;
     int pos = 0;

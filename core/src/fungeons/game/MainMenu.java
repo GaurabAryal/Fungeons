@@ -167,7 +167,7 @@ public class MainMenu implements Screen {
                             if (user != null) {
                                 ParseUser u = ParseUser.getCurrentUser();
                                 if (u.getUsername() != null) {
-
+                                    screenControl.setOnline(true);
                                     exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
                                     exitDialog.show(stage);
                                 }

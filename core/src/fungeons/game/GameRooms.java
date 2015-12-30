@@ -37,7 +37,7 @@ import pablo127.almonds.ParseException;
 import pablo127.almonds.ParseObject;
 import pablo127.almonds.SaveCallback;
 
-
+//When you join , screencontrol.maps() should be the same as one from the gameroom. When you create your screencontrol.maps should be the same as the map you select.
 public class GameRooms implements Screen {
     Game game;
     SpriteBatch sbBatch;
@@ -62,7 +62,6 @@ public class GameRooms implements Screen {
     TextButton btnAddGameroom;
     TextButton btnExit;
     TextButton btnJoin;
-    TextButton btnMaps;
     ArrayList<String> gamerooms = new ArrayList<String>();
     TextButton btnRefresh;
     TextButton.TextButtonStyle btnWhiteStyle;
@@ -112,7 +111,6 @@ public class GameRooms implements Screen {
         //
 
         //final TextButton btnMaps = new TextButton("Select Your Map", skin);
-        btnMaps = new TextButton("Select Your Map", skin, "btnWhiteStyle");
 
 
         /*btnMaps.addListener(new ChangeListener() {
@@ -124,7 +122,7 @@ public class GameRooms implements Screen {
             }
         });*/
         final SelectBox selectBox = new SelectBox(skin);
-        selectBox.setItems("Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail");
+        selectBox.setItems("BunsTown", "Dawgg", "Frogosaurus", "FunCity", "FunLeafClover", "FunMountain");
         // Maps
         //
         final Drawable dBGWall;
@@ -205,8 +203,6 @@ public class GameRooms implements Screen {
                 gameroomTable.add(selectBox).size(winW / 4f, winH / 6f)
                         .padTop(winH / 16f);//
                 gameroomTable.row();
-                gameroomTable.add(btnMaps).colspan(2).center().padTop(winH / 32f);
-                gameroomTable.row();
                 gameroomTable.add(btnAdd).height(winH/6f).width(winW/3f)
                         .padTop(winH / 16f).padBottom(winH / 16f);
                 gameroomTable.add(btnExitAdd).height(winH/6f).width(winW/3f)
@@ -245,14 +241,6 @@ public class GameRooms implements Screen {
                         screenControl.setnScreen(7, 4);//was 4,2
                     }
                 });
-
-            }
-        });
-        btnMaps.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
-                System.out.println("Found it");
-                screenControl.setnScreen(8, 2);
 
             }
         });
