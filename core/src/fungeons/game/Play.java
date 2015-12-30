@@ -76,7 +76,7 @@ public class Play extends MapSelection implements Screen {
     float Time, DeadTime,TimeDisplay, ArrowTime, PPM, CharRotation; //PPM is pixels per meter, we use it for box2d conversions since box2d works in meters
 
     float fCharX,fCharY, DeltaY;
-    int nCharVX, nCharVY, nTelX, nTelY, nTel2X, nTel2Y;
+    int nCharVX, nCharVY, nTelX, nTelY, nTel2X, nTel2Y, nRandTrap;
     int nDir;
     Timer timer;
 
@@ -105,13 +105,15 @@ public class Play extends MapSelection implements Screen {
     Stage stage, stage2;
     Boolean bCanJump, bLight=true, bArrowShot, bZoomOut, bDead;
 
-    Sprite sSaw, sPlat, sFire, sSpike, sSpikeBlock;
+    Sprite sSaw, sPlat, sFlame , sSpike, sSpikeBlock;
 
     Character character;
     Platform platform;
     DeathThing death;
     Trap_Buzzsaw saw;
-    Array<Vector2> arTraps;
+    Trap_Flame flame;
+    Array<Vector2> arTrapVec;
+    Array<String> arTrapStr;
     ScreenControl screenControl;
 
 
@@ -159,7 +161,10 @@ public class Play extends MapSelection implements Screen {
         platform = new Platform();
         death = new DeathThing();
         saw = new Trap_Buzzsaw();
-        arTraps = new Array<Vector2>();
+        flame=new Trap_Flame();
+        flame.create();
+        arTrapVec = new Array<Vector2>();
+        arTrapStr = new Array<String>();
         arPlats = new Array <Platform>();
         arArrows = new Array<Arrow>();
 
@@ -328,8 +333,11 @@ public class Play extends MapSelection implements Screen {
                 }
             }
         }
-
+        saw.updateDeath(death);
         sSaw = saw.getSprite(Atlas);
+        saw.setPlay(this);
+        flame.setPlay(this);
+
 
         // I tried and tried to grab the character from a seperate file but there are some steps that cannot be skipped
         // the character has to be made using a world, and it wouldn't make sense to make a whole other box2d world
@@ -386,9 +394,9 @@ public class Play extends MapSelection implements Screen {
 
         //char stuff
 
+
         DeltaY=fCharY-nTelY;
-        arTraps=saw.getTrapArray();
-        bDead=death.getDead(arTraps,fCharX,fCharY+1);
+        bDead=death.getDead(fCharX,fCharY+1, arTrapVec, arTrapStr, flame);
 
         CurMove=(CharBody.getLinearVelocity());//sets a vector to have the current velocity of the characters box3d character
 
@@ -437,7 +445,9 @@ public class Play extends MapSelection implements Screen {
             timeLabel2.setText("Time:  "+twoDec.format(Time));
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
-            saw.PlaySound(fCharX,fCharY,arTraps, bDead);
+            if(arTrapStr.contains("saw",true)) {
+                saw.PlaySound(fCharX, fCharY, arTrapVec, bDead);
+            }
             //   timeLabel.setText(String.format("%.2f",Time));
             //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
@@ -683,18 +693,40 @@ public class Play extends MapSelection implements Screen {
         sDThing=death.getSprite(Time);
         sDThing.draw(batch);
 
+        saw.updateDeath(death);
+        flame.updateDeath(death);
+        sFlame = flame.getSprite();
+        nRandTrap=(int)MathUtils.random(2);
 
         if(bZoomOut==false) {
-            if(fCharX-nTelX<=80 && fCharX-nTelX>=-80 &&fCharY-nTelY<24 && fCharY-nTelY>-24) {}
-
+            if(fCharX-nTelX<=80 && fCharX-nTelX>=-80 &&fCharY-nTelY<24 && fCharY-nTelY>-24) {/*do nothing*/}//teleport range
+// it would look really wierd if there was a trap on the screen when you teleport because it would just vanish...
             else{
-                saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTraps);
+                System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    1");
+                if(nRandTrap<=1) {
+                    saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
+                    System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    2");
+
+                } 
+                else if(nRandTrap==2) {
+                    flame.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
+                    System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    3");
+
+                }
+                System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    4");
+
             }
         }
-        for(int i=0;i<arTraps.size;i++){
-            sSaw.setPosition(arTraps.get(i).x-sSaw.getWidth()/2,arTraps.get(i).y-sSaw.getHeight()/2);
-            sSaw.setRotation(sSaw.getRotation()-40);
-            sSaw.draw(batch);
+        for(int i=0;i<arTrapVec.size;i++){
+            if(arTrapStr.get(i).equals("saw")) {
+                sSaw.setPosition(arTrapVec.get(i).x - sSaw.getWidth() / 2, arTrapVec.get(i).y - sSaw.getHeight() / 2);
+                sSaw.setRotation(sSaw.getRotation() - 39);
+                sSaw.draw(batch);
+            }
+            if(arTrapStr.get(i).equals("flame")){
+                sFlame.setPosition(arTrapVec.get(i).x, arTrapVec.get(i).y);
+                sFlame.draw(batch);
+            }
         }
         for(int i=0;i<arPlats.size;i++){
             sPlat=arPlats.get(i).getSprite(Atlas);
@@ -741,6 +773,7 @@ public class Play extends MapSelection implements Screen {
         Map.dispose();
         MapRenderer.dispose();
         Atlas.dispose();
+        flame.dispose();
         touchpadMoveSkin.dispose();
         btnJumpSkin.dispose();
         touchpadMoveSkin.dispose();
@@ -766,7 +799,8 @@ public class Play extends MapSelection implements Screen {
             world.destroyBody(platform.PlatBody);
         }
         arPlats.clear();
-        arTraps.clear();
+        arTrapVec.clear();
+        arTrapStr.clear();
         fCharX=nTel2X;
         fCharY=nTel2Y+DeltaY;
         float VY = CharBody.getLinearVelocity().y;
@@ -790,6 +824,11 @@ public class Play extends MapSelection implements Screen {
         jointDef.localAnchorA.set(0, 2f);//sets origin of anchor on first body, and length of the joint to the 2nd body
         joint = world.createJoint(jointDef);
     }
+    public void updateTraps(Array<Vector2> trapVecs, Array<String> trapStrs){
+        arTrapVec=trapVecs;
+        arTrapStr=trapStrs;
+    }
+
 }
 
 
