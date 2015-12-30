@@ -39,37 +39,13 @@ public class ScoresDisplay implements Screen {
     Skin skin;
     Stage stage;
     int nSHeight, nSWidth, length = 0;
-    ScrollPane scrollPane;
-    List list;
-    Table gameroomTable;
-    Table gameTable;
-    Window.WindowStyle windowStyle;
-    Window window;
-    String []arsMaps = {"Fun City", "Buns Town", "Meth Lab", "Cash Money", "Wet Cash", "Dog tail"};
-
-    boolean check = true;
-    int ctpos = 0;
-    int pos = 0;
-    Table table;
     JSONObject jsonObject;
-    TextButton btnAddGameroom;
-    TextButton btnExit;
-    TextButton btnJoin;
-    ArrayList<String> gamerooms = new ArrayList<String>();
-    TextButton btnRefresh;
-    JSONArray results;
-
-    JSONObject resultObject;
 
     TextureAtlas Atlas;
     TextureRegion Region;
 
     ScreenControl screenControl;
 
-    public void render() {
-
-
-    }
 
     @Override
     public void show() {
@@ -93,12 +69,11 @@ public class ScoresDisplay implements Screen {
         skin.add("btnUp",dbtnUp);
         Region=Atlas.findRegion("Button 2");
         Drawable dbtnDn = new TextureRegionDrawable(Region);
-        skin.add("btnDn",dbtnDn);
+        skin.add("btnDn", dbtnDn);
         final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
-        ButtonFont.setScale(nSWidth/512);//will implement when Texture pack is fixed
+        ButtonFont.setScale(nSWidth / 512);//will implement when Texture pack is fixed
         TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(dbtnUp,dbtnDn,dbtnUp,ButtonFont);
         skin.add("btnStyle",btnStyle);
-
         final Button btnRestart = new TextButton("Go back to the Gameroom", skin, "btnStyle");
         final Button btnLobby = new TextButton("Go to the Lobby", skin, "btnStyle");
         final Timer timer = new Timer();
@@ -205,6 +180,7 @@ public class ScoresDisplay implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//This will take you to a specific game~~
                 bCanCreate = false;
+                length = 0;
                 if (screenControl.Owner) {
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
@@ -278,6 +254,7 @@ public class ScoresDisplay implements Screen {
                     Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                         @Override
                         public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                            length = 0;
                             screenControl.setnScreen(7,2);//was 2,5
                         }
 
