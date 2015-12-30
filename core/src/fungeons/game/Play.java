@@ -707,7 +707,7 @@ public class Play extends MapSelection implements Screen {
                     saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
                     System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    2");
 
-                }
+                } 
                 else if(nRandTrap==2) {
                     flame.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
                     System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    3");
