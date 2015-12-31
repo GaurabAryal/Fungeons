@@ -64,6 +64,11 @@ public  class main extends Game {
             this.setScreen(splashScreen);
         }
         if (nScreen == 1 && getScreen()!=mainMenu) {
+            if(GameSong.isPlaying()==true){
+                GameSong.stop();
+            }
+            MenuSong.play();
+            MenuSong.setLooping(true);
             Gdx.input.setInputProcessor(mainMenu.stage);
             this.setScreen(mainMenu);
         }
@@ -73,14 +78,15 @@ public  class main extends Game {
 
         }
         else if (nScreen == 3 && getScreen()!=play){
+            if(MenuSong.isPlaying()==true){
+                MenuSong.stop();
+
+            }
+            GameSong.play();
+            GameSong.setLooping(true);
             Gdx.input.setInputProcessor(play.stage);
             this.setScreen(play);
 
-            if(MenuSong.isPlaying()==true){
-                MenuSong.stop();
-                GameSong.play();
-                GameSong.setLooping(true);
-            }
         }
         if(nScreen == 4  && getScreen()!=gameRoom){
             // gameRoom.create();
@@ -100,7 +106,7 @@ public  class main extends Game {
         if(nScreen==8 && getScreen()!= mapSelection){
             this.setScreen(mapSelection);
         }
-        if(nScreen!=5){
+        if(nScreen==5){
             GameSong.stop();
             MenuSong.play();
             MenuSong.setLooping(true);

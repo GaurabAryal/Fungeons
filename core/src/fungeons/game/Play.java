@@ -445,9 +445,7 @@ public class Play extends MapSelection implements Screen {
             timeLabel2.setText("Time:  "+twoDec.format(Time));
             fCharX = CharBody.getPosition().x;
             fCharY = CharBody.getPosition().y;
-            if(arTrapStr.contains("saw",true)) {
-                saw.PlaySound(fCharX, fCharY, arTrapVec, bDead);
-            }
+            saw.PlaySound(fCharX, fCharY, arTrapVec, bDead);
             //   timeLabel.setText(String.format("%.2f",Time));
             //  timeLabel2.setText("Time:  "+String.format("%.2f",Time));
         }
@@ -702,18 +700,14 @@ public class Play extends MapSelection implements Screen {
             if(fCharX-nTelX<=80 && fCharX-nTelX>=-80 &&fCharY-nTelY<24 && fCharY-nTelY>-24) {/*do nothing*/}//teleport range
 // it would look really wierd if there was a trap on the screen when you teleport because it would just vanish...
             else{
-                System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    1");
                 if(nRandTrap<=1) {
                     saw.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
-                    System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    2");
-
-                } 
-                else if(nRandTrap==2) {
-                    flame.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
-                    System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    3");
 
                 }
-                System.out.println(arTrapStr.size+"     "+arTrapVec.size+"    4");
+                else if(nRandTrap==2) {
+                    flame.setVars(nCharVX, fCharX, fCharY, MapCol, arTrapVec, arTrapStr);
+
+                }
 
             }
         }
@@ -807,6 +801,7 @@ public class Play extends MapSelection implements Screen {
         makeBoxes();
         CharBody.setLinearVelocity(CharBody.getLinearVelocity().x,VY);
         CharBody2.setLinearVelocity(CharBody2.getLinearVelocity().x,VY);
+        Time+=99;
     }
     public void makeBoxes(){
        // character.dispose();

@@ -119,7 +119,7 @@ public class Trap_Flame {
                 for (int i = 0; i < arTrapVec.size; i++) {//FIND A WAY TO BETTER UPDATE THE VECTOR TRAPS ARRAY?!?!?!?!?
                     vTraps.set(arTrapVec.get(i));
 
-                    if (vFlame.dst(vTraps) <= 21) {
+                    if (vFlame.dst(vTraps) <= 24) {
                         break;
                     }
                     if (i == arTrapVec.size - 1) {
