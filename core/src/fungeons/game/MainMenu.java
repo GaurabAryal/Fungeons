@@ -33,6 +33,7 @@ import pablo127.almonds.SignUpCallback;
 /**
  * Created by Gaurab on 2015-04-13.
  */
+
 public class MainMenu implements Screen {
     Stage stage;
     SpriteBatch batch;
@@ -68,12 +69,6 @@ public class MainMenu implements Screen {
         Region=Atlas.findRegion("BG Wall Brick Wide");
         BGWall= Region;
 
-      /*  for(int i=0;i<(Gdx.graphics.getWidth()+100)/Region.getRegionWidth();i++){
-            for(int j=0;j<(Gdx.graphics.getHeight()+100)/Region.getRegionHeight();j++){
-                BGWall[i][j].setRegion(Region);
-
-            }
-        }*/
         dBGWall= new TextureRegionDrawable(BGWall);
         Region=Atlas.findRegion("Button 1");
         TextureRegion btnWhite = Region;
