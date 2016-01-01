@@ -290,10 +290,6 @@ public class Play extends MapSelection implements Screen {
 
         MapLoader = new TmxMapLoader();
 
-        //
-        //GetMap();
-        System.out.println(GetMap());
-        //
         sMap = GetMap();
 
         Map = MapLoader.load(screenControl.getMap());//name of the tmx map file

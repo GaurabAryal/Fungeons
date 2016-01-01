@@ -46,8 +46,6 @@ public class MainMenu implements Screen {
     Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
     Label.LabelStyle dialogStyle;
 
-   // BitmapFont mockFont= new BitmapFont(Gdx.files.internal("mockFont.fnt"));
-    //Texture img =  new Texture("bgimg2.jpeg");
 
     ScreenControl screenControl;
     Game game;
