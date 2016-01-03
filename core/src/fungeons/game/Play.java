@@ -56,7 +56,6 @@ public class Play extends MapSelection implements Screen {
     DecimalFormat twoDec;
     Label timeLabel, timeLabel2;
     String chatId;
-    JSONObject jsonObject;
     boolean bWent;
 
     BodyDef MapDef;
@@ -505,35 +504,6 @@ public class Play extends MapSelection implements Screen {
                         //what we will do is open up a new screen and display scores. This game keeps rendering still... window wont take priority
                         // dispose();
                         screenControl.setnScreen(7,5);//was 5,3
-                        /**this bit of code is to upload to profile but dont worry about this for now**/
-                                       /* final Net.HttpRequest httpRequest;
-                                        httpRequest = new Net.HttpRequest(Net.HttpMethods.PUT);
-                                        httpRequest.setUrl("https://api.parse.com/1/classes/_User/" + ParseUser.getCurrentUser().getObjectId());
-                                        screenControl.setChatId("");
-                                        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-                                        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
-                                        JSONObject json = new JSONObject();
-                                        JSONObject skills = new JSONObject();
-                                        skills.put("__op", "Add");
-                                        skills.put("objects", new JSONArray(Arrays.asList( "Gamename" + ": " + twoDec.format(Time))));
-                                        json.put("games", skills);
-                                        httpRequest.setContent(json.toString());
-                                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
-                                            @Override
-                                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                                            }
-
-                                            @Override
-                                            public void failed(Throwable t) {
-                                                System.out.println(t.toString());
-                                            }
-
-                                            @Override
-                                            public void cancelled() {
-
-                                            }
-                                        });*/
-                        /***********************IGNORE************************/
                     }
 
                     @Override

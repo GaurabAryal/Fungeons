@@ -51,11 +51,6 @@ public class MainMenu implements Screen {
     ScreenControl screenControl;
     Game game;
 
-    public void render(){
-
-
-    }
-
     @Override
     public void show() {
         final int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();

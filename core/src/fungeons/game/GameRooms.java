@@ -53,8 +53,6 @@ public class GameRooms implements Screen {
     Window window;
     String []arsMaps = {"Fun City", "Buns Town", "Frogosaurus",
             "Fun City", "Fun Leaf Clover", "Fun Mountain"};
-
-    boolean check = true;
     int ctpos = 0;
     int pos = 0;
     Table table;

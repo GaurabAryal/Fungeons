@@ -48,20 +48,13 @@ public class GameRoom implements Screen {
     List list2;
     Table gameroomTable;
     Table gameTable;
-    Window.WindowStyle windowStyle;
     Window window;
-    boolean check = true;
-    int ctpos = 0;
-    int pos = 0;
     Table table;
     JSONObject jsonObject;
     TextButton btnStart;
     TextButton btnBack;
-    TextButton btnExit;
-    TextButton btnJoin;
     ArrayList<String> gamerooms = new ArrayList<String>();
     ArrayList<String> players = new ArrayList<String>();
-    TextButton btnRefresh;
     boolean bCanCreate = false;
     String chatObjId="";
 

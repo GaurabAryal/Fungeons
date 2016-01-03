@@ -34,11 +34,6 @@ public class Instructions implements Screen {
 
     }
 
-    public void render(){
-
-    }
-
-
     @Override
     public void show() {
         nScreenWidth=Gdx.graphics.getWidth();
