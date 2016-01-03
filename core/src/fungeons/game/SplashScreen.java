@@ -23,7 +23,6 @@ public class SplashScreen implements Screen{
     main main1;
     MainMenu mainMenu;
     public SplashScreen(){
-      //  main1=main_;
 
     }
 

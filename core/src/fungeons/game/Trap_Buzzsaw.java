@@ -135,10 +135,9 @@ public class Trap_Buzzsaw {
                 for (int i = 0; i < arTrapVec.size; i++) {
                     vTraps.set(arTrapVec.get(i));
 
-                    if (vSaw.dst(vTraps) <= 23) {
+                    if (vSaw.dst(vTraps) <= 25) {
                             break;
                     }
-                    System.out.println(vSaw.dst(vTraps) +"     SAW");
                     if (i == arTrapVec.size - 1) {
                         arTrapVec.add(new Vector2(vSaw));
                         arTrapStr.add(new String("saw"));
@@ -176,22 +175,24 @@ public class Trap_Buzzsaw {
     public void PlaySound(float CharX, float CharY, Array<Vector2> Traps, Boolean Dead){
         vChar = new Vector2(CharX,CharY);
         float closest=120;
+
             for (int i = 0; i < Traps.size; i++) {
-                if (vChar.dst(Traps.get(i)) < closest) {
-                    closest = vChar.dst(Traps.get(i));
-                }
-                if (i == Traps.size - 1) {
-
-                    BuzzSawSound.setVolume(id, 7f / (float) Math.pow(closest, 1.2));
-
-                    if (isPlaying == false) {
-                        id=BuzzSawSound.loop();
-                        isPlaying = true;
+                if (arTrapStr.get(i).equals("saw")) {
+                    if (vChar.dst(Traps.get(i)) < closest) {
+                        closest = vChar.dst(Traps.get(i));
                     }
+                    if (i == Traps.size - 1) {
 
+                        BuzzSawSound.setVolume(id, 7f / (float) Math.pow(closest, 1.2));
+
+                        if (isPlaying == false) {
+                            id = BuzzSawSound.loop();
+                            isPlaying = true;
+                        }
+
+                    }
                 }
             }
-
     }
     public void dispose(){
         BuzzSawSound.stop(id);

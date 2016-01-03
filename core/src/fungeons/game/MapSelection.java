@@ -79,16 +79,28 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         Drawable dbtnWhiteDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("BunsTown");
         Drawable BunsTown = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("BunsTownDn");
+        Drawable BunsTownDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("Dawgg");
         Drawable Dawgg = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("DawggDn");
+        Drawable DawggDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("Frogosaurus");
         final Drawable Frogosaurus = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("FrogosaurusDn");
+        final Drawable FrogosaurusDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("FunCity");
         Drawable FunCity = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("FunCityDn");
+        Drawable FunCityDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("FunLeafClover");
         Drawable FunLeafClover = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("FunLeafCloverDn");
+        Drawable FunLeafCloverDn = new TextureRegionDrawable(Region);
         Region=Atlas.findRegion("FunMountain");
         Drawable FunMountain = new TextureRegionDrawable(Region);
+        Region=Atlas.findRegion("FunMountainDn");
+        Drawable FunMountainDn = new TextureRegionDrawable(Region);
         //
         ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         ButtonFont.setScale(nScreenWidth/512);
@@ -104,23 +116,20 @@ public class MapSelection implements Screen { //currently is placeholder has sam
             btnGame=new TextButton("PLAY",btnWhiteStyle);
         }
 
-        btnBunsTown = new ImageButton(BunsTown,dbtnWhiteDn);
-        btnDawgg = new ImageButton(Dawgg,dbtnWhiteDn);
-        btnFrogosaurus = new ImageButton(Frogosaurus,dbtnWhiteDn);
-        btnFunCity = new ImageButton(FunCity,dbtnWhiteDn);
-        btnFunLeafClover = new ImageButton(FunLeafClover,dbtnWhiteDn);
-        btnFunMountain = new ImageButton(FunMountain,dbtnWhiteDn);
+        btnBunsTown = new ImageButton(BunsTown,BunsTownDn);
+        btnDawgg = new ImageButton(Dawgg,DawggDn);
+        btnFrogosaurus = new ImageButton(Frogosaurus,FrogosaurusDn);
+        btnFunCity = new ImageButton(FunCity,FunCityDn);
+        btnFunLeafClover = new ImageButton(FunLeafClover,FunLeafCloverDn);
+        btnFunMountain = new ImageButton(FunMountain,FunCityDn);
 
         table=new Table(skin);
         table.setSize(nScreenWidth, nScreenHeight);
         table.setBackground(dBGWall);
-        //table.pad(nScreenHeight / 16);
-
 
         btnBack.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //   stage.dispose();
                 if (screenControl.isOnline()){
                     screenControl.setnScreen(7, 2);
                 }else {
@@ -169,9 +178,9 @@ public class MapSelection implements Screen { //currently is placeholder has sam
 
         table.padBottom(nScreenHeight / 6);
         table.row();
-        table.add(bunsTown).pad(10f);//.width((int) (nScreenWidth / (3 * nbtnW))).height((int) (nScreenHeight / (3 * nbtnH))).pad(10f);
-        table.add(dawgg).pad(10f);//.width((int) (nScreenWidth / (3 * nbtnW))).height((int) (nScreenHeight / (3 * nbtnH))).pad(10f);
-        table.add(frogosaurus).pad(10f);//.width((int) (nScreenWidth / (3 * nbtnW))).height((int) (nScreenHeight / (3 * nbtnH))).pad(10f);
+        table.add(bunsTown).pad(10f);
+        table.add(dawgg).pad(10f);
+        table.add(frogosaurus).pad(10f);
         table.row();
         table.add(btnBunsTown).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH)).pad(10f);
         table.add(btnDawgg).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH)).pad(10f);
@@ -186,18 +195,13 @@ public class MapSelection implements Screen { //currently is placeholder has sam
         table.add(btnFunMountain).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / nbtnH)).pad(10f);
         table.row().padBottom(nScreenHeight / 3);
 
-        //table.add(btnGame);
-
         table2=new Table(skin);
         table2.setSize(nScreenWidth, nScreenHeight / 4);
-        //table2.padTop(nScreenHeight / 6);
         table2.add(btnGame).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / (2 * nbtnH))).pad(20f);
         table2.add(btnBack).width((int) (nScreenWidth / nbtnW)).height((int) (nScreenHeight / (2 * nbtnH))).pad(20f);
 
-        //stage.addActor(btnGame);
         stage.addActor(table);
         stage.addActor(table2);
-        //stage.addActor(btnBack);
 
         Gdx.input.setInputProcessor(stage);
     }
