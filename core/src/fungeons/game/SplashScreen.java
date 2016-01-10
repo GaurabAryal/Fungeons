@@ -48,7 +48,6 @@ public class SplashScreen implements Screen{
         sSplash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sSplash.setPosition(-sSplash.getWidth()/2,-sSplash.getHeight()/2);
         batch.setProjectionMatrix(camera.combined);
-        //System.out.println("FUKIN HELLO!??! 3333333");
     }
 
     @Override
@@ -57,18 +56,14 @@ public class SplashScreen implements Screen{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Time+=Gdx.graphics.getDeltaTime();
-       // System.out.println("splash render    "+Time);
         batch.begin();
         sSplash.draw(batch);
         sSplash.setAlpha((float)(-0.5*Math.cos(Time)+0.5));
-      //  System.out.println("switch  "+screenControl.getnScreen()+"      "+screenControl.nScreen );
         camera.update();
         batch.end();
 
         if(Time>=6.5){
             screenControl.setnScreen(1,0);
-         //   System.out.println("switch  "+screenControl.getnScreen()+"      "+screenControl.nScreen );
-         //   main1.setScreen(mainMenu);
         }
     }
 

@@ -120,10 +120,6 @@ public class Play extends MapSelection implements Screen {
 
     }
 
-    public void render(){
-
-    }
-
     @Override
     public void show() {
         world=new World(gravity,false);
