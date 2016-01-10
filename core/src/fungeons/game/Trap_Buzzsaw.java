@@ -33,12 +33,6 @@ public class Trap_Buzzsaw {
         fCharY=CharY;
         if(BuzzSawSound==null) {
             BuzzSawSound = Gdx.audio.newSound(Gdx.files.internal("BuzzSaw Sound.mp2"));
-
-           /* BuzzSawSound.setPriority(1,1);
-            BuzzSawSound.setLooping(1,true);
-            BuzzSawSound.play();
-            BuzzSawSound.pause();
-            BuzzSawSound.resume(1);*/
         }
         if (CharVX != 0) {
             nCharVX = CharVX;//only updates when char is moving thus storing it's previous velocity if the player stops

@@ -86,13 +86,9 @@ public class GameRooms implements Screen {
 
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("Button 1");
-       // TextureRegion btnWhite = Region;
         dbtnWhite = new TextureRegionDrawable(Region);
-       // skin.add("btnWhite",dbtnWhite);
         Region=Atlas.findRegion("Button 2");
-      //  TextureRegion btnWhiteDn = Region;
         Drawable dbtnWhiteDn = new TextureRegionDrawable(Region);
-        //skin.add("btnWhiteDn",dbtnWhiteDn);
         final BitmapFont ButtonFont = new BitmapFont(Gdx.files.internal("FungeonsFont.fnt"));
         final BitmapFont ButtonFontAlt = new BitmapFont(Gdx.files.internal("FungeonsFontAlt.fnt"));
         ButtonFont.setScale(nSWidth/512);//will implement when Texture pack is fixed
@@ -105,20 +101,7 @@ public class GameRooms implements Screen {
         final Label nameLabel = new Label("Name: ", skin);
         final Label mapLabel = new Label("Map: ", skin);
         final TextField txtName = new TextField("", skin);
-        // RaresSourceCode Change Selectbox into Button that changes screen
-        //
 
-        //final TextButton btnMaps = new TextButton("Select Your Map", skin);
-
-
-        /*btnMaps.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) { // Hopefully go to mapscreen
-                System.out.println("Found it");
-                screenControl.setnScreen(8,2);
-
-            }
-        });*/
         final SelectBox selectBox = new SelectBox(skin);
         selectBox.setItems("BunsTown", "Dawgg", "Frogosaurus", "FunCity", "FunLeafClover", "FunMountain");
         // Maps
@@ -137,16 +120,6 @@ public class GameRooms implements Screen {
         table.setBackground(dBGWall);
         ParseObject pO = new ParseObject("gamerooms");
 
-//        for (int i =0; i < 1;i++) {
-//            pO.
-////            pO.put("Name","GameRoom"+i);
-////            pO.put("map",1);
-////            pO.put("isJoinable",true);
-////            p
-////            pO2.put("game", "GameRoom"+i);
-////            pO.saveInBackground();
-////            pO2.saveInBackground();
-//        }
         btnAddGameroom = new TextButton("Add Game", skin, "btnWhiteStyle");
 
         btnRefresh = new TextButton("Refresh", skin, "btnWhiteStyle");
@@ -181,15 +154,13 @@ public class GameRooms implements Screen {
         selectBox.setSelected("Fun City");
 
 
-        // list.setVisible(false);
         btnAddGameroom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Add a gameroom
                 System.out.println("Added");
-              //  window.setModal(true);
                 float winW=window.getWidth(), winH=window.getHeight();
                 window.setVisible(true);
-                gameroomTable.setPosition(0, 0);//clearly there is an issue. everytime you exit and click on add again, table moves down. WTF!!!
+                gameroomTable.setPosition(0, 0);
                 nameLabel.setFontScale(2f);
                 gameroomTable.add(nameLabel).size(winH/6f).padTop(winH / 16f);
                 txtName.getStyle().font.setScale(2f);
@@ -350,14 +321,12 @@ public class GameRooms implements Screen {
                             public boolean handle(Event event) {
 
                                 if (pos > ((int) scrollPane.getScrollY() + 9) || pos < ((int) scrollPane.getScrollY() - 9)) {
-                                    //System.out.println(scrollPane.getScrollY() +"    "+ pos);
                                     ctpos = 0;
                                 } else if (ctpos > 3) {
                                     JSONArray results = (JSONArray) jsonObject.get("results");
                                     float winW=window.getWidth(),winH=window.getHeight();
                                     for (int n = 0; n < results.length(); n++) {
                                         resultObject = (JSONObject) results.get(n);
-                                        //System.out.println(list.getSelected().toString() + resultObject.get("Name").toString());
                                         if (resultObject.get("Name").toString().equals(list.getSelected().toString()) && gameTable.getRows() < 3) {
                                             resultObject = (JSONObject) results.get(n);
                                             gameTable.add(resultObject.get("Name").toString())
