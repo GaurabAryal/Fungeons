@@ -292,7 +292,6 @@ public class GameRooms implements Screen {
         final Net.HttpRequest httpRequest;
         httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
         httpRequest.setUrl("https://api.parse.com/1/classes/gamerooms/");
-        System.out.println(Parse.getRestAPIKey() + Parse.getApplicationId());
         httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
         httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
         httpRequest.setContent(requestContent);
@@ -313,7 +312,6 @@ public class GameRooms implements Screen {
                         list.clearItems();
                         list.setItems(gamerooms.toArray());
                         table.add(btnRefresh).height(nSHeight/7f).width(nSWidth/4f);
-                        //table.row();
                         scrollPane = new ScrollPane(list, skin);
                         scrollPane.setColor(0.2f, 0.2f, 0.2f, 0.7f);//makes it translucent asaposed to opaque or transparent
                         scrollPane.addListener(new EventListener() {
