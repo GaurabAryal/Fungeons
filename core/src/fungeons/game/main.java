@@ -89,7 +89,6 @@ public  class main extends Game {
 
         }
         if(nScreen == 4  && getScreen()!=gameRoom){
-            // gameRoom.create();
             this.setScreen(gameRoom);
         }
         if (nScreen == 5  && getScreen()!=scoresDisplay){

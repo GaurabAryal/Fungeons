@@ -361,17 +361,14 @@ public class GameRooms implements Screen {
                         });
                         table.add(btnAddGameroom).height(nSHeight/7f).width(nSWidth/4f);
                         table.row().height(nSHeight);
-                        //scrollPane.setFillParent(true);
 
                         table.add(scrollPane).width(nSWidth).colspan(2);
 
                         table.setFillParent(true);
-                        //   table.setPosition(nSWidth/2,nSHeight);
 
                         table.center().top().pad(0);
                         stage.addActor(table);
                     }
-                    //stage.addActor(scrollPane);
                 } catch (Exception e) {
                     System.out.println(e);
                 }

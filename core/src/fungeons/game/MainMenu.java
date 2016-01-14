@@ -94,7 +94,6 @@ public class MainMenu implements Screen {
 
         final Label passwordLabel = new Label("Password: ", skin);
         final Label userLabel = new Label("Username: ", skin);
-        //  final Label someSpace = new Label("         ", skin);
         final TextField txtPassword = new TextField("", skin);
         final TextButton button = new TextButton("LOGIN", skin, "btnWhiteStyle");
         final TextButton btnH2p = new TextButton("HOW TO PLAY", skin, "btnWhiteStyle");
@@ -148,7 +147,6 @@ public class MainMenu implements Screen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
-                // screenControl.setnScreen(2);
                 try {
                     ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
@@ -178,15 +176,12 @@ public class MainMenu implements Screen {
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
                             if (e == null) {
-                                // Hooray! Let them use the app now.
                                 exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle).padTop(nScreenHeight/40f);
                                 exitDialog.show(stage);
                             } else {
                                 System.out.println(e.getMessage());
                                 exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle).padTop(nScreenHeight/40f);
                                 exitDialog.show(stage);
-                                // Sign up didn't succeed. Look at the ParseException
-                                // to figure out what went wrong
                             }
                         }
                     });
@@ -215,7 +210,6 @@ public class MainMenu implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         batch.begin();
-        // batch.draw(img, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.draw();
 
         batch.end();
