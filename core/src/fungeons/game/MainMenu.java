@@ -24,6 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+/*SOCKET.IO IMPORT*/
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.emitter.Emitter;
+
+import java.net.URISyntaxException;
+
 import pablo127.almonds.LogInCallback;
 import pablo127.almonds.Parse;
 import pablo127.almonds.ParseException;
@@ -50,6 +57,19 @@ public class MainMenu implements Screen {
     ScreenControl screenControl;
     Game game;
 
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://myapp-fungeons.rhcloud.com:8000/");
+        } catch (URISyntaxException e) {}
+    }
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+            System.out.println("Connected!!!!!!!!!!!");
+        }
+    };
     @Override
     public void show() {
         final int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
@@ -147,22 +167,25 @@ public class MainMenu implements Screen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
-                try {
-                    ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            if (user != null) {
-                                ParseUser u = ParseUser.getCurrentUser();
-                                if (u.getUsername() != null) {
-                                    screenControl.setOnline(true);
-                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
-                                    exitDialog.show(stage);
-                                }
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
+
+                mSocket.connect();
+                mSocket.on("connect", onNewMessage);
+//                try {
+//                    ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
+//                        public void done(ParseUser user, ParseException e) {
+//                            if (user != null) {
+//                                ParseUser u = ParseUser.getCurrentUser();
+//                                if (u.getUsername() != null) {
+//                                    screenControl.setOnline(true);
+//                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+//                                    exitDialog.show(stage);
+//                                }
+//                            }
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    System.out.println(e);
+//                }
             }
         });
         btnRegister.addListener(new ChangeListener() {
@@ -273,5 +296,6 @@ public class MainMenu implements Screen {
             screenControl.setnScreen(7,2);//was 2,1
             }
     }
+
 
 }

@@ -7,4 +7,5 @@ eclipse.project {
 }
 dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.github.nkzawa:socket.io-client:0.6.0' /*socket.io dependency*/
 }
