@@ -167,7 +167,7 @@ public class MainMenu implements Screen {
         });
         btnRegister.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) { // Register bt
+            public void changed(ChangeEvent event, Actor actor) { // Register button
                 if (txtUsername.getText() != "" && txtPassword.getText() !="") {
                     ParseUser user = new ParseUser();
                     user.setUsername(txtUsername.getText());
@@ -185,6 +185,8 @@ public class MainMenu implements Screen {
                             }
                         }
                     });
+                }else{
+                    System.out.println("Failed registration");
                 }
             }
         });
@@ -268,8 +270,6 @@ public class MainMenu implements Screen {
         }
         @Override
             protected void result(Object object){
-
-            System.out.println(object);
             screenControl.setnScreen(7,2);//was 2,1
             }
     }
