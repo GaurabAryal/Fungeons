@@ -2,6 +2,7 @@ package fungeons.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,6 +24,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 
 import pablo127.almonds.LogInCallback;
 import pablo127.almonds.Parse;
@@ -148,16 +152,36 @@ public class MainMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
                 try {
-                    ParseUser.logIn(txtUsername.getText(), txtPassword.getText(), new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            if (user != null) {
-                                ParseUser u = ParseUser.getCurrentUser();
-                                if (u.getUsername() != null) {
-                                    screenControl.setOnline(true);
-                                    exitDialog.text(" Welcome, " + u.getUsername() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
-                                    exitDialog.show(stage);
-                                }
+                    final Net.HttpRequest httpRequest;
+                    httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+                    httpRequest.setUrl("http://backend-fungeons.rhcloud.com/login");
+                    String authStr = txtUsername.getText()+":"+txtPassword.getText();
+                    // encode data on your side using BASE64
+                    byte[] bytesEncoded = Base64.encodeBase64(authStr .getBytes());
+                    String authEncoded = new String(bytesEncoded);
+                     httpRequest.setHeader("Authorization", "Basic "+authEncoded);
+                    Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                        @Override
+                        public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                            System.out.println(httpResponse.getStatus());
+                            String res = httpResponse.getResultAsString();
+                            System.out.println(res);
+                            if(!res.equals("Unauthorized")){
+                                JSONObject response = new JSONObject(res);
+                                screenControl.setAuthToken(response.get("token").toString());
+                                exitDialog.text(" Welcome, " + txtUsername.getText() + "! ", dialogStyle).padTop(nScreenHeight/40f);//Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                exitDialog.show(stage);
                             }
+                        }
+
+                        @Override
+                        public void failed(Throwable t) {
+                            System.out.println(t.toString());
+                        }
+
+                        @Override
+                        public void cancelled() {
+
                         }
                     });
                 } catch (Exception e) {

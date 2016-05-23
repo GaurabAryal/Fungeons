@@ -9,6 +9,7 @@ public class ScreenControl {// basically holds an int
     boolean Owner;
     String userId = "";
     String chatId ="";
+    String authToken ="";
     String Name = "";
     String sMap = "BunsTown.tmx";
     int nMap = 0;
@@ -33,6 +34,9 @@ public class ScreenControl {// basically holds an int
     public void setOnline(boolean _online){
         online = _online;
     }
+    public void setAuthToken(String _authToken){
+        authToken = _authToken;
+    }
     public void setUserId(String _userId){
         userId = _userId;
     }
@@ -56,6 +60,9 @@ public class ScreenControl {// basically holds an int
     }
     public String getUserId(){
         return userId;
+    }
+    public String getAuthToken(){
+        return authToken;
     }
     public int getnScreen(){
         return(nScreen);
