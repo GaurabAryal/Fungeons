@@ -39,6 +39,7 @@ import pablo127.almonds.SignUpCallback;
  */
 
 public class MainMenu implements Screen {
+    //Stage is an InputProcessor. When it receives input events, it fires them on the appropriate actors.
     Stage stage;
     SpriteBatch batch;
     TextureAtlas Atlas;
@@ -59,8 +60,6 @@ public class MainMenu implements Screen {
         final int nScreenHeight=Gdx.graphics.getHeight(), nScreenWidth=Gdx.graphics.getWidth();
         Parse.initialize("ayDwhTuCZaESDYV4OvdRIWHjX2DW2DuUWwGB6BTk", "s2NFEowokTeIhqxB1eYFTBNNY1hE6dVPoSDVDCaB");//initialize parse with our keys
         batch = new SpriteBatch();
-
-
         Drawable dBGWall;
         Atlas= new TextureAtlas(Gdx.files.internal("Fungeons_3.pack"));
         Region=Atlas.findRegion("BG Wall Brick Wide");
@@ -94,6 +93,8 @@ public class MainMenu implements Screen {
         skin.add("windowStyle",windowStyle);
         final ExitDialog exitDialog = new ExitDialog("", skin, "windowStyle");
         exitDialog.setPosition(nScreenWidth/8f,nScreenHeight/4f);
+        final RegisterDialog registerDialog = new RegisterDialog("", skin, "windowStyle");
+        registerDialog.setPosition(nScreenWidth/8f,nScreenHeight/4f);
         dialogStyle = new Label.LabelStyle(ButtonFontAlt, Color.WHITE);
 
         final Label passwordLabel = new Label("Password: ", skin);
@@ -150,7 +151,7 @@ public class MainMenu implements Screen {
         //http://stackoverflow.com/questions/21488311/libgdx-how-to-create-a-button
         button.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {//this is login button. Parse.User is an object from Almonds library.
+            public void changed(ChangeEvent event, Actor actor) {
                 try {
                     final Net.HttpRequest httpRequest;
                     httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
@@ -159,13 +160,11 @@ public class MainMenu implements Screen {
                     // encode data on your side using BASE64
                     byte[] bytesEncoded = Base64.encodeBase64(authStr .getBytes());
                     String authEncoded = new String(bytesEncoded);
-                     httpRequest.setHeader("Authorization", "Basic "+authEncoded);
+                    httpRequest.setHeader("Authorization", "Basic "+authEncoded);
                     Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
                         @Override
                         public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                            System.out.println(httpResponse.getStatus());
                             String res = httpResponse.getResultAsString();
-                            System.out.println(res);
                             if(!res.equals("Unauthorized")){
                                 JSONObject response = new JSONObject(res);
                                 screenControl.setAuthToken(response.get("token").toString());
@@ -193,22 +192,43 @@ public class MainMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) { // Register button
                 if (txtUsername.getText() != "" && txtPassword.getText() !="") {
-                    ParseUser user = new ParseUser();
-                    user.setUsername(txtUsername.getText());
-                    user.setPassword(txtPassword.getText());
-                    user.setEmail(txtUsername.getText() + "@example.com");
-                    user.signUpInBackground(new SignUpCallback() {
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                exitDialog.text("Thank you for registering, " + txtUsername.getText() + "!", dialogStyle).padTop(nScreenHeight/40f);
-                                exitDialog.show(stage);
-                            } else {
-                                System.out.println(e.getMessage());
-                                exitDialog.text(e.getMessage() + ". Please choose another Username", dialogStyle).padTop(nScreenHeight/40f);
-                                exitDialog.show(stage);
+                    try {
+                        final Net.HttpRequest httpRequest;
+                        httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+                        httpRequest.setUrl("http://backend-fungeons.rhcloud.com/register");
+                        httpRequest.setHeader("Content-Type", "application/json");
+                        final JSONObject userInfo = new JSONObject();
+                        userInfo.append("username", txtUsername.getText());
+                        userInfo.append("password", txtPassword.getText());
+                        System.out.println(userInfo.toString());
+                        httpRequest.setContent(userInfo.toString());
+                        Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+                            @Override
+                            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+
+                                JSONObject response = new JSONObject(httpResponse.getResultAsString());
+                                System.out.println(response.toString());
+                                System.out.println(response.get("message"));
+                                if(response.get("message").equals("Successfully registered user, " + txtUsername.getText())){
+                                    //Opens up a dialog box saying you successfully logged in. When you press OK, it will redirect you to the lobby
+                                    registerDialog.text("Welcome " + txtUsername.getText() + "! Please Login!", dialogStyle).padTop(nScreenHeight/40f);
+                                    registerDialog.show(stage);
+                                }
                             }
-                        }
-                    });
+
+                            @Override
+                            public void failed(Throwable t) {
+                                System.out.println(t.toString());
+                            }
+
+                            @Override
+                            public void cancelled() {
+
+                            }
+                        });
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }else{
                     System.out.println("Failed registration");
                 }
@@ -296,6 +316,34 @@ public class MainMenu implements Screen {
             protected void result(Object object){
             screenControl.setnScreen(7,2);//was 2,1
             }
+    }
+
+    public  class RegisterDialog extends Dialog {
+        public RegisterDialog(String title, Skin skin_,String windowStyle_){
+            super(title, skin, "windowStyle");
+
+        }
+        public RegisterDialog(String title, Skin skin_){
+            super(title, skin);
+
+        }
+
+        public RegisterDialog(String title,WindowStyle windowStyle_){
+            super(title, windowStyle);
+        }
+        {
+
+            int nScreenWidth=Gdx.graphics.getWidth(), nScreenHeight=Gdx.graphics.getHeight();
+
+            setSize(nScreenWidth, nScreenHeight);
+            setScale(1f,3f);
+            button("OK", this,btnWhiteStyle).pad(nScreenHeight / 20f, nScreenWidth / 20f, nScreenHeight / 40f, nScreenWidth / 20f);
+
+        }
+        @Override
+        protected void result(Object object){
+
+        }
     }
 
 }

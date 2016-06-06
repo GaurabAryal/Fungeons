@@ -21,7 +21,6 @@ public class ScreenControl {// basically holds an int
     public void setnScreen(int nScreen_, int nOldScreen_){
         nScreen = nScreen_;
         nOldScreen=nOldScreen_;
-        System.out.println("welp");
     }
 
     public void setName (String sName, boolean bOwner){

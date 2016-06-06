@@ -291,23 +291,23 @@ public class GameRooms implements Screen {
         String requestContent = null;
         final Net.HttpRequest httpRequest;
         httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        httpRequest.setUrl("https://api.parse.com/1/classes/gamerooms/");
-        httpRequest.setHeader("X-Parse-Application-Id", Parse.getApplicationId());
-        httpRequest.setHeader("X-Parse-REST-API-Key", Parse.getRestAPIKey());
+        httpRequest.setUrl("http://backend-fungeons.rhcloud.com/api/gamerooms");
+        httpRequest.setHeader("x-access-token", screenControl.getAuthToken());
         httpRequest.setContent(requestContent);
         Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() { // Listens to the server response
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
                 try {
-                    jsonObject = new JSONObject(httpResponse.getResultAsString());
-                    JSONArray results = (JSONArray) jsonObject.get("results");
+                  //  jsonObject = new JSONObject(httpResponse.getResultAsString());
+                  //  System.out.println(jsonObject.toString());
+                    JSONArray results = new JSONArray(httpResponse.getResultAsString());
                     if (results.length()!= Results) {
                         Results = results.length();
                         gamerooms.clear();
                         table.clearChildren();
                         for (int n = 0; n < results.length(); n++) {
                             resultObject = (JSONObject) results.get(n);
-                            gamerooms.add(resultObject.get("Name").toString());
+                            gamerooms.add(resultObject.get("name").toString());
                         }
                         list.clearItems();
                         list.setItems(gamerooms.toArray());
